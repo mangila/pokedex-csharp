@@ -11,12 +11,12 @@ public class PokemonHttpClient(
     HttpClient httpClient,
     IOptions<PokeApiOption> options)
 {
-    public async Task<Pokemon?> GetPokemon(string id, CancellationToken cancellationToken = default)
+    public async Task<PokemonApiResponse> GetPokemon(string id, CancellationToken cancellationToken = default)
     {
         var uri = options
             .Value
             .GetPokemonUri
             .Replace("{id}", id);
-        return await httpClient.GetFromJsonAsync<Pokemon>(uri, cancellationToken);
+        return await httpClient.GetFromJsonAsync<PokemonApiResponse>(uri, cancellationToken);
     }
 }

@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace pokedex_shared.Config;
 
-public class HttpRequestConfig
+public static class HttpRequestConfig
 {
     public static class Policies
     {

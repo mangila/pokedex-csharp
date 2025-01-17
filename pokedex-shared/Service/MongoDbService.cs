@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using pokedex_api.Model;
+using pokedex_shared.Model;
 using pokedex_shared.Option;
 
 namespace pokedex_shared.Service;
@@ -9,7 +9,7 @@ namespace pokedex_shared.Service;
 public class MongoDbService
 {
     private readonly ILogger<MongoDbService> _logger;
-    private readonly IMongoCollection<PokemonResponse> _collection;
+    private readonly IMongoCollection<PokemonDocument> _collection;
 
     public MongoDbService(
         ILogger<MongoDbService> logger,
@@ -17,19 +17,27 @@ public class MongoDbService
     {
         _logger = logger;
         var options = mongoDbOption.Value;
-        var client = new MongoClient(options.ConnectionString);
-        _collection = client
+        _collection = new MongoClient(options.ConnectionString)
             .GetDatabase(options.Database)
-            .GetCollection<PokemonResponse>(options.Collection);
+            .GetCollection<PokemonDocument>(options.Collection);
     }
 
-    public Task<PokemonResponse> FindByIdAsync(string id, CancellationToken cancellationToken = default)
+    public Task<PokemonDocument> FindByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<PokemonResponse> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+    public Task<PokemonDocument> FindByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
+    }
+
+    public void InsertAsync(PokemonApiResponse pokemon, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(pokemon);
+        _collection.InsertOne(pokemon.ToDocument(), new InsertOneOptions
+        {
+            Comment = "Insert from InsertAsync()"
+        }, cancellationToken);
     }
 }

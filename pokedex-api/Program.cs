@@ -1,13 +1,12 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using pokedex_api.Controller;
+using pokedex_api.ExceptionHandler;
 using pokedex_shared.Config;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the DI container.
 
 // Configure API Controllers
 builder.Services.AddControllers();
@@ -16,9 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 SwaggerGenServiceCollectionExtensions.AddSwaggerGen(builder.Services);
 // Configure MongoDB
-builder.Services.AddMongoDb(
-    builder.Configuration.GetSection(nameof(MongoDbOption))
-);
+builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
 // Configure Redis
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
@@ -47,6 +44,7 @@ builder.Services.AddApiVersioning(options =>
         options.SubstituteApiVersionInUrl = true;
     });
 // Add Exception Handler
+builder.Services.AddExceptionHandler<ArgumentNullExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 // Add Singleton Services
