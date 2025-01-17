@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace pokedex_shared.Http;
+namespace pokedex_shared.Model;
 
 public class Pokemon
 {

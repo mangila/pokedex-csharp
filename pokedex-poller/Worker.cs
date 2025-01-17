@@ -7,7 +7,7 @@ public class Worker(
     ILogger<Worker> logger,
     WorkerOption workerOption,
     IEnumerable<int> ids,
-    PokemonClient pokemonClient
+    PokemonHttpClient pokemonHttpClient
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -18,7 +18,7 @@ public class Worker(
             {
                 foreach (var index in ids)
                 {
-                    var s = await pokemonClient.GetPokemon(index.ToString(), cancellationToken);
+                    var s = await pokemonHttpClient.GetPokemon(index.ToString(), cancellationToken);
                     logger.LogInformation(s.Name);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }

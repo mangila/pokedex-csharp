@@ -1,6 +1,7 @@
-﻿using pokedex_api.Model;
+﻿
+using pokedex_api.Model;
 
-namespace pokedex_api.Service;
+namespace pokedex_shared.Service;
 
 public class PokemonService(DatasourceService datasource)
 {

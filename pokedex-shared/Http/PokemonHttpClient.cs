@@ -2,11 +2,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using pokedex_poller.Config;
+using pokedex_shared.Model;
 
 namespace pokedex_shared.Http;
 
-public class PokemonClient(
-    ILogger<PokemonClient> logger,
+public class PokemonHttpClient(
+    ILogger<PokemonHttpClient> logger,
     HttpClient httpClient,
     IOptions<PokeApiOption> options)
 {

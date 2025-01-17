@@ -1,8 +1,9 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using pokedex_api.Config;
 using pokedex_api.Controller;
-using pokedex_api.Service;
+using pokedex_shared.Config;
+using pokedex_shared.Option;
+using pokedex_shared.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+SwaggerGenServiceCollectionExtensions.AddSwaggerGen(builder.Services);
 // Configure MongoDB
 builder.Services.AddMongoDb(
     builder.Configuration.GetSection(nameof(MongoDbOption))
@@ -25,11 +26,11 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
 });
 // Configure Request timeouts
-builder.Services.AddRequestTimeouts(HttpConfig.ConfigureRequestTimeout);
+builder.Services.AddRequestTimeouts(HttpRequestConfig.ConfigureRequestTimeout);
 // Configure Rate limiting
-builder.Services.AddRateLimiter(HttpConfig.ConfigureRateLimiter);
+builder.Services.AddRateLimiter(HttpRateLimiterConfig.ConfigureRateLimiter);
 // Configure Default [ApiController] behaviour
-builder.Services.Configure<ApiBehaviorOptions>(HttpConfig.ConfigureApiBehaviourOptions);
+builder.Services.Configure<ApiBehaviorOptions>(ApiBehaviourConfig.ConfigureApiBehaviourOptions);
 builder.Services.AddApiVersioning(options =>
     {
         options.DefaultApiVersion = new ApiVersion(1);

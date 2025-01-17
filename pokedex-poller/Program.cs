@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using pokedex_poller;
 using pokedex_poller.Config;
+using pokedex_shared.Config;
 using pokedex_shared.Http;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -26,7 +27,7 @@ builder.Services.AddSingleton<IHostedService>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<Worker>>();
     var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
-    var pokemonClient = provider.GetRequiredService<PokemonClient>();
+    var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
     return new Worker(logger, workerOption.Value, Enumerable.Range(1, 151), pokemonClient);
 });
 

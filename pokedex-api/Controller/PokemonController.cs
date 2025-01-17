@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Model;
-using pokedex_api.Service;
-using static pokedex_api.Config.HttpConfig;
+using pokedex_shared.Config;
+using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;
 
@@ -14,7 +14,7 @@ namespace pokedex_api.Controller;
 [ApiController]
 [Route("api/v{v:apiVersion}/pokemons")]
 [Produces(MediaTypeNames.Application.Json)]
-[EnableRateLimiting(RateLimitPolicies.FixedWindowPolicy)]
+[EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindowPolicy)]
 public class PokemonController(
     ILogger<PokemonController> logger,
     PokemonService pokemonService)
@@ -40,7 +40,7 @@ public class PokemonController(
     /// <response code="500">Mangila messed up...</response>
     [MapToApiVersion(1)]
     [HttpGet]
-    [RequestTimeout(RequestPolicies.OneSecondPolicy)]
+    [RequestTimeout(HttpRequestConfig.Policies.OneSecondPolicy)]
     [ProducesResponseType<IEnumerable<PokemonResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<IEnumerable<PokemonResponse>>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
@@ -84,7 +84,7 @@ public class PokemonController(
     [MapToApiVersion(1)]
     [HttpGet]
     [Route("search")]
-    [RequestTimeout(RequestPolicies.FiveHundredMsSecondPolicy)]
+    [RequestTimeout(HttpRequestConfig.Policies.FiveHundredMsSecondPolicy)]
     [ProducesResponseType<PokemonResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
-namespace pokedex_api.Service;
+namespace pokedex_shared.Service;
 
 /**
 * <summary>

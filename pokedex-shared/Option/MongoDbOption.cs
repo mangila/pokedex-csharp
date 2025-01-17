@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace pokedex_api.Config;
+namespace pokedex_shared.Option;
 
 public class MongoDbOption
 {

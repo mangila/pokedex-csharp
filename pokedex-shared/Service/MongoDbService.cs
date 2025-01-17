@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using pokedex_api.Config;
 using pokedex_api.Model;
+using pokedex_shared.Option;
 
-namespace pokedex_api.Service;
+namespace pokedex_shared.Service;
 
 public class MongoDbService
 {

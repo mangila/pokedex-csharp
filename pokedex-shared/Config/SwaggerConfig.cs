@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace pokedex_api.Config;
+namespace pokedex_shared.Config;
 
 public static class SwaggerConfig
 {

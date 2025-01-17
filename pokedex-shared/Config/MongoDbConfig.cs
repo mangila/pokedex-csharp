@@ -1,10 +1,9 @@
-﻿
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using pokedex_shared.Option;
+using pokedex_shared.Service;
 
-
-
-using pokedex_api.Service;
-
-namespace pokedex_api.Config;
+namespace pokedex_shared.Config;
 
 public static class MongoDbConfig
 {

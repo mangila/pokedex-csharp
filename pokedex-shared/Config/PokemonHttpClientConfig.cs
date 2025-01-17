@@ -2,19 +2,20 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using pokedex_poller.Config;
+using pokedex_shared.Http;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
 
-namespace pokedex_shared.Http;
+namespace pokedex_shared.Config;
 
-public static class PokemonHttpConfig
+public static class PokemonHttpClientConfig
 {
     public static IServiceCollection AddPokemonApi(this IServiceCollection services,
         IConfigurationSection section)
     {
         var pokeOptions = section.Get<PokeApiOption>();
-        services.AddHttpClient<PokemonClient>(client =>
+        services.AddHttpClient<PokemonHttpClient>(client =>
             {
                 client.BaseAddress = new Uri(pokeOptions.Url);
                 client.Timeout = TimeSpan.FromMinutes(1);
