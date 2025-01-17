@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using pokedex_poller;
 using pokedex_poller.Config;
-using pokedex_poller.Http;
+using pokedex_shared.Http;
 
 var builder = Host.CreateApplicationBuilder(args);
 // Add Option Services to DI Container

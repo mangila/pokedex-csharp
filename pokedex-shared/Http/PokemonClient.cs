@@ -1,8 +1,9 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using pokedex_poller.Config;
 
-namespace pokedex_poller.Http;
+namespace pokedex_shared.Http;
 
 public class PokemonClient(
     ILogger<PokemonClient> logger,

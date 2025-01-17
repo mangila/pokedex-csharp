@@ -10,17 +10,12 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.9.1" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
-        <PackageReference Include="MongoDB.Driver" Version="2.29.0" />
-        <PackageReference Include="MongoDB.Driver.Core" Version="2.29.0" />
-        <PackageReference Include="MongoDB.Driver.GridFS" Version="2.29.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.29.0"/>
+        <PackageReference Include="MongoDB.Driver.Core" Version="2.29.0"/>
+        <PackageReference Include="MongoDB.Driver.GridFS" Version="2.29.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Service\" />
+        <ProjectReference Include="..\pokedex-shared\pokedex-shared.csproj"/>
     </ItemGroup>
 </Project>

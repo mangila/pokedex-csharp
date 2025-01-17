@@ -1,5 +1,5 @@
 using pokedex_poller.Config;
-using pokedex_poller.Http;
+using pokedex_shared.Http;
 
 namespace pokedex_poller;
 

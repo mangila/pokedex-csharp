@@ -1,12 +1,14 @@
 ﻿using System.Net;
-using pokedex_poller.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using pokedex_poller.Config;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
 
-namespace pokedex_poller.Config;
+namespace pokedex_shared.Http;
 
-public static class PokemonConfig
+public static class PokemonHttpConfig
 {
     public static IServiceCollection AddPokemonApi(this IServiceCollection services,
         IConfigurationSection section)
