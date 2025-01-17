@@ -18,7 +18,10 @@ public static partial class Extensions
 {
     public static PokemonDto ToDto(this PokemonDocument document)
     {
-        return new PokemonDto();
+        return new PokemonDto(
+            Id: document.Id,
+            Name: document.Name
+        );
     }
 
     private static void Validate(this PokemonDocument document)
