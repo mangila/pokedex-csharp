@@ -20,7 +20,7 @@ public class Worker(
                 foreach (var index in ids)
                 {
                     var pokemon = await pokemonHttpClient.GetPokemon(index.ToString(), cancellationToken);
-                    mongoDbService.InsertAsync(pokemon, cancellationToken);
+                    await mongoDbService.InsertAsync(pokemon, cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }
             }

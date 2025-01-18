@@ -13,7 +13,7 @@ public static partial class Extensions
     {
         var document = new PokemonDocument
         {
-            Id = apiResponse.Id,
+            PokemonId = apiResponse.Id.ToString(),
             Name = apiResponse.Name
         };
         document.Validate();

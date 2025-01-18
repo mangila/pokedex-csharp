@@ -41,21 +41,18 @@ public class PokemonController(
     [MapToApiVersion(1)]
     [HttpGet]
     [RequestTimeout(HttpRequestConfig.Policies.OneSecondPolicy)]
-    [ProducesResponseType<IEnumerable<PokemonResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<IEnumerable<PokemonResponse>>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IEnumerable<PokemonResponse>> FindAll(
-        [FromQuery] List<string> ids,
+    public async Task<IEnumerable<PokemonDto>> FindAll(
+        [FromQuery] List<int> ids,
         CancellationToken cancellationToken
     )
     {
-        if (ids.Count == 0)
-        {
-            return pokemonService.FindAllAsync(cancellationToken);
-        }
-
-        return pokemonService.FindAllByIdAsync(ids, cancellationToken);
+        return ids.Count == 0
+            ? pokemonService.FindAllAsync(cancellationToken)
+            : pokemonService.FindAllByIdAsync(ids, cancellationToken);
     }
 
     /// <summary>
@@ -83,9 +80,9 @@ public class PokemonController(
     /// <response code="500">Mangila messed up...</response>
     [MapToApiVersion(1)]
     [HttpGet]
-    [Route("search")]
+    [Route("search/id")]
     [RequestTimeout(HttpRequestConfig.Policies.FiveHundredMsSecondPolicy)]
-    [ProducesResponseType<PokemonResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PokemonDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
@@ -93,20 +90,13 @@ public class PokemonController(
     public async Task<IResult> FindByQuery(
         [FromQuery]
         [Required]
-        [StringLength(200,
-            ErrorMessage = "\"value\" query param cannot be over 200 characters")]
-        [RegularExpression("[A-Za-z\\d]+",
-            ErrorMessage = "\"value\" query param must be a number or letter!")]
-        string value,
+        [RegularExpression("[\\d]+",
+            ErrorMessage = "\"id\" query param must be a number!")]
+        int id,
         CancellationToken cancellationToken
     )
     {
-        var pokemonResponse = pokemonService.FindOneByAsync(value, cancellationToken);
-        if (pokemonResponse is null)
-        {
-            return Results.NotFound();
-        }
-
-        return Results.Ok(pokemonResponse);
+        var pokemonResponse = await pokemonService.FindOneByIdAsync(id, cancellationToken);
+        return pokemonResponse.HasValue ? Results.Ok(pokemonResponse.Value) : Results.NotFound();
     }
 }

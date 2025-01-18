@@ -38,7 +38,7 @@ public static class HttpRequestConfig
         };
         requestTimeoutOptions.AddPolicy(Policies.FiveHundredMsSecondPolicy, new RequestTimeoutPolicy
         {
-            Timeout = TimeSpan.FromMilliseconds(500),
+            Timeout = TimeSpan.FromMilliseconds(2000),
             TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
             WriteTimeoutResponse = async context =>
             {

@@ -4,7 +4,7 @@ namespace pokedex_shared.Service;
 
 public class PokemonService(DatasourceService datasource)
 {
-    public IEnumerable<PokemonDto> FindAllByIdAsync(List<string> ids,
+    public IEnumerable<PokemonDto> FindAllByIdAsync(List<int> ids,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
@@ -15,8 +15,8 @@ public class PokemonService(DatasourceService datasource)
         throw new NotImplementedException();
     }
 
-    public PokemonDto FindOneByAsync(string value, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindOneByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await datasource.FindAsync(id.ToString(), cancellationToken);
     }
 }

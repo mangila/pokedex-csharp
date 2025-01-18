@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using pokedex_shared.Config;
+using pokedex_shared.Model;
 
 namespace pokedex_shared.Service;
 
@@ -13,8 +16,23 @@ public class DatasourceService(
     IDistributedCache redis,
     MongoDbService mongoDbService)
 {
-    public void FindAsync(string key, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindAsync(string key, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var cacheValue = await redis.GetStringAsync(key, cancellationToken);
+        if (cacheValue is null)
+        {
+            logger.LogDebug("Cache miss");
+            var databaseValue = await mongoDbService.FindByIdAsync(key, cancellationToken);
+            if (databaseValue.HasValue)
+            {
+                await redis.SetStringAsync(key, await databaseValue.Value.ToJsonAsync(cancellationToken));
+            }
+
+            return databaseValue;
+        }
+
+        logger.LogDebug("Cache hit");
+        var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
+        return dto;
     }
 }

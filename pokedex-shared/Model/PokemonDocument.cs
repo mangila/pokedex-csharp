@@ -1,17 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace pokedex_shared.Model;
 
 public class PokemonDocument
 {
-    [Required]
-    [Key]
-    [Range(1, 151, ErrorMessage = "Id can only be Gen I pokemon")]
-    public int Id { get; set; }
+    [Required] [BsonId] public ObjectId Id { get; init; }
+
+    [Required] [BsonElement("pokemon_id")] public required string PokemonId { get; init; }
 
     [Required]
     [StringLength(100, ErrorMessage = "Name cannot be more than 100 chars")]
-    public required string Name { get; set; }
+    [BsonElement("name")]
+    public required string Name { get; init; }
 }
 
 public static partial class Extensions
@@ -19,7 +21,7 @@ public static partial class Extensions
     public static PokemonDto ToDto(this PokemonDocument document)
     {
         return new PokemonDto(
-            Id: document.Id,
+            PokemonId: document.PokemonId,
             Name: document.Name
         );
     }

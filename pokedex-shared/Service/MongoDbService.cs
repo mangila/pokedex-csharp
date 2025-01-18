@@ -22,20 +22,22 @@ public class MongoDbService
             .GetCollection<PokemonDocument>(options.Collection);
     }
 
-    public Task<PokemonDocument> FindByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindByIdAsync(string pokemonId, CancellationToken cancellationToken = default)
+    {
+        var document = await _collection.Find(pokemonDocument => pokemonDocument.PokemonId.ToString() == pokemonId)
+            .FirstOrDefaultAsync(cancellationToken);
+        return document?.ToDto();
+    }
+
+    public Task<PokemonDto> FindByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<PokemonDocument> FindByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void InsertAsync(PokemonApiResponse pokemon, CancellationToken cancellationToken = default)
+    public async Task InsertAsync(PokemonApiResponse pokemon, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(pokemon);
-        _collection.InsertOne(pokemon.ToDocument(), new InsertOneOptions
+        await _collection.InsertOneAsync(pokemon.ToDocument(), new InsertOneOptions
         {
             Comment = "Insert from InsertAsync()"
         }, cancellationToken);
