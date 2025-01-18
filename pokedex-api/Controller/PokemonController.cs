@@ -61,6 +61,9 @@ public class PokemonController(
     /// <param name="value">
     /// Search for ID or Name
     /// </param>
+    /// <param name="id">
+    /// Search for id
+    /// </param>
     /// <param name="cancellationToken">Ignored by swagger. Http Request Token</param>
     /// <remarks>
     /// Sample names:<br></br>
@@ -83,7 +86,7 @@ public class PokemonController(
     [Route("search/id")]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     [ProducesResponseType<PokemonDto>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]

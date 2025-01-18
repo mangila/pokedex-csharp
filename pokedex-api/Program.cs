@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using pokedex_api.Controller;
 using pokedex_api.ExceptionHandler;
 using pokedex_shared.Config;
 using pokedex_shared.Option;
