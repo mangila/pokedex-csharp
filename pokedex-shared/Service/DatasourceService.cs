@@ -19,21 +19,21 @@ public class DatasourceService(
     public async Task<PokemonDto?> FindAsync(string key, CancellationToken cancellationToken = default)
     {
         var cacheValue = await redis.GetStringAsync(key, cancellationToken);
-        if (cacheValue is null)
+        if (cacheValue is not null)
         {
-            logger.LogDebug("Cache miss - {}", key);
-            var databaseValue = await mongoDbService.FindByPokemonIdAsync(key, cancellationToken);
-            if (databaseValue.HasValue)
-            {
-                var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-                await redis.SetStringAsync(key, json, token: cancellationToken);
-            }
+            logger.LogDebug("Cache hit - {}", key);
+            var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
+            return dto;
+        }
 
+        logger.LogDebug("Cache miss - {}", key);
+        var databaseValue = await mongoDbService.FindByPokemonIdAsync(key, cancellationToken);
+        if (!databaseValue.HasValue)
+        {
             return databaseValue;
         }
 
-        logger.LogDebug("Cache hit - {}", key);
-        var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
-        return dto;
+        var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
+        await redis.SetStringAsync(key, json, token: cancellationToken);
     }
 }
