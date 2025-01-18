@@ -12,7 +12,7 @@ namespace pokedex_api.Controller;
 
 [ApiVersion(1)]
 [ApiController]
-[Route("api/v{v:apiVersion}/pokemons")]
+[Route("api/v{v:apiVersion}/pokemon")]
 [Produces(MediaTypeNames.Application.Json)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindowPolicy)]
 public class PokemonController(
