@@ -35,5 +35,6 @@ public class DatasourceService(
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
         await redis.SetStringAsync(key, json, token: cancellationToken);
+        return databaseValue;
     }
 }
