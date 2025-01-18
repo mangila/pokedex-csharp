@@ -1,5 +1,7 @@
+using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using pokedex_api.ExceptionHandler;
 using pokedex_shared.Config;
 using pokedex_shared.Option;
@@ -12,7 +14,28 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
-SwaggerGenServiceCollectionExtensions.AddSwaggerGen(builder.Services);
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Pokedex API",
+        Description = "An .NET Core Restful API with Pokémon´s",
+        Contact = new OpenApiContact
+        {
+            Name = "Mangila",
+            Url = new Uri("https://github.com/mangila")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "MIT License"
+        }
+    });
+    // Set the XML-comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
 // Configure MongoDB
 builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
 // Configure Redis

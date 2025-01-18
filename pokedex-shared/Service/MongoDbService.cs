@@ -29,7 +29,7 @@ public class MongoDbService
         return document?.ToDto();
     }
 
-    public Task<PokemonDto> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+    public Task<PokemonDto?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

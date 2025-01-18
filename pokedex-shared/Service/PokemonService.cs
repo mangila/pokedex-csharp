@@ -17,6 +17,11 @@ public class PokemonService(DatasourceService datasource)
 
     public async Task<PokemonDto?> FindOneByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await datasource.FindAsync(id.ToString(), cancellationToken);
+        return await datasource.FindByIdAsync(id, cancellationToken);
+    }
+
+    public async Task<PokemonDto?> FindOneByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        return await datasource.FindByNameAsync(name, cancellationToken);
     }
 }
