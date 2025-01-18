@@ -21,7 +21,7 @@ public class DatasourceService(
         var cacheValue = await redis.GetStringAsync(key, cancellationToken);
         if (cacheValue is null)
         {
-            logger.LogDebug("Cache miss");
+            logger.LogDebug("Cache miss - {}", key);
             var databaseValue = await mongoDbService.FindByPokemonIdAsync(key, cancellationToken);
             if (databaseValue.HasValue)
             {
@@ -32,7 +32,7 @@ public class DatasourceService(
             return databaseValue;
         }
 
-        logger.LogDebug("Cache hit");
+        logger.LogDebug("Cache hit - {}", key);
         var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
         return dto;
     }
