@@ -17,6 +17,10 @@ for a cache-a-side pattern
 
 C# Worker Service project that polls data from PokeApi and persists the fetched data to a MongoDB docker instance.
 
+## pokedex-shared
+
+Shared config, services around the project
+
 ## datasource
 MongoDB as database and Redis as a IDistributedCache.
 * Redis Insight - http://localhost:8001
