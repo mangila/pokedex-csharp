@@ -14,7 +14,7 @@ namespace pokedex_api.Controller;
 [ApiController]
 [Route("api/v{v:apiVersion}/pokemon")]
 [Produces(MediaTypeNames.Application.Json)]
-[EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindowPolicy)]
+[EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 public class PokemonController(
     ILogger<PokemonController> logger,
     PokemonService pokemonService)
@@ -40,7 +40,7 @@ public class PokemonController(
     /// <response code="500">Mangila messed up...</response>
     [MapToApiVersion(1)]
     [HttpGet]
-    [RequestTimeout(HttpRequestConfig.Policies.OneSecondPolicy)]
+    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
@@ -81,7 +81,7 @@ public class PokemonController(
     [MapToApiVersion(1)]
     [HttpGet]
     [Route("search/id")]
-    [RequestTimeout(HttpRequestConfig.Policies.FiveHundredMsSecondPolicy)]
+    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     [ProducesResponseType<PokemonDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]

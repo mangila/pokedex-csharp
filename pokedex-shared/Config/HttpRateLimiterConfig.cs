@@ -9,12 +9,12 @@ public static class HttpRateLimiterConfig
 {
     public static class Policies
     {
-        public const string FixedWindowPolicy = "FixedWindowPolicy";
+        public const string FixedWindow = "FixedWindow";
     }
 
     public static void ConfigureRateLimiter(RateLimiterOptions rateLimiterOptions)
     {
-        rateLimiterOptions.AddPolicy<object>(policyName: Policies.FixedWindowPolicy, context =>
+        rateLimiterOptions.AddPolicy<object>(policyName: Policies.FixedWindow, context =>
         {
             return RateLimitPartition.GetFixedWindowLimiter<object>(
                 partitionKey: context.Request.Headers.Host.ToString(),

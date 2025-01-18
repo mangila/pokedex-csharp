@@ -10,8 +10,7 @@ public static class HttpRequestConfig
 {
     public static class Policies
     {
-        public const string FiveHundredMsSecondPolicy = "FiveHundredMsSecondPolicy";
-        public const string OneSecondPolicy = "OneSecondPolicy";
+        public const string OneMinute = "OneMinute";
     }
 
     public static void ConfigureRequestTimeout(RequestTimeoutOptions requestTimeoutOptions)
@@ -36,9 +35,9 @@ public static class HttpRequestConfig
                 await context.Response.WriteAsync(problemDetails.ToJson());
             }
         };
-        requestTimeoutOptions.AddPolicy(Policies.FiveHundredMsSecondPolicy, new RequestTimeoutPolicy
+        requestTimeoutOptions.AddPolicy(Policies.OneMinute, new RequestTimeoutPolicy
         {
-            Timeout = TimeSpan.FromMilliseconds(2000),
+            Timeout = TimeSpan.FromMinutes(1),
             TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
             WriteTimeoutResponse = async context =>
             {
@@ -46,27 +45,7 @@ public static class HttpRequestConfig
                 var problemDetails = new ProblemDetails
                 {
                     Title = "Request Timeout",
-                    Detail = $"Request timed out by {Policies.FiveHundredMsSecondPolicy}",
-                    Status = StatusCodes.Status408RequestTimeout,
-                    Extensions = new Dictionary<string, object?>
-                    {
-                        { "env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") }
-                    }
-                };
-                await context.Response.WriteAsync(problemDetails.ToJson());
-            }
-        });
-        requestTimeoutOptions.AddPolicy(Policies.OneSecondPolicy, new RequestTimeoutPolicy
-        {
-            Timeout = TimeSpan.FromSeconds(1),
-            TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
-            WriteTimeoutResponse = async context =>
-            {
-                context.Response.ContentType = MediaTypeNames.Application.Json;
-                var problemDetails = new ProblemDetails
-                {
-                    Title = "Request Timeout",
-                    Detail = $"Request timed out by {Policies.OneSecondPolicy}",
+                    Detail = $"Request timed out by {Policies.OneMinute}",
                     Status = StatusCodes.Status408RequestTimeout,
                     Extensions = new Dictionary<string, object?>
                     {
