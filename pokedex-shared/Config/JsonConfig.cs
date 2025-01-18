@@ -7,7 +7,7 @@ public static class JsonConfig
 {
     public static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower, // Use camelCase for properties
+        PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower, // Use KebabCaseLower for properties
         WriteIndented = true, // Pretty-print JSON
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower) } // Serialize enums as strings
     };
