@@ -22,7 +22,7 @@ public class DatasourceService(
         if (cacheValue is null)
         {
             logger.LogDebug("Cache miss");
-            var databaseValue = await mongoDbService.FindByIdAsync(key, cancellationToken);
+            var databaseValue = await mongoDbService.FindByPokemonIdAsync(key, cancellationToken);
             if (databaseValue.HasValue)
             {
                 var json = await databaseValue.Value.ToJsonAsync(cancellationToken);

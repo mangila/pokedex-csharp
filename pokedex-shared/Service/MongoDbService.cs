@@ -22,7 +22,7 @@ public class MongoDbService
             .GetCollection<PokemonDocument>(options.Collection);
     }
 
-    public async Task<PokemonDto?> FindByIdAsync(string pokemonId, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindByPokemonIdAsync(string pokemonId, CancellationToken cancellationToken = default)
     {
         var document = await _collection.Find(pokemonDocument => pokemonDocument.PokemonId.ToString() == pokemonId)
             .FirstOrDefaultAsync(cancellationToken);
