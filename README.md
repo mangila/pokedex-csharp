@@ -11,7 +11,7 @@ Blazor project that displays the Pokemon data. Using Bootstrap components.
 
 Restful API with swagger endpoint. Connected to a Redis docker instance and a MongoDB docker instance 
 for a cache-a-side pattern
-* http://localhost:5144/swagger
+* http://localhost:5144/swagger - Swagger
 
 ## pokedex-poller
 
