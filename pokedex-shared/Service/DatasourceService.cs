@@ -25,7 +25,8 @@ public class DatasourceService(
             var databaseValue = await mongoDbService.FindByIdAsync(key, cancellationToken);
             if (databaseValue.HasValue)
             {
-                await redis.SetStringAsync(key, await databaseValue.Value.ToJsonAsync(cancellationToken));
+                await redis.SetStringAsync(key, await databaseValue.Value.ToJsonAsync(cancellationToken),
+                    token: cancellationToken);
             }
 
             return databaseValue;
