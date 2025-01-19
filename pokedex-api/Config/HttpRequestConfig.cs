@@ -1,11 +1,9 @@
 ﻿using System.Net.Mime;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using pokedex_shared.Extension;
 
-namespace pokedex_shared.Config;
+namespace pokedex_api.Config;
 
 public static class HttpRequestConfig
 {
@@ -33,7 +31,7 @@ public static class HttpRequestConfig
                         { "env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") }
                     }
                 };
-                await context.Response.WriteAsync(problemDetails.ToJson());
+                await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
             }
         };
         requestTimeoutOptions.AddPolicy(Policies.OneMinute, new RequestTimeoutPolicy
@@ -53,7 +51,7 @@ public static class HttpRequestConfig
                         { "env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") }
                     }
                 };
-                await context.Response.WriteAsync(problemDetails.ToJson());
+                await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
             }
         });
     }

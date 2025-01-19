@@ -1,9 +1,8 @@
 ﻿using System.Globalization;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace pokedex_shared.Config;
+namespace pokedex_api.Config;
 
 public static class HttpRateLimiterConfig
 {

@@ -2,6 +2,7 @@ using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using pokedex_api.Config;
 using pokedex_api.ExceptionHandler;
 using pokedex_shared.Config;
 using pokedex_shared.Option;
