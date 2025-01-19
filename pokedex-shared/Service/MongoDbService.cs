@@ -22,24 +22,68 @@ public class MongoDbService
             .GetCollection<PokemonDocument>(options.Collection);
     }
 
-    public async Task<PokemonDto?> FindByPokemonIdAsync(string pokemonId, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
+        CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(pokemonDocument => pokemonDocument.PokemonId.ToString() == pokemonId)
-            .FirstOrDefaultAsync(cancellationToken);
+        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.PokemonId == pokemonId.id,
+            cancellationToken: cancellationToken);
+        var document = await cursor.FirstOrDefaultAsync(cancellationToken);
         return document?.ToDto();
     }
 
-    public Task<PokemonDto?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.Name == pokemonName.name,
+            cancellationToken: cancellationToken);
+        var document = await cursor.FirstOrDefaultAsync(cancellationToken);
+        return document?.ToDto();
     }
 
     public async Task InsertAsync(PokemonApiResponse pokemon, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(pokemon);
         await _collection.InsertOneAsync(pokemon.ToDocument(), new InsertOneOptions
         {
             Comment = "Insert from InsertAsync()"
         }, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> SearchByNameAsync(string search,
+        CancellationToken cancellationToken = default)
+    {
+        using var cursor = await _collection.FindAsync(document => document.Name.Contains(search),
+            cancellationToken: cancellationToken);
+        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
+        CancellationToken cancellationToken = default)
+    {
+        using var cursor = await _collection.FindAsync(document =>
+                pokemonIdCollection.Ids.Exists(id => document.PokemonId == id.id),
+            cancellationToken: cancellationToken);
+        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    {
+        using var cursor = await _collection.FindAsync(FilterDefinition<PokemonDocument>.Empty,
+            cancellationToken: cancellationToken);
+        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+    }
+
+    private static async Task<PokemonDtoCollection> GetPokemonDtoCollectionAsync(IAsyncCursor<PokemonDocument> cursor,
+        CancellationToken cancellationToken = default)
+    {
+        var collection = new PokemonDtoCollection();
+        while (await cursor.MoveNextAsync(cancellationToken))
+        {
+            foreach (var document in cursor.Current)
+            {
+                collection.pokemons.Add(document.ToDto());
+            }
+        }
+
+        return collection;
     }
 }

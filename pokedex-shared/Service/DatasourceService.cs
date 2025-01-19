@@ -16,48 +16,66 @@ public class DatasourceService(
     IDistributedCache redis,
     MongoDbService mongoDbService)
 {
-    public async Task<PokemonDto?> FindByIdAsync(int pokemonId, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindByPokemonIdAsync(PokemonId pokemonId,
+        CancellationToken cancellationToken = default)
     {
-        var key = pokemonId.ToString();
-        var cacheValue = await redis.GetStringAsync(key, cancellationToken);
+        var cacheValue = await redis.GetStringAsync(pokemonId.id, cancellationToken);
         if (cacheValue is not null)
         {
-            logger.LogDebug("Cache hit - {}", key);
+            logger.LogDebug("Cache hit - {}", pokemonId);
             var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
             return dto;
         }
 
-        logger.LogDebug("Cache miss - {}", key);
-        var databaseValue = await mongoDbService.FindByPokemonIdAsync(key, cancellationToken);
+        logger.LogDebug("Cache miss - {}", pokemonId);
+        var databaseValue = await mongoDbService.FindOneByPokemonIdAsync(pokemonId, cancellationToken);
         if (!databaseValue.HasValue)
         {
             return databaseValue;
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(key, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonId.id, json, token: cancellationToken);
         return databaseValue;
     }
 
-    public async Task<PokemonDto?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<PokemonDto?> FindByNameAsync(PokemonName pokemonName,
+        CancellationToken cancellationToken = default)
     {
-        var cacheValue = await redis.GetStringAsync(name, cancellationToken);
+        var cacheValue = await redis.GetStringAsync(pokemonName.name, cancellationToken);
         if (cacheValue is not null)
         {
-            logger.LogDebug("Cache hit - {}", name);
+            logger.LogDebug("Cache hit - {}", pokemonName);
             var dto = JsonSerializer.Deserialize<PokemonDto>(cacheValue, JsonConfig.JsonOptions);
             return dto;
         }
 
-        logger.LogDebug("Cache miss - {}", name);
-        var databaseValue = await mongoDbService.FindByNameAsync(name, cancellationToken);
+        logger.LogDebug("Cache miss - {}", pokemonName);
+        var databaseValue = await mongoDbService.FindOneByNameAsync(pokemonName, cancellationToken);
         if (!databaseValue.HasValue)
         {
             return databaseValue;
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(name, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonName.name, json, token: cancellationToken);
         return databaseValue;
+    }
+
+    public async Task<PokemonDtoCollection> SearchByName(string search,
+        CancellationToken cancellationToken = default)
+    {
+        return await mongoDbService.SearchByNameAsync(search, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
+        CancellationToken cancellationToken = default)
+    {
+        return await mongoDbService.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await mongoDbService.FindAllAsync(cancellationToken);
     }
 }

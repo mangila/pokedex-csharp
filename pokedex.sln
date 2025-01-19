@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pokedex-poller", "pokedex-p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pokedex-api", "pokedex-api\pokedex-api.csproj", "{E77FA122-68D3-493D-BF6F-B8DCFB947AF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pokedex-unit-test", "pokedex-unit-test\pokedex-unit-test.csproj", "{7ED6F76B-A901-4534-B2C3-0E20B7A26939}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pokedex-ui", "pokedex-ui\pokedex-ui.csproj", "{A366B6BE-B8F5-426E-9C42-6F7ED3159952}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pokedex-shared", "pokedex-shared\pokedex-shared.csproj", "{A9BF14C2-8E97-40BF-96AA-C239AF42B303}"
@@ -24,10 +22,6 @@ Global
 		{E77FA122-68D3-493D-BF6F-B8DCFB947AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E77FA122-68D3-493D-BF6F-B8DCFB947AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E77FA122-68D3-493D-BF6F-B8DCFB947AF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7ED6F76B-A901-4534-B2C3-0E20B7A26939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7ED6F76B-A901-4534-B2C3-0E20B7A26939}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7ED6F76B-A901-4534-B2C3-0E20B7A26939}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7ED6F76B-A901-4534-B2C3-0E20B7A26939}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A366B6BE-B8F5-426E-9C42-6F7ED3159952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A366B6BE-B8F5-426E-9C42-6F7ED3159952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A366B6BE-B8F5-426E-9C42-6F7ED3159952}.Release|Any CPU.ActiveCfg = Release|Any CPU

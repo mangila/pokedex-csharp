@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
@@ -23,41 +22,77 @@ public class PokemonController(
     /// <summary>
     /// Return all Pokémon as a list
     /// </summary>
-    /// <param name="cancellationToken">Ignored by swagger. Http Request Token</param>
-    /// <param name="ids">
-    /// Search for IDs
-    /// </param>
-    /// <remarks>
-    /// NOTE: If the query param is not defined endpoint will return all Pokémon<br></br>
-    /// Sample Ids:<br></br>
-    /// * 44 <br></br>
-    /// * 150 <br></br>
-    /// * 3
-    /// </remarks>
+    /// <param name="cancellationToken">Ignored by swagger</param>
     /// <response code="200">All Pokémons as a List</response>
-    /// <response code="204">Empty List Response</response>
     /// <response code="409">Something went wrong with the request</response>
     /// <response code="500">Mangila messed up...</response>
     [MapToApiVersion(1)]
     [HttpGet]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<IEnumerable<PokemonDto>>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<PokemonDtoCollection>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IEnumerable<PokemonDto>> FindAll(
-        [FromQuery] List<int> ids,
+    public async Task<IResult> FindAll(CancellationToken cancellationToken)
+    {
+        var collection = await pokemonService.FindAllAsync(cancellationToken);
+        return Results.Ok(collection);
+    }
+
+    /// <summary>
+    /// Return Pokemon by id
+    /// </summary>
+    /// <param name="pokemonId"></param>
+    /// <param name="cancellationToken">Ignored by swagger</param>
+    /// <response code="200">Pokemon by Id</response>
+    /// <response code="404">Not found</response>
+    /// <response code="409">Something went wrong with the request</response>
+    /// <response code="500">Mangila messed up...</response>
+    [MapToApiVersion(1)]
+    [HttpGet("{id:int}")]
+    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+    [ProducesResponseType<PokemonDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IResult> FindByPokemonId(
+        [FromRoute] PokemonId pokemonId,
         CancellationToken cancellationToken
     )
     {
-        return ids.Count == 0
-            ? pokemonService.FindAllAsync(cancellationToken)
-            : pokemonService.FindAllByIdAsync(ids, cancellationToken);
+        var dto = await pokemonService.FindOneByPokemonIdAsync(pokemonId, cancellationToken);
+        return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 
-    /// <summary>Find one Pokémon by id</summary>
-    /// <param name="id">Search for id</param>
-    /// <param name="cancellationToken"></param>
+    /// <summary>
+    /// Return Pokemon by name
+    /// </summary>
+    /// <param name="pokemonName"></param>
+    /// <param name="cancellationToken">Ignored by swagger</param>
+    /// <response code="200">Pokemon by name</response>
+    /// <response code="404">Not found</response>
+    /// <response code="409">Something went wrong with the request</response>
+    /// <response code="500">Mangila messed up...</response>
+    [MapToApiVersion(1)]
+    [HttpGet("{name}")]
+    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+    [ProducesResponseType<PokemonDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IResult> FindByPokemonName(
+        [FromRoute] PokemonName pokemonName,
+        CancellationToken cancellationToken
+    )
+    {
+        var dto = await pokemonService.FindOneByNameAsync(pokemonName, cancellationToken);
+        return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
+    }
+
+    /// <summary>Search for pokemons by id</summary>
+    /// <param name="ids">
+    /// Array of ids
+    /// </param>
+    /// <param name="cancellationToken">Ignored by swagger</param>
     /// <remarks>
     /// Sample Ids:<br></br>
     /// * 1 <br></br>
@@ -73,31 +108,27 @@ public class PokemonController(
     [HttpGet]
     [Route("search/id")]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    [ProducesResponseType<PokemonDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PokemonDtoCollection>(StatusCodes.Status200OK)]
     [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IResult> FindByQuery(
-        [FromQuery]
-        [Required]
-        [RegularExpression("[\\d]+",
-            ErrorMessage = "\"id\" query param must be a number!")]
-        int id,
+    public async Task<IResult> QueryById(
+        [FromQuery] List<int> ids,
         CancellationToken cancellationToken
     )
     {
-        var pokemonResponse = await pokemonService.FindOneByIdAsync(id, cancellationToken);
-        return pokemonResponse.HasValue ? Results.Ok(pokemonResponse.Value) : Results.NotFound();
+        var collection = await pokemonService.FindAllByPokemonIdAsync(
+            new PokemonIdCollection(ids),
+            cancellationToken);
+        return Results.Ok(collection);
     }
 
     /// <summary>
-    /// Find one Pokémon by name
+    /// Search for Pokemon by name
     /// </summary>
-    /// <param name="name">
-    /// Search for name
-    /// </param>
-    /// <param name="cancellationToken">Ignored by swagger. Http Request Token</param>
+    /// <param name="search"></param>
+    /// <param name="cancellationToken">Ignored by swagger</param>
     /// <remarks>
     /// Sample Names:<br></br>
     /// * charizard <br></br>
@@ -113,18 +144,16 @@ public class PokemonController(
     [HttpGet]
     [Route("search/name")]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    [ProducesResponseType<PokemonDto>(StatusCodes.Status200OK)]
-    [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<PokemonDtoCollection>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IResult> FindByQuery(
-        [FromQuery] [Required] [StringLength(100, ErrorMessage = "length cannot be over 100")]
-        string name,
+    public async Task<IResult> QueryByName(
+        [FromQuery] string search,
         CancellationToken cancellationToken
     )
     {
-        var pokemonResponse = await pokemonService.FindOneByNameAsync(name, cancellationToken);
-        return pokemonResponse.HasValue ? Results.Ok(pokemonResponse.Value) : Results.NotFound();
+        var collection = await pokemonService.SearchByName(search, cancellationToken);
+        return Results.Ok(collection);
     }
 }
