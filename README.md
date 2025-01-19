@@ -4,8 +4,8 @@ A pretty Pokédex (yet another)
 
 ## pokedex-ui
 
-Blazor project that displays the Pokemon data. Using Bootstrap components.
-* http://localhost:5122/
+Next.js app that displays the Pokemon data. Using MUI components.
+* http://localhost:3000/
 
 ## pokedex-api
 

@@ -17,6 +17,8 @@ public static class ApiMapper
         SpeciesApiResponse speciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse)
     {
+        var sprites = pokemonApiResponse.sprites;
+        
         return new PokemonDocument
         {
             PokemonId = pokemonApiResponse.id.ToString(),
