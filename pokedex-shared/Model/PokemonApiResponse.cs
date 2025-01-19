@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using pokedex_shared.Extension;
 
 namespace pokedex_shared.Model;
 

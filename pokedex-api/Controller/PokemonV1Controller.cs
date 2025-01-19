@@ -40,7 +40,7 @@ public class PokemonV1Controller(
     /// <summary>
     /// Return Pokemon by id
     /// </summary>
-    /// <param name="pokemonId"></param>
+    /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <response code="200">Pokemon by Id</response>
     /// <response code="400">Something went wrong with the request</response>
@@ -54,18 +54,18 @@ public class PokemonV1Controller(
     [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> FindByPokemonId(
-        [FromRoute] PokemonId pokemonId,
+        [FromRoute] int id,
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonService.FindOneByPokemonIdAsync(pokemonId, cancellationToken);
+        var dto = await pokemonService.FindOneByPokemonIdAsync(new PokemonId(id.ToString()), cancellationToken);
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 
     /// <summary>
     /// Return Pokemon by name
     /// </summary>
-    /// <param name="pokemonName"></param>
+    /// <param name="name"></param>
     /// <param name="cancellationToken"></param>
     /// <response code="200">Pokemon by name</response>
     /// <response code="400">Something went wrong with the request</response>
@@ -79,11 +79,11 @@ public class PokemonV1Controller(
     [ProducesResponseType<IResult>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> FindByPokemonName(
-        [FromRoute] PokemonName pokemonName,
+        [FromRoute] string name,
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonService.FindOneByNameAsync(pokemonName, cancellationToken);
+        var dto = await pokemonService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 

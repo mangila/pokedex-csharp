@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using pokedex_shared.Extension;
 
 namespace pokedex_shared.Config;
 

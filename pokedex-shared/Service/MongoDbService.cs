@@ -25,7 +25,7 @@ public class MongoDbService
     public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.PokemonId == pokemonId.id,
+        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.PokemonId == pokemonId.Value,
             cancellationToken: cancellationToken);
         var document = await cursor.FirstOrDefaultAsync(cancellationToken);
         return document?.ToDto();
@@ -34,7 +34,7 @@ public class MongoDbService
     public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.Name == pokemonName.name,
+        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.Name == pokemonName.Value,
             cancellationToken: cancellationToken);
         var document = await cursor.FirstOrDefaultAsync(cancellationToken);
         return document?.ToDto();
@@ -60,7 +60,7 @@ public class MongoDbService
         CancellationToken cancellationToken = default)
     {
         using var cursor = await _collection.FindAsync(document =>
-                pokemonIdCollection.Ids.Exists(id => document.PokemonId == id.id),
+                pokemonIdCollection.Ids.Exists(id => document.PokemonId == id.Value),
             cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }

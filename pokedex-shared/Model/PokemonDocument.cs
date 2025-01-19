@@ -29,15 +29,4 @@ public static partial class Extensions
             Name: document.Name
         );
     }
-
-    private static void Validate(this PokemonDocument document)
-    {
-        var context = new ValidationContext(document, serviceProvider: null, items: null);
-        var results = new List<ValidationResult>();
-        Validator.TryValidateObject(document, context, results, validateAllProperties: true);
-        if (results.Count != 0)
-        {
-            throw new ValidationException(string.Join(", ", results));
-        }
-    }
 }

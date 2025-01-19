@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using pokedex_shared.Config;
+using pokedex_shared.Extension;
 using pokedex_shared.Model;
 
 namespace pokedex_shared.Service;
@@ -19,7 +20,7 @@ public class DatasourceService(
     public async Task<PokemonDto?> FindByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        var cacheValue = await redis.GetStringAsync(pokemonId.id, cancellationToken);
+        var cacheValue = await redis.GetStringAsync(pokemonId.Value, cancellationToken);
         if (cacheValue is not null)
         {
             logger.LogDebug("Cache hit - {}", pokemonId);
@@ -35,14 +36,14 @@ public class DatasourceService(
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(pokemonId.id, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonId.Value, json, token: cancellationToken);
         return databaseValue;
     }
 
     public async Task<PokemonDto?> FindByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        var cacheValue = await redis.GetStringAsync(pokemonName.name, cancellationToken);
+        var cacheValue = await redis.GetStringAsync(pokemonName.Value, cancellationToken);
         if (cacheValue is not null)
         {
             logger.LogDebug("Cache hit - {}", pokemonName);
@@ -58,7 +59,7 @@ public class DatasourceService(
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(pokemonName.name, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonName.Value, json, token: cancellationToken);
         return databaseValue;
     }
 
