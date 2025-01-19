@@ -4,7 +4,7 @@ A pretty Pokédex (yet another)
 
 ## pokedex-ui
 
-Next.js app that displays the Pokemon data. Using MUI components.
+Next.js app that displays the Pokémon data. Using MUI components.
 * http://localhost:3000/
 
 ## pokedex-api
@@ -19,7 +19,7 @@ C# Worker Service project that polls data from PokeApi and persists the fetched 
 
 ## pokedex-shared
 
-Shared config, services around the project
+Shared config and services around the project
 
 ## datasource
 MongoDB as database and Redis as a IDistributedCache.
