@@ -8,7 +8,11 @@ public class PokemonDocument
 {
     [Required] [BsonId] public ObjectId Id { get; init; }
 
-    [Required] [BsonElement("pokemon_id")] public required string PokemonId { get; init; }
+    [Required]
+    [StringLength(5, ErrorMessage = "length cannot be over 5")]
+    [RegularExpression("\\d+", ErrorMessage = "must be a number")]
+    [BsonElement("pokemon_id")]
+    public required string PokemonId { get; init; }
 
     [Required]
     [StringLength(100, ErrorMessage = "Name cannot be more than 100 chars")]
