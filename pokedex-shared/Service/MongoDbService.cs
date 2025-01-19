@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using pokedex_shared.Model;
+using pokedex_shared.Model.Document;
+using pokedex_shared.Model.Domain;
+using pokedex_shared.Model.Dto;
 using pokedex_shared.Option;
 
 namespace pokedex_shared.Service;
@@ -40,9 +42,9 @@ public class MongoDbService
         return document?.ToDto();
     }
 
-    public async Task InsertAsync(PokemonApiResponse pokemon, CancellationToken cancellationToken = default)
+    public async Task InsertAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
     {
-        await _collection.InsertOneAsync(pokemon.ToDocument(), new InsertOneOptions
+        await _collection.InsertOneAsync(pokemon, new InsertOneOptions
         {
             Comment = "Insert from InsertAsync()"
         }, cancellationToken);

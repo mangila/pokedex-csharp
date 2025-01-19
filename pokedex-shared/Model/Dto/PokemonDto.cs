@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using pokedex_shared.Extension;
+using pokedex_shared.Model.Document;
 
-namespace pokedex_shared.Model;
+namespace pokedex_shared.Model.Dto;
 
 public readonly record struct PokemonDto(
     [property: JsonPropertyName("pokemon_id")]

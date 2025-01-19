@@ -1,4 +1,5 @@
-﻿using pokedex_shared.Model;
+﻿using pokedex_shared.Model.Domain;
+using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Service;
 
@@ -7,7 +8,7 @@ public class PokemonService(DatasourceService datasource)
     public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.FindAllByPokemonIdAsync(pokemonIdCollection,cancellationToken);
+        return await datasource.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
     public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)

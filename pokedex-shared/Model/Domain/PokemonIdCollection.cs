@@ -1,4 +1,4 @@
-﻿namespace pokedex_shared.Model;
+﻿namespace pokedex_shared.Model.Domain;
 
 public class PokemonIdCollection
 {

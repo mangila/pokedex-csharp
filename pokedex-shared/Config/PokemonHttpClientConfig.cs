@@ -1,8 +1,7 @@
-﻿using System.Net;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using pokedex_poller.Config;
 using pokedex_shared.Http;
+using pokedex_shared.Option;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
@@ -29,7 +28,7 @@ public static class PokemonHttpClientConfig
     {
         return HttpPolicyExtensions
             .HandleTransientHttpError()
-            .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
+            .OrResult(msg => !msg.IsSuccessStatusCode)
             .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
                 retryAttempt)));
     }

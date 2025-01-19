@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace pokedex_poller.Config;
+namespace pokedex_shared.Option;
 
 public class PokeApiOption
 {

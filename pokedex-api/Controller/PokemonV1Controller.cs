@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
-using pokedex_shared.Model;
+using pokedex_shared.Model.Domain;
+using pokedex_shared.Model.Dto;
 using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;

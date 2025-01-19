@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using pokedex_shared.Extension;
 
-namespace pokedex_shared.Model;
+namespace pokedex_shared.Model.Domain;
 
 public class PokemonId
 {
@@ -13,6 +13,12 @@ public class PokemonId
     public PokemonId(string value)
     {
         Value = value;
+        this.Validate();
+    }
+
+    public PokemonId(int value)
+    {
+        Value = value.ToString();
         this.Validate();
     }
 }

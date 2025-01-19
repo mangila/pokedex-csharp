@@ -3,7 +3,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using pokedex_shared.Config;
 using pokedex_shared.Extension;
-using pokedex_shared.Model;
+using pokedex_shared.Model.Domain;
+using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Service;
 

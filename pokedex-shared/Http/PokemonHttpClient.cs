@@ -1,22 +1,12 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using pokedex_poller.Config;
-using pokedex_shared.Model;
 
 namespace pokedex_shared.Http;
 
-public class PokemonHttpClient(
-    ILogger<PokemonHttpClient> logger,
-    HttpClient httpClient,
-    IOptions<PokeApiOption> options)
+public class PokemonHttpClient(HttpClient httpClient)
 {
-    public async Task<PokemonApiResponse> GetPokemon(string id, CancellationToken cancellationToken = default)
+    public async Task<T> Get<T>(Uri uri, CancellationToken cancellationToken = default)
     {
-        var uri = options
-            .Value
-            .GetPokemonUri
-            .Replace("{id}", id);
-        return await httpClient.GetFromJsonAsync<PokemonApiResponse>(uri, cancellationToken);
+        return await httpClient.GetFromJsonAsync<T>(uri, cancellationToken) ??
+               throw new InvalidOperationException("null response");
     }
 }

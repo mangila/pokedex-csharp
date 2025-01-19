@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using pokedex_shared.Model.Dto;
 
-namespace pokedex_shared.Model;
+namespace pokedex_shared.Model.Document;
 
 public class PokemonDocument
 {
@@ -20,7 +21,7 @@ public class PokemonDocument
     public required string Name { get; init; }
 }
 
-public static partial class Extensions
+public static class Extensions
 {
     public static PokemonDto ToDto(this PokemonDocument document)
     {

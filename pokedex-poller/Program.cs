@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using pokedex_poller;
-using pokedex_poller.Config;
 using pokedex_shared.Config;
 using pokedex_shared.Http;
 using pokedex_shared.Option;
@@ -25,14 +24,20 @@ builder.Services.AddOptions<PokeApiOption>()
 // Add Services to the DI Container
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
-// Add Gen I
+// Add Gen I Worker
 builder.Services.AddSingleton<IHostedService>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<Worker>>();
     var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
+    var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
     var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
     var mongoDbService = provider.GetRequiredService<MongoDbService>();
-    return new Worker(logger, workerOption.Value, Enumerable.Range(1, 151), pokemonClient, mongoDbService);
+    return new Worker(logger,
+        workerOption.Value,
+        pokeApiOption.Value,
+        Enumerable.Range(1, 151),
+        pokemonClient,
+        mongoDbService);
 });
 
 var host = builder.Build();
