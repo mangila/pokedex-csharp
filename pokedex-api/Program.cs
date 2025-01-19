@@ -66,7 +66,6 @@ builder.Services.AddApiVersioning(options =>
         options.SubstituteApiVersionInUrl = true;
     });
 // Add Exception Handler
-builder.Services.AddExceptionHandler<ArgumentNullExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 // Add Singleton Services
