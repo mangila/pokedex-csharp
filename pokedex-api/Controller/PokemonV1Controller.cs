@@ -14,8 +14,8 @@ namespace pokedex_api.Controller;
 [Route("api/v{v:apiVersion}/pokemon")]
 [Produces(MediaTypeNames.Application.Json)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
-public class PokemonController(
-    ILogger<PokemonController> logger,
+public class PokemonV1Controller(
+    ILogger<PokemonV1Controller> logger,
     PokemonService pokemonService)
     : ControllerBase
 {

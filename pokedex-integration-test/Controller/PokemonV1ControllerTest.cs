@@ -3,8 +3,8 @@
 namespace pokedex_integration_test.Controller;
 
 [TestFixture]
-[TestOf(typeof(PokemonController))]
-public class PokemonControllerTest
+[TestOf(typeof(PokemonV1Controller))]
+public class PokemonV1ControllerTest
 {
 
     [Test]
