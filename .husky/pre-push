@@ -1,2 +1,3 @@
-﻿npm test-backend
-npm lint
+﻿where dotnet
+npx run dotnet test
+npm run lint
