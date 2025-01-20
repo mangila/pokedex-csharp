@@ -7,7 +7,7 @@ namespace pokedex_shared.Mapper;
 
 /**
  * <summary>
- *  Map from PokeApi api responses
+ *  Map responses from PokeApi to database document
  * </summary>
  */
 public static class ApiMapper
@@ -18,7 +18,6 @@ public static class ApiMapper
         EvolutionChainApiResponse evolutionChainApiResponse)
     {
         var sprites = pokemonApiResponse.sprites;
-        
         return new PokemonDocument
         {
             PokemonId = pokemonApiResponse.id.ToString(),
