@@ -10,7 +10,7 @@ public readonly record struct PokemonDto(
     [property: JsonPropertyName("name")] string Name
 );
 
-public static partial class Extensions
+public static class Extensions
 {
     public static PokemonDocument ToDocument(this PokemonDto dto)
     {
