@@ -25,6 +25,8 @@ appsettings.*.json
 *.tmp
 *.bak
 
+node_modules/
+
 
 
 # Ignore test result files
