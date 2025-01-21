@@ -3,7 +3,7 @@ import LokiTransport from "winston-loki";
 import * as process from "node:process";
 
 // Loki transport configuration
-const loki = winston.createLogger({
+export const loki = winston.createLogger({
     transports: [
         new LokiTransport({
             host: "http://localhost:3100",
@@ -16,5 +16,3 @@ const loki = winston.createLogger({
         }),
     ],
 });
-
-export default loki;

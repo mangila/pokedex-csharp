@@ -1,5 +1,6 @@
 ﻿'use client' // Error boundaries must be Client Components
 
+import {sendLogToLoki} from '@/api'
 import {useEffect} from 'react'
 
 export default function Error({
@@ -10,8 +11,11 @@ export default function Error({
     reset: () => void
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
-        console.error(error)
+        sendLogToLoki({
+            loglevel: 'error',
+            message: error.message,
+            data: error
+        });
     }, [error])
 
     return (
