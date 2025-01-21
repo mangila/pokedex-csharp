@@ -6,7 +6,7 @@ A pretty Pokédex (yet another)
 
 Next.js app that displays the Pokémon data. Using MUI components.
 
-* http://localhost:3000/
+* http://localhost:4000/
 
 ## pokedex-api
 
