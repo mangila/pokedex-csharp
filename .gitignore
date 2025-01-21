@@ -8,7 +8,7 @@ obj/
 .vscode/
 
 # Ignore ASP.NET Core environment configuration files
-appsettings.*.json
+# appsettings.*.json - nothing secret here
 
 # Ignore Windows Installer files
 *.cab
