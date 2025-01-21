@@ -44,6 +44,6 @@ services:
         /run.sh
     image: grafana/grafana:latest
     ports:
-      - "3120:3120"
+      - "3000:3000"
     networks:
       - loki

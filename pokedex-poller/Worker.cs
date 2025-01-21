@@ -20,6 +20,7 @@ public class Worker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
+            logger.LogInformation("worker started");
             try
             {
                 foreach (var index in ids)

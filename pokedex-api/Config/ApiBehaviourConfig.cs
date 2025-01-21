@@ -21,7 +21,6 @@ public static class ApiBehaviourConfig
                 Detail = errMsg,
                 Status = StatusCodes.Status400BadRequest,
             };
-            problemDetails.Extensions.Add("env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
             return new BadRequestObjectResult(problemDetails);
         };
     }

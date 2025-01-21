@@ -26,10 +26,6 @@ public static class HttpRequestConfig
                     Title = "Request Timeout",
                     Detail = "Request timed out by Default Policy",
                     Status = StatusCodes.Status408RequestTimeout,
-                    Extensions = new Dictionary<string, object?>()
-                    {
-                        { "env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") }
-                    }
                 };
                 await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
             }
@@ -46,10 +42,6 @@ public static class HttpRequestConfig
                     Title = "Request Timeout",
                     Detail = $"Request timed out by {Policies.OneMinute}",
                     Status = StatusCodes.Status408RequestTimeout,
-                    Extensions = new Dictionary<string, object?>
-                    {
-                        { "env", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") }
-                    }
                 };
                 await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
             }

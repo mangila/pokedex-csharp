@@ -7,6 +7,7 @@ using pokedex_api.ExceptionHandler;
 using pokedex_shared.Config;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,9 @@ builder.Services.AddApiVersioning(options =>
         options.GroupNameFormat = "'v'V";
         options.SubstituteApiVersionInUrl = true;
     });
+// Load Serilog from configuration
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 // Add Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -81,6 +85,7 @@ app.UseSwaggerUI(options =>
     options.DocumentTitle = "Swagger UI - Pokedex API";
     options.DisplayRequestDuration();
 });
+app.UseSerilogRequestLogging();
 app.UseRequestTimeouts();
 app.UseRateLimiter();
 app.MapControllers();

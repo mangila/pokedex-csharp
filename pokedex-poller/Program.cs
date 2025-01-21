@@ -4,8 +4,13 @@ using pokedex_shared.Config;
 using pokedex_shared.Http;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
+using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
+// Load Serilog from configuration
+// Configure Serilog with the loaded configuration
+builder.Services.AddSerilog(config =>
+    config.ReadFrom.Configuration(builder.Configuration));
 // Add Option Services to DI Container
 var sectionWorkerOption = builder
     .Configuration
