@@ -38,4 +38,8 @@ MongoDB as database and Redis as a IDistributedCache.
 * Redis Insight - http://localhost:8001
 * Mongo Express - http://localhost:8081
 
+## loki
+
+* Grafana with Loki datasource - http://localhost:3000
+
 
