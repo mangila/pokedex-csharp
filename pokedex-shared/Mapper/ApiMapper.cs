@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using pokedex_shared.Http.EvolutionChain;
 using pokedex_shared.Http.Pokemon;
@@ -25,6 +26,8 @@ public static partial class ApiMapper
         {
             PokemonId = pokemonApiResponse.id.ToString(),
             Name = pokemonApiResponse.name,
+            Height = ToMeters(pokemonApiResponse.height),
+            Weight = ToKilogramWeight(pokemonApiResponse.weight),
             Generation = pokemonSpeciesApiResponse.generation.name,
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
             Stats = ToPokemonStats(pokemonApiResponse.stats),
@@ -38,13 +41,24 @@ public static partial class ApiMapper
         };
     }
 
+    private static string ToMeters(int height)
+    {
+        return (height / 10.0).ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static string ToKilogramWeight(int weight)
+    {
+        return (weight / 10.0).ToString(CultureInfo.InvariantCulture);
+    }
+
     private static List<PokemonEvolutionDocument> ToPokemonEvolutions(Chain chain)
     {
         var list = new List<PokemonEvolutionDocument> { new(0, chain.species.name) };
         return GetEvolution(chain.chain, list);
     }
 
-    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo, List<PokemonEvolutionDocument> list)
+    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo,
+        List<PokemonEvolutionDocument> list)
     {
         if (chainEvolvesTo.Length == 0) return list;
 
@@ -66,7 +80,7 @@ public static partial class ApiMapper
 
     private static List<PokemonStatDocument> ToPokemonStats(Stats[] stats)
     {
-        return stats.Select(s => new PokemonStatDocument(s.stat.name, s.base_stat)).ToList();
+        return stats.Select(s => new PokemonStatDocument(s.stat.name, s.base_stat ?? 0)).ToList();
     }
 
     private static List<PokemonTypeDocument> ToPokemonTypes(Types[] types)

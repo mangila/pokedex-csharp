@@ -10,6 +10,8 @@ public class PokemonDocument
     [Required] [BsonId] public ObjectId Id { get; init; }
     [Required] [BsonElement("pokemon_id")] public required string PokemonId { get; init; }
     [Required] [BsonElement("name")] public required string Name { get; init; }
+    [Required] [BsonElement("height")] public required string Height { get; init; }
+    [Required] [BsonElement("weight")] public required string Weight { get; init; }
 
     [Required]
     [BsonElement("description")]
@@ -39,6 +41,8 @@ public static class Extensions
         return new PokemonDto(
             PokemonId: document.PokemonId,
             Name: document.Name,
+            Height: document.Height,
+            Weight: document.Weight,
             Description: document.Description,
             Generation: document.Generation,
             Types: document.Types.ToDtos(),

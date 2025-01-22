@@ -1,408 +1,358 @@
 ﻿namespace pokedex_shared.Http.Pokemon;
 
-public class PokemonApiResponse
-{
-    public Abilities[] abilities { get; set; }
-    public int base_experience { get; set; }
-    public Cries cries { get; set; }
-    public Forms[] forms { get; set; }
-    public Game_indices[] game_indices { get; set; }
-    public int height { get; set; }
-    public object[] held_items { get; set; }
-    public int id { get; set; }
-    public bool is_default { get; set; }
-    public string location_area_encounters { get; set; }
-    public Moves[] moves { get; set; }
-    public string name { get; set; }
-    public int order { get; set; }
-    public object[] past_abilities { get; set; }
-    public object[] past_types { get; set; }
-    public Species species { get; set; }
-    public Sprites sprites { get; set; }
-    public Stats[] stats { get; set; }
-    public Types[] types { get; set; }
-    public int weight { get; set; }
-}
+public readonly record struct PokemonApiResponse(
+    Abilities[] abilities,
+    int? base_experience,
+    Cries cries,
+    Forms[] forms,
+    Game_indices[] game_indices,
+    int height,
+    object[] held_items,
+    int id,
+    bool is_default,
+    string location_area_encounters,
+    Moves[] moves,
+    string name,
+    int? order,
+    object[] past_abilities,
+    object[] past_types,
+    Species species,
+    Sprites sprites,
+    Stats[] stats,
+    Types[] types,
+    int weight
+);
 
-public class Abilities
-{
-    public Ability ability { get; set; }
-    public bool is_hidden { get; set; }
-    public int slot { get; set; }
-}
+public readonly record struct Abilities(
+    Ability ability,
+    bool is_hidden,
+    int? slot
+);
 
-public class Ability
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Ability(
+    string name,
+    string url
+);
 
-public class Cries
-{
-    public string latest { get; set; }
-    public string? legacy { get; set; }
-}
+public readonly record struct Cries(
+    string latest,
+    string legacy
+);
 
-public class Forms
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Forms(
+    string name,
+    string url
+);
 
-public class Game_indices
-{
-    public int game_index { get; set; }
-    public Version version { get; set; }
-}
+public readonly record struct Game_indices(
+    int? game_index,
+    Version version
+);
 
-public class Version
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Version(
+    string name,
+    string url
+);
 
-public class Moves
-{
-    public Move move { get; set; }
-    public Version_group_details[] version_group_details { get; set; }
-}
+public readonly record struct Moves(
+    Move move,
+    Version_group_details[] version_group_details
+);
 
-public class Move
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Move(
+    string name,
+    string url
+);
 
-public class Version_group_details
-{
-    public int level_learned_at { get; set; }
-    public Move_learn_method move_learn_method { get; set; }
-    public Version_group version_group { get; set; }
-}
+public readonly record struct Version_group_details(
+    int? level_learned_at,
+    Move_learn_method move_learn_method,
+    Version_group version_group
+);
 
-public class Move_learn_method
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Move_learn_method(
+    string name,
+    string url
+);
 
-public class Version_group
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Version_group(
+    string name,
+    string url
+);
 
-public class Species
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Species(
+    string name,
+    string url
+);
 
-public class Sprites
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-    public Other other { get; set; }
-    public Versions versions { get; set; }
-}
+public readonly record struct Sprites(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female,
+    Other other,
+    Versions versions
+);
 
-public class Other
-{
-    public Dream_world dream_world { get; set; }
-    public Home home { get; set; }
-    public Official_artwork official_artwork { get; set; }
-    public Showdown showdown { get; set; }
-}
+public readonly record struct Other(
+    Dream_world dream_world,
+    Home home,
+    Official_artwork official_artwork,
+    Showdown showdown
+);
 
-public class Dream_world
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-}
+public readonly record struct Dream_world(
+    string front_default,
+    object front_female
+);
 
-public class Home
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Home(
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Official_artwork
-{
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
+public readonly record struct Official_artwork(
+    string front_default,
+    string front_shiny
+);
 
-public class Showdown
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Showdown(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Versions
-{
-    public Generation_i generation_i { get; set; }
-    public Generation_ii generation_ii { get; set; }
-    public Generation_iii generation_iii { get; set; }
-    public Generation_iv generation_iv { get; set; }
-    public Generation_v generation_v { get; set; }
-    public Generation_vi generation_vi { get; set; }
-    public Generation_vii generation_vii { get; set; }
-    public Generation_viii generation_viii { get; set; }
-}
+public readonly record struct Versions(
+    Generation_i generation_i,
+    Generation_ii generation_ii,
+    Generation_iii generation_iii,
+    Generation_iv generation_iv,
+    Generation_v generation_v,
+    Generation_vi generation_vi,
+    Generation_vii generation_vii,
+    Generation_viii generation_viii
+);
 
-public class Generation_i
-{
-    public Red_blue red_blue { get; set; }
-    public Yellow yellow { get; set; }
-}
+public readonly record struct Generation_i(
+    Red_blue red_blue,
+    Yellow yellow
+);
 
-public class Red_blue
-{
-    public string back_default { get; set; }
-    public string back_gray { get; set; }
-    public string back_transparent { get; set; }
-    public string front_default { get; set; }
-    public string front_gray { get; set; }
-    public string front_transparent { get; set; }
-}
+public readonly record struct Red_blue(
+    string back_default,
+    string back_gray,
+    string back_transparent,
+    string front_default,
+    string front_gray,
+    string front_transparent
+);
 
-public class Yellow
-{
-    public string back_default { get; set; }
-    public string back_gray { get; set; }
-    public string back_transparent { get; set; }
-    public string front_default { get; set; }
-    public string front_gray { get; set; }
-    public string front_transparent { get; set; }
-}
+public readonly record struct Yellow(
+    string back_default,
+    string back_gray,
+    string back_transparent,
+    string front_default,
+    string front_gray,
+    string front_transparent
+);
 
-public class Generation_ii
-{
-    public Crystal crystal { get; set; }
-    public Gold gold { get; set; }
-    public Silver silver { get; set; }
-}
+public readonly record struct Generation_ii(
+    Crystal crystal,
+    Gold gold,
+    Silver silver
+);
 
-public class Crystal
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_transparent { get; set; }
-    public string back_transparent { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_transparent { get; set; }
-    public string front_transparent { get; set; }
-}
+public readonly record struct Crystal(
+    string back_default,
+    string back_shiny,
+    string back_shiny_transparent,
+    string back_transparent,
+    string front_default,
+    string front_shiny,
+    string front_shiny_transparent,
+    string front_transparent
+);
 
-public class Gold
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-    public string front_transparent { get; set; }
-}
+public readonly record struct Gold(
+    string back_default,
+    string back_shiny,
+    string front_default,
+    string front_shiny,
+    string front_transparent
+);
 
-public class Silver
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-    public string front_transparent { get; set; }
-}
+public readonly record struct Silver(
+    string back_default,
+    string back_shiny,
+    string front_default,
+    string front_shiny,
+    string front_transparent
+);
 
-public class Generation_iii
-{
-    public Emerald emerald { get; set; }
-    public Firered_leafgreen firered_leafgreen { get; set; }
-    public Ruby_sapphire ruby_sapphire { get; set; }
-}
+public readonly record struct Generation_iii(
+    Emerald emerald,
+    Firered_leafgreen firered_leafgreen,
+    Ruby_sapphire ruby_sapphire
+);
 
-public class Emerald
-{
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
+public readonly record struct Emerald(
+    string front_default,
+    string front_shiny
+);
 
-public class Firered_leafgreen
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
+public readonly record struct Firered_leafgreen(
+    string back_default,
+    string back_shiny,
+    string front_default,
+    string front_shiny
+);
 
-public class Ruby_sapphire
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
+public readonly record struct Ruby_sapphire(
+    string back_default,
+    string back_shiny,
+    string front_default,
+    string front_shiny
+);
 
-public class Generation_iv
-{
-    public Diamond_pearl diamond_pearl { get; set; }
-    public Heartgold_soulsilver heartgold_soulsilver { get; set; }
-    public Platinum platinum { get; set; }
-}
+public readonly record struct Generation_iv(
+    Diamond_pearl diamond_pearl,
+    Heartgold_soulsilver heartgold_soulsilver,
+    Platinum platinum
+);
 
-public class Diamond_pearl
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Diamond_pearl(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Heartgold_soulsilver
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Heartgold_soulsilver(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Platinum
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Platinum(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Generation_v
-{
-    public Black_white black_white { get; set; }
-}
+public readonly record struct Generation_v(
+    Black_white black_white
+);
 
-public class Black_white
-{
-    public Animated animated { get; set; }
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Black_white(
+    Animated animated,
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Animated
-{
-    public string back_default { get; set; }
-    public object back_female { get; set; }
-    public string back_shiny { get; set; }
-    public object back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Animated(
+    string back_default,
+    object back_female,
+    string back_shiny,
+    object back_shiny_female,
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Generation_vi
-{
-    public Omegaruby_alphasapphire omegaruby_alphasapphire { get; set; }
-    public X_y x_y { get; set; }
-}
+public readonly record struct Generation_vi(
+    Omegaruby_alphasapphire omegaruby_alphasapphire,
+    X_y x_y
+);
 
-public class Omegaruby_alphasapphire
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Omegaruby_alphasapphire(
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class X_y
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct X_y(
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Generation_vii
-{
-    public Icons icons { get; set; }
-    public Ultra_sun_ultra_moon ultra_sun_ultra_moon { get; set; }
-}
+public readonly record struct Generation_vii(
+    Icons icons,
+    Ultra_sun_ultra_moon ultra_sun_ultra_moon
+);
 
-public class Icons
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-}
+public readonly record struct Icons(
+    string front_default,
+    object front_female
+);
 
-public class Ultra_sun_ultra_moon
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
-}
+public readonly record struct Ultra_sun_ultra_moon(
+    string front_default,
+    object front_female,
+    string front_shiny,
+    object front_shiny_female
+);
 
-public class Generation_viii
-{
-    public Icons1 icons { get; set; }
-}
+public readonly record struct Generation_viii(
+    Icons1 icons
+);
 
-public class Icons1
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-}
+public readonly record struct Icons1(
+    string front_default,
+    object front_female
+);
 
-public class Stats
-{
-    public int base_stat { get; set; }
-    public int effort { get; set; }
-    public Stat stat { get; set; }
-}
+public readonly record struct Stats(
+    int? base_stat,
+    int? effort,
+    Stat stat
+);
 
-public class Stat
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Stat(
+    string name,
+    string url
+);
 
-public class Types
-{
-    public int slot { get; set; }
-    public Type type { get; set; }
-}
+public readonly record struct Types(
+    int? slot,
+    Type type
+);
 
-public class Type
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Type(
+    string name,
+    string url
+);

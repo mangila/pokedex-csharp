@@ -36,6 +36,8 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
 });
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
+builder.Services.AddSingleton<RedisService>();
+
 // Add GenerationI Worker
 builder.Services.AddSingleton<IHostedService>(provider =>
 {

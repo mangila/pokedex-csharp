@@ -2,33 +2,31 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using pokedex_shared.Config;
+using pokedex_shared.Service;
 
 namespace pokedex_shared.Http;
 
 public class PokemonHttpClient(
     ILogger<PokemonHttpClient> logger,
     HttpClient httpClient,
-    IDistributedCache redis)
+    RedisService redis)
 {
     private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions = new()
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1), // Expire in 1 hour
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
     };
 
-    public async Task<T> GetAsync<T>(Uri uri, CancellationToken cancellationToken = default)
+    public async Task<T> GetAsync<T>(Uri uri, CancellationToken cancellationToken = default) where T : struct
     {
-        var cacheKey = uri.ToString();
-        var cacheValue = await redis.GetStringAsync(cacheKey, cancellationToken);
-        if (cacheValue is null)
+        var key = uri.ToString();
+        var dto = await redis.GetAsync<T>(key, cancellationToken);
+        if (dto.HasValue)
         {
-            logger.LogInformation("Cache miss - {cacheKey}", cacheKey);
-            var json = await httpClient.GetStringAsync(uri, cancellationToken);
-            await redis.SetStringAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
-            return JsonSerializer.Deserialize<T>(json) ?? throw new InvalidOperationException();
+            return dto.Value;
         }
 
-        logger.LogInformation("Cache hit - {cacheKey}", cacheKey);
-        return JsonSerializer.Deserialize<T>(cacheValue, JsonConfig.JsonOptions) ??
-               throw new InvalidOperationException();
+        var json = await httpClient.GetStringAsync(uri, cancellationToken);
+        await redis.SetAsync(key, json, _distributedCacheEntryOptions, cancellationToken);
+        return JsonSerializer.Deserialize<T>(json, JsonConfig.JsonOptions);
     }
 }

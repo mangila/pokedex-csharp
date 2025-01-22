@@ -6,6 +6,8 @@ public readonly record struct PokemonDto(
     [property: JsonPropertyName("pokemon_id")]
     string PokemonId,
     [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("height")] string Height,
+    [property: JsonPropertyName("weight")] string Weight,
     [property: JsonPropertyName("description")]
     string Description,
     [property: JsonPropertyName("generation")]

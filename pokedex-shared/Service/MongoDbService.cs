@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
@@ -53,17 +54,21 @@ public class MongoDbService
     public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(document => document.Name.Contains(search.Value),
-            cancellationToken: cancellationToken);
+        var filter = Builders<PokemonDocument>.Filter.Regex(
+            doc => doc.Name,
+            new BsonRegularExpression(search.Value, "i")
+        );
+
+        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }
 
     public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(document =>
-                pokemonIdCollection.Ids.Exists(id => document.PokemonId == id.Value),
-            cancellationToken: cancellationToken);
+        var ids = pokemonIdCollection.Ids.Select(id => id.Value).ToList();
+        var filter = Builders<PokemonDocument>.Filter.In(doc => doc.PokemonId, ids);
+        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }
 

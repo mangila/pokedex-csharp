@@ -1,0 +1,29 @@
+﻿### Get all Pokemons
+GET {{pokemonV1}}
+Content-Type: application/json
+
+###
+
+### GET pokemon by id
+GET {{pokemonV1}}/1
+Content-Type: application/json
+
+###
+
+### GET pokemon by name
+GET {{pokemonV1}}/bulbasaur
+Content-Type: application/json
+
+###
+
+### GET pokemon by ids
+GET {{pokemonV1}}/search/id?ids=1&ids=2
+Content-Type: application/json
+
+###
+
+### GET pokemon by ids
+GET {{pokemonV1}}/search/name?search=bu
+Content-Type: application/json
+
+###

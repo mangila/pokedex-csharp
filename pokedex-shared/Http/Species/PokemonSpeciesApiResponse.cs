@@ -1,159 +1,132 @@
 ﻿namespace pokedex_shared.Http.Species;
 
-public class PokemonSpeciesApiResponse
-{
-    public int? base_happiness { get; set; }
-    public int? capture_rate { get; set; }
-    public Color color { get; set; }
-    public Egg_groups[] egg_groups { get; set; }
-    public Evolution_chain evolution_chain { get; set; }
-    public Evolves_from_species evolves_from_species { get; set; }
-    public Flavor_text_entries[] flavor_text_entries { get; set; }
-    public object[] form_descriptions { get; set; }
-    public bool forms_switchable { get; set; }
-    public int? gender_rate { get; set; }
-    public Genera[] genera { get; set; }
-    public Generation generation { get; set; }
-    public Growth_rate growth_rate { get; set; }
-    public Habitat habitat { get; set; }
-    public bool has_gender_differences { get; set; }
-    public int? hatch_counter { get; set; }
-    public int? id { get; set; }
-    public bool is_baby { get; set; }
-    public bool is_legendary { get; set; }
-    public bool is_mythical { get; set; }
-    public string name { get; set; }
-    public Names[] names { get; set; }
-    public int? order { get; set; }
-    public Pal_park_encounters[] pal_park_encounters { get; set; }
-    public Pokedex_numbers[] pokedex_numbers { get; set; }
-    public Shape shape { get; set; }
-    public Varieties[] varieties { get; set; }
-}
+public readonly record struct PokemonSpeciesApiResponse(
+    int? base_happiness,
+    int? capture_rate,
+    Color color,
+    Egg_groups[] egg_groups,
+    Evolution_chain evolution_chain,
+    object evolves_from_species,
+    Flavor_text_entries[] flavor_text_entries,
+    object[] form_descriptions,
+    bool forms_switchable,
+    int? gender_rate,
+    Genera[] genera,
+    Generation generation,
+    Growth_rate growth_rate,
+    Habitat? habitat,
+    bool has_gender_differences,
+    int? hatch_counter,
+    int? id,
+    bool is_baby,
+    bool is_legendary,
+    bool is_mythical,
+    string name,
+    Names[] names,
+    int? order,
+    Pal_park_encounters[] pal_park_encounters,
+    Pokedex_numbers[] pokedex_numbers,
+    Shape shape,
+    Varieties[] varieties
+);
 
-public class Color
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Color(
+    string name,
+    string url
+);
 
-public class Egg_groups
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Egg_groups(
+    string name,
+    string url
+);
 
-public class Evolution_chain
-{
-    public string url { get; set; }
-}
+public readonly record struct Evolution_chain(
+    string url
+);
 
-public class Evolves_from_species
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Flavor_text_entries(
+    string flavor_text,
+    Language language,
+    Version version
+);
 
-public class Flavor_text_entries
-{
-    public string flavor_text { get; set; }
-    public Language language { get; set; }
-    public Version version { get; set; }
-}
+public readonly record struct Language(
+    string name,
+    string url
+);
 
-public class Language
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Version(
+    string name,
+    string url
+);
 
-public class Version
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Genera(
+    string genus,
+    Language1 language
+);
 
-public class Genera
-{
-    public string genus { get; set; }
-    public Language1 language { get; set; }
-}
+public readonly record struct Language1(
+    string name,
+    string url
+);
 
-public class Language1
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Generation(
+    string name,
+    string url
+);
 
-public class Generation
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Growth_rate(
+    string name,
+    string url
+);
 
-public class Growth_rate
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Habitat(
+    string name,
+    string url
+);
 
-public class Habitat
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Names(
+    Language2 language,
+    string name
+);
 
-public class Names
-{
-    public Language2 language { get; set; }
-    public string name { get; set; }
-}
+public readonly record struct Language2(
+    string name,
+    string url
+);
 
-public class Language2
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Pal_park_encounters(
+    Area area,
+    int? base_score,
+    int? rate
+);
 
-public class Pal_park_encounters
-{
-    public Area area { get; set; }
-    public int? base_score { get; set; }
-    public int? rate { get; set; }
-}
+public readonly record struct Area(
+    string name,
+    string url
+);
 
-public class Area
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Pokedex_numbers(
+    int? entry_number,
+    Pokedex pokedex
+);
 
-public class Pokedex_numbers
-{
-    public int? entry_number { get; set; }
-    public Pokedex pokedex { get; set; }
-}
+public readonly record struct Pokedex(
+    string name,
+    string url
+);
 
-public class Pokedex
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Shape(
+    string name,
+    string url
+);
 
-public class Shape
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Varieties(
+    bool is_default,
+    Pokemon pokemon
+);
 
-public class Varieties
-{
-    public bool is_default { get; set; }
-    public Pokemon pokemon { get; set; }
-}
-
-public class Pokemon
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
+public readonly record struct Pokemon(
+    string name,
+    string url
+);
