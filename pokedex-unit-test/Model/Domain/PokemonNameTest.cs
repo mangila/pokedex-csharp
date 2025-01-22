@@ -17,9 +17,11 @@ public class PokemonNameTest
         // Except Mr.Mime
         act = () => new PokemonName("Mr.Mime");
         act.Should().NotThrow<ValidationException>();
-        // No long strings
-        string longString = string.Concat(Enumerable.Repeat("string", 30));
-        act = () => new PokemonId(longString);
+        // 49 chars
+        act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 49)));
+        act.Should().NotThrow<ValidationException>();
+        // 51 chars
+        act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 51)));
         act.Should().Throw<ValidationException>();
     }
 }
