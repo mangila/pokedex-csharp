@@ -16,40 +16,42 @@ public static partial class ApiMapper
 {
     public static PokemonDocument ToDocument(
         PokemonApiResponse pokemonApiResponse,
-        SpeciesApiResponse speciesApiResponse,
+        PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse,
         ObjectId spriteId,
         ObjectId audioId)
     {
-        ToPokemonEvolutions(evolutionChainApiResponse.chain);
-
         return new PokemonDocument
         {
             PokemonId = pokemonApiResponse.id.ToString(),
             Name = pokemonApiResponse.name,
-            Description = ToPokemonDescription(speciesApiResponse.flavor_text_entries),
+            Generation = pokemonSpeciesApiResponse.generation.name,
+            Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
             Stats = ToPokemonStats(pokemonApiResponse.stats),
             Types = ToPokemonTypes(pokemonApiResponse.types),
             Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
             SpriteId = spriteId,
             AudioId = audioId,
+            Legendary = pokemonSpeciesApiResponse.is_legendary,
+            Mythical = pokemonSpeciesApiResponse.is_mythical,
+            Baby = pokemonSpeciesApiResponse.is_baby
         };
     }
 
-    private static List<PokemonEvolution> ToPokemonEvolutions(Chain chain)
+    private static List<PokemonEvolutionDocument> ToPokemonEvolutions(Chain chain)
     {
-        var list = new List<PokemonEvolution> { new(0, chain.species.name) };
-        return GetEvolution(chain.evolves_to, list);
+        var list = new List<PokemonEvolutionDocument> { new(0, chain.species.name) };
+        return GetEvolution(chain.chain, list);
     }
 
-    private static List<PokemonEvolution> GetEvolution(Evolves_to[] chainEvolvesTo, List<PokemonEvolution> list)
+    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo, List<PokemonEvolutionDocument> list)
     {
         if (chainEvolvesTo.Length == 0) return list;
 
-        foreach (var to in chainEvolvesTo)
+        foreach (var evolutionChain in chainEvolvesTo)
         {
-            list.Add(new PokemonEvolution(list.Count, to.species.name));
-            GetEvolution(to.evolves_to, list);
+            list.Add(new PokemonEvolutionDocument(list.Count, evolutionChain.species.name));
+            GetEvolution(evolutionChain.next, list);
         }
 
         return list;
@@ -62,14 +64,14 @@ public static partial class ApiMapper
         return ReplaceLineBreaks().Replace(flavorText, " ").Trim();
     }
 
-    private static List<PokemonStat> ToPokemonStats(Stats[] stats)
+    private static List<PokemonStatDocument> ToPokemonStats(Stats[] stats)
     {
-        return stats.Select(s => new PokemonStat(s.stat.name, s.base_stat)).ToList();
+        return stats.Select(s => new PokemonStatDocument(s.stat.name, s.base_stat)).ToList();
     }
 
-    private static List<PokemonType> ToPokemonTypes(Types[] types)
+    private static List<PokemonTypeDocument> ToPokemonTypes(Types[] types)
     {
-        return types.Select(t => new PokemonType(t.type.name)).ToList();
+        return types.Select(t => new PokemonTypeDocument(t.type.name)).ToList();
     }
 
     [GeneratedRegex(@"[\r\n\t\f]+")]

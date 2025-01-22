@@ -15,18 +15,22 @@ public class PokemonDocument
     [BsonElement("description")]
     public required string Description { get; init; }
 
-    [Required] [BsonElement("types")] public required List<PokemonType> Types { get; init; }
-    [Required] [BsonElement("evolutions")] public required List<PokemonEvolution> Evolutions { get; init; }
-    [Required] [BsonElement("stats")] public required List<PokemonStat> Stats { get; init; }
+    [Required] [BsonElement("generation")] public required string Generation { get; init; }
+    [Required] [BsonElement("types")] public required List<PokemonTypeDocument> Types { get; init; }
+    [Required] [BsonElement("evolutions")] public required List<PokemonEvolutionDocument> Evolutions { get; init; }
+    [Required] [BsonElement("stats")] public required List<PokemonStatDocument> Stats { get; init; }
     [Required] [BsonElement("audio_id")] public required ObjectId AudioId { get; init; }
     [Required] [BsonElement("sprite_id")] public required ObjectId SpriteId { get; init; }
+    [Required] [BsonElement("legendary")] public required bool Legendary { get; init; }
+    [Required] [BsonElement("mythical")] public required bool Mythical { get; init; }
+    [Required] [BsonElement("baby")] public required bool Baby { get; init; }
 }
 
-public readonly record struct PokemonType(string Type);
+public readonly record struct PokemonTypeDocument(string type);
 
-public readonly record struct PokemonStat(string Type, int Value);
+public readonly record struct PokemonStatDocument(string type, int value);
 
-public readonly record struct PokemonEvolution(int value, string name);
+public readonly record struct PokemonEvolutionDocument(int value, string name);
 
 public static class Extensions
 {
@@ -34,7 +38,53 @@ public static class Extensions
     {
         return new PokemonDto(
             PokemonId: document.PokemonId,
-            Name: document.Name
+            Name: document.Name,
+            Description: document.Description,
+            Generation: document.Generation,
+            Types: document.Types.ToDtos(),
+            Evolutions: document.Evolutions.ToDtos(),
+            Stats: document.Stats.ToDtos(),
+            AudioId: document.AudioId.ToString(),
+            SpriteId: document.SpriteId.ToString(),
+            Legendary: document.Legendary,
+            Mythical: document.Mythical,
+            Baby: document.Baby
+        );
+    }
+
+    private static List<PokemonTypeDto> ToDtos(this List<PokemonTypeDocument> pokemonTypeDocuments)
+    {
+        return pokemonTypeDocuments.Select(document => document.ToDto()).ToList();
+    }
+
+    private static PokemonTypeDto ToDto(this PokemonTypeDocument pokemonTypeDocument)
+    {
+        return new PokemonTypeDto(pokemonTypeDocument.type);
+    }
+
+    private static List<PokemonEvolutionDto> ToDtos(this List<PokemonEvolutionDocument> pokemonEvolutionDocuments)
+    {
+        return pokemonEvolutionDocuments.Select(document => document.ToDto()).ToList();
+    }
+
+    private static PokemonEvolutionDto ToDto(this PokemonEvolutionDocument pokemonEvolutionDocument)
+    {
+        return new PokemonEvolutionDto(
+            value: pokemonEvolutionDocument.value,
+            name: pokemonEvolutionDocument.name
+        );
+    }
+
+    private static List<PokemonStatDto> ToDtos(this List<PokemonStatDocument> pokemonStatDocuments)
+    {
+        return pokemonStatDocuments.Select(document => document.ToDto()).ToList();
+    }
+
+    private static PokemonStatDto ToDto(this PokemonStatDocument pokemonStatDocument)
+    {
+        return new PokemonStatDto(
+            value: pokemonStatDocument.value,
+            type: pokemonStatDocument.type
         );
     }
 }

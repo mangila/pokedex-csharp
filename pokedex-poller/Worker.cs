@@ -27,17 +27,18 @@ public class Worker(
             try
             {
                 var generation =
-                    await pokemonHttpClient.Get<PokemonGenerationApiResponse>(GetPokemonGenerationUri(),
+                    await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationUri(),
                         cancellationToken);
-                foreach (var generationPokemon in generation.pokemon_species)
+                foreach (var generationPokemon in generation.pokemonSpecies)
                 {
                     logger.LogInformation("Poll: {name}", generationPokemon.name);
-                    var pokemon = await pokemonHttpClient.Get<PokemonApiResponse>(
+                    var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
                         GetPokemonRelativeUri(generationPokemon.name),
                         cancellationToken);
-                    var species = await pokemonHttpClient.Get<SpeciesApiResponse>(new Uri(pokemon.species.url),
+                    var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
+                        new Uri(pokemon.species.url),
                         cancellationToken);
-                    var evolutionChain = await pokemonHttpClient.Get<EvolutionChainApiResponse>(
+                    var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
                         new Uri(species.evolution_chain.url), cancellationToken);
                     var spriteId =
                         await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default),

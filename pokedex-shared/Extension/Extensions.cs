@@ -18,11 +18,6 @@ public static class Extensions
         }
     }
 
-    public static string ToJson<T>(this T type)
-    {
-        return JsonSerializer.Serialize(type, JsonConfig.JsonOptions);
-    }
-
     public static async Task<string> ToJsonAsync<T>(this T type, CancellationToken cancellationToken = default)
     {
         await using var memoryStream = new MemoryStream();

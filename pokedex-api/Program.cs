@@ -46,6 +46,8 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     var connection = builder.Configuration.GetConnectionString("Redis");
     redisOptions.Configuration = connection;
 });
+// Add Http Client
+builder.Services.AddHttpClient();
 // Configure Request timeouts
 builder.Services.AddRequestTimeouts(HttpRequestConfig.ConfigureRequestTimeout);
 // Configure Rate limiting

@@ -1,6 +1,6 @@
 ﻿namespace pokedex_shared.Http.Species;
 
-public class SpeciesApiResponse
+public class PokemonSpeciesApiResponse
 {
     public int? base_happiness { get; set; }
     public int? capture_rate { get; set; }

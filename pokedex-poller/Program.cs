@@ -28,6 +28,12 @@ builder.Services.AddOptions<PokeApiOption>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 // Add Services to the DI Container
+// Configure Redis
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    var connection = builder.Configuration.GetConnectionString("Redis");
+    redisOptions.Configuration = connection;
+});
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
 // Add GenerationI Worker
