@@ -18,6 +18,11 @@ public class DatasourceService(
     IDistributedCache redis,
     MongoDbService mongoDbService)
 {
+    private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1), // Expire in 1 hour
+    };
+
     public async Task<PokemonDto?> FindByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
@@ -37,7 +42,7 @@ public class DatasourceService(
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(pokemonId.Value, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonId.Value, json, _distributedCacheEntryOptions, cancellationToken);
         return databaseValue;
     }
 
@@ -60,7 +65,7 @@ public class DatasourceService(
         }
 
         var json = await databaseValue.Value.ToJsonAsync(cancellationToken);
-        await redis.SetStringAsync(pokemonName.Value, json, token: cancellationToken);
+        await redis.SetStringAsync(pokemonName.Value, json, _distributedCacheEntryOptions, cancellationToken);
         return databaseValue;
     }
 
