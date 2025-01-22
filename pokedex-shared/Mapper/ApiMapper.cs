@@ -26,7 +26,7 @@ public static partial class ApiMapper
         {
             PokemonId = pokemonApiResponse.id.ToString(),
             Name = pokemonApiResponse.name,
-            Height = ToMeters(pokemonApiResponse.height),
+            Height = ToMeterHeight(pokemonApiResponse.height),
             Weight = ToKilogramWeight(pokemonApiResponse.weight),
             Generation = pokemonSpeciesApiResponse.generation.name,
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
@@ -41,7 +41,7 @@ public static partial class ApiMapper
         };
     }
 
-    private static string ToMeters(int height)
+    private static string ToMeterHeight(int height)
     {
         return (height / 10.0).ToString(CultureInfo.InvariantCulture);
     }
