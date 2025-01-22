@@ -11,6 +11,7 @@ namespace pokedex_shared.Service;
 
 public class MongoDbService
 {
+    private const string CaseInsensitiveMatching = "i";
     private readonly ILogger<MongoDbService> _logger;
     private readonly IMongoCollection<PokemonDocument> _collection;
 
@@ -56,7 +57,7 @@ public class MongoDbService
     {
         var filter = Builders<PokemonDocument>.Filter.Regex(
             doc => doc.Name,
-            new BsonRegularExpression(search.Value, "i")
+            new BsonRegularExpression(search.Value, CaseInsensitiveMatching)
         );
 
         using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);

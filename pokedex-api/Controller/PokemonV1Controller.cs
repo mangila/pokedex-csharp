@@ -47,8 +47,7 @@ public class PokemonV1Controller(
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 
-    [HttpGet]
-    [Route("search/id")]
+    [HttpGet("search/id")]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     public async Task<IResult> QueryById(
         [FromQuery] List<int> ids,
@@ -61,8 +60,7 @@ public class PokemonV1Controller(
         return Results.Ok(collection);
     }
 
-    [HttpGet]
-    [Route("search/name")]
+    [HttpGet("search/name")]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     public async Task<IResult> QueryByName(
         [FromQuery] string search,
