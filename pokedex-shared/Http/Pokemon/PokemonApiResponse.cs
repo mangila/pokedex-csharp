@@ -36,7 +36,7 @@ public readonly record struct Ability(
 
 public readonly record struct Cries(
     string latest,
-    string legacy
+    string? legacy
 );
 
 public readonly record struct Forms(

@@ -48,7 +48,7 @@ public class MongoDbService
     {
         await _collection.InsertOneAsync(pokemon, new InsertOneOptions
         {
-            Comment = "Insert from InsertAsync()"
+            Comment = "Insert from InsertAsync() - inserting a new Pokemon"
         }, cancellationToken);
     }
 
