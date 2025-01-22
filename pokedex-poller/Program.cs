@@ -37,12 +37,14 @@ builder.Services.AddSingleton<IHostedService>(provider =>
     var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
     var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
     var mongoDbService = provider.GetRequiredService<MongoDbService>();
+    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsService>();
     return new Worker(logger,
         workerOption.Value,
         pokeApiOption.Value,
         Enumerable.Range(1, 151),
         pokemonClient,
-        mongoDbService);
+        mongoDbService,
+        mongoDbGridFsService);
 });
 
 var host = builder.Build();

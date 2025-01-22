@@ -23,10 +23,6 @@ export const metadata: Metadata = {
 
 const NAVIGATION: Navigation = [
     {
-        kind: 'header',
-        title: 'Main items',
-    },
-    {
         title: 'Dashboard',
         icon: <Dashboard/>,
     },

@@ -148,7 +148,7 @@ public class PokemonV1Controller(
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.SearchByName(search, cancellationToken);
+        var collection = await pokemonService.SearchByName(new PokemonName(search), cancellationToken);
         return Results.Ok(collection);
     }
 }

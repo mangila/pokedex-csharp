@@ -8,17 +8,11 @@ namespace pokedex_shared.Model.Document;
 public class PokemonDocument
 {
     [Required] [BsonId] public ObjectId Id { get; init; }
-
-    [Required]
-    [StringLength(5, ErrorMessage = "length cannot be over 5")]
-    [RegularExpression("\\d+", ErrorMessage = "must be a number")]
-    [BsonElement("pokemon_id")]
-    public required string PokemonId { get; init; }
-
-    [Required]
-    [StringLength(100, ErrorMessage = "Name cannot be more than 100 chars")]
-    [BsonElement("name")]
-    public required string Name { get; init; }
+    [Required] [BsonElement("pokemon_id")] public required string PokemonId { get; init; }
+    [Required] [BsonElement("name")] public required string Name { get; init; }
+    [Required] [BsonElement("types")] public required List<PokemonType> Types { get; init; }
+    [Required] [BsonElement("audio_id")] public required ObjectId AudioId { get; init; }
+    [Required] [BsonElement("sprite_id")] public required ObjectId SpriteId { get; init; }
 }
 
 public static class Extensions

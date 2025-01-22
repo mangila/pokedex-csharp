@@ -64,7 +64,7 @@ public class DatasourceService(
         return databaseValue;
     }
 
-    public async Task<PokemonDtoCollection> SearchByName(string search,
+    public async Task<PokemonDtoCollection> SearchByName(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbService.SearchByNameAsync(search, cancellationToken);

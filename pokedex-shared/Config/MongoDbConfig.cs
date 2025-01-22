@@ -15,6 +15,7 @@ public static class MongoDbConfig
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton<MongoDbService>();
+        services.AddSingleton<MongoDbGridFsService>();
         return services;
     }
 }

@@ -14,7 +14,8 @@ public class Worker(
     PokeApiOption pokeApiOption,
     IEnumerable<int> ids,
     PokemonHttpClient pokemonHttpClient,
-    MongoDbService mongoDbService) : BackgroundService
+    MongoDbService mongoDbService,
+    MongoDbGridFsService mongoDbGridFsService) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -25,6 +26,7 @@ public class Worker(
             {
                 foreach (var index in ids)
                 {
+                    logger.LogInformation("poll id - {index}", index.ToString());
                     var pokemon = await pokemonHttpClient.Get<PokemonApiResponse>(
                         GetRelativeUri(index),
                         cancellationToken);
@@ -32,7 +34,14 @@ public class Worker(
                         cancellationToken);
                     var evolutionChain = await pokemonHttpClient.Get<EvolutionChainApiResponse>(
                         new Uri(species.evolution_chain.url), cancellationToken);
-                    await mongoDbService.InsertAsync(ApiMapper.ToDocument(pokemon, species, evolutionChain),
+                    var spriteId =
+                        await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default),
+                            pokemon.name + "-sprite");
+                    var audioId = await mongoDbGridFsService.InsertAsync(
+                        new Uri(pokemon.cries.legacy ?? pokemon.cries.latest),
+                        pokemon.name + "-audio");
+                    await mongoDbService.InsertAsync(
+                        ApiMapper.ToDocument(pokemon, species, evolutionChain, spriteId, audioId),
                         cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }

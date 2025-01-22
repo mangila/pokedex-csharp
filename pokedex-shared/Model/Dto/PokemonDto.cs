@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using MongoDB.Bson;
 using pokedex_shared.Extension;
 using pokedex_shared.Model.Document;
 
@@ -17,7 +18,10 @@ public static class Extensions
         var document = new PokemonDocument
         {
             PokemonId = dto.PokemonId,
-            Name = dto.Name
+            Name = dto.Name,
+            Types = new List<PokemonType>(),
+            AudioId = new ObjectId(),
+            SpriteId = new ObjectId()
         };
         document.Validate();
         return document;

@@ -16,7 +16,7 @@ public class PokemonService(DatasourceService datasource)
         return await datasource.FindAllAsync(cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> SearchByName(string search,
+    public async Task<PokemonDtoCollection> SearchByName(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await datasource.SearchByName(search, cancellationToken);

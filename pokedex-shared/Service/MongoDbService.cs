@@ -18,10 +18,10 @@ public class MongoDbService
         IOptions<MongoDbOption> mongoDbOption)
     {
         _logger = logger;
-        var options = mongoDbOption.Value;
-        _collection = new MongoClient(options.ConnectionString)
-            .GetDatabase(options.Database)
-            .GetCollection<PokemonDocument>(options.Collection);
+        var mongoDb = mongoDbOption.Value;
+        _collection = new MongoClient(mongoDb.ConnectionString)
+            .GetDatabase(mongoDb.Database)
+            .GetCollection<PokemonDocument>(mongoDb.Collection);
     }
 
     public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
@@ -50,10 +50,10 @@ public class MongoDbService
         }, cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> SearchByNameAsync(string search,
+    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(document => document.Name.Contains(search),
+        using var cursor = await _collection.FindAsync(document => document.Name.Contains(search.Value),
             cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }
