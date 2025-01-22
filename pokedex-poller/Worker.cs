@@ -23,16 +23,16 @@ public class Worker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogInformation("worker started fetch - : {pokemonGeneration}", pokemonGeneration);
+            logger.LogInformation("worker started - {pokemonGeneration}", pokemonGeneration);
             try
             {
                 var generation =
-                    await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationUri(),
+                    await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
                         cancellationToken);
                 foreach (var generationPokemon in generation.pokemonSpecies)
                 {
                     var pokemonName = new PokemonName(generationPokemon.name);
-                    logger.LogInformation("Poll: {name}", pokemonName.Value);
+                    logger.LogInformation("{name}", pokemonName.Value);
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
                         GetPokemonRelativeUri(pokemonName),
                         cancellationToken);
@@ -63,7 +63,7 @@ public class Worker(
         }
     }
 
-    private Uri GetPokemonGenerationUri()
+    private Uri GetPokemonGenerationRelativeUri()
     {
         return new Uri(
             $"{pokeApiOption.GetPokemonGenerationUri}"

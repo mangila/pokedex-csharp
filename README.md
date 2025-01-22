@@ -13,8 +13,6 @@ Next.js app that displays the Pokémon data. Using MUI components.
 Restful API with swagger endpoint. Connected to a Redis docker instance and a MongoDB docker instance
 for a cache-Aside pattern
 
-* http://localhost:5144/swagger - Swagger
-
 ## pokedex-poller
 
 C# Worker Service project that polls data from PokeApi and persists the fetched data to a MongoDB docker instance.
@@ -43,4 +41,6 @@ MongoDB as database and Redis as a IDistributedCache.
 
 * Grafana with Loki datasource - http://localhost:3000
 
+## scripts
 
+* HTTP request files
