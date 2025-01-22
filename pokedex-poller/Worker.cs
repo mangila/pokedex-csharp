@@ -31,9 +31,10 @@ public class Worker(
                         cancellationToken);
                 foreach (var generationPokemon in generation.pokemonSpecies)
                 {
-                    logger.LogInformation("Poll: {name}", generationPokemon.name);
+                    var pokemonName = new PokemonName(generationPokemon.name);
+                    logger.LogInformation("Poll: {name}", pokemonName.Value);
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                        GetPokemonRelativeUri(generationPokemon.name),
+                        GetPokemonRelativeUri(pokemonName),
                         cancellationToken);
                     var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
                         new Uri(pokemon.species.url),
@@ -42,10 +43,10 @@ public class Worker(
                         new Uri(species.evolution_chain.url), cancellationToken);
                     var spriteId =
                         await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default),
-                            pokemon.name + "-sprite");
+                            $"{pokemonName.Value}-sprite");
                     var audioId = await mongoDbGridFsService.InsertAsync(
                         new Uri(pokemon.cries.legacy ?? pokemon.cries.latest),
-                        pokemon.name + "-audio");
+                        $"{pokemonName.Value}-audio");
                     await mongoDbService.InsertAsync(
                         ApiMapper.ToDocument(pokemon, species, evolutionChain, spriteId, audioId),
                         cancellationToken);
@@ -64,17 +65,16 @@ public class Worker(
 
     private Uri GetPokemonGenerationUri()
     {
-        int value = (int)pokemonGeneration;
         return new Uri(
             $"{pokeApiOption.GetPokemonGenerationUri}"
-                .Replace("{id}", value.ToString())
+                .Replace("{id}", pokemonGeneration.Value)
             , UriKind.Relative);
     }
 
-    private Uri GetPokemonRelativeUri(string name)
+    private Uri GetPokemonRelativeUri(PokemonName name)
     {
         return new Uri(
-            $"{pokeApiOption.GetPokemonUri}".Replace("{id}", name)
+            $"{pokeApiOption.GetPokemonUri}".Replace("{id}", name.Value)
             , UriKind.Relative);
     }
 }
