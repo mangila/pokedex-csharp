@@ -15,9 +15,12 @@ export default function Error({
             loglevel: 'error',
             message: error.message,
             data: error
+        }).catch((err: Error) => {
+            {
+                console.error(err)
+            }
         });
     }, [error])
-
     return (
         <div>
             <h2>Something went wrong!</h2>
