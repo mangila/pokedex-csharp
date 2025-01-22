@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using pokedex_poller;
 using pokedex_shared.Config;
 using pokedex_shared.Http;
+using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
 using Serilog;
@@ -29,7 +30,7 @@ builder.Services.AddOptions<PokeApiOption>()
 // Add Services to the DI Container
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
-// Add Gen I Worker
+// Add GenerationI Worker
 builder.Services.AddSingleton<IHostedService>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<Worker>>();
@@ -41,7 +42,7 @@ builder.Services.AddSingleton<IHostedService>(provider =>
     return new Worker(logger,
         workerOption.Value,
         pokeApiOption.Value,
-        Enumerable.Range(1, 151),
+        PokemonGeneration.GenerationI,
         pokemonClient,
         mongoDbService,
         mongoDbGridFsService);

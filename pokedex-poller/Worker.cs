@@ -1,8 +1,10 @@
 using pokedex_shared.Http;
 using pokedex_shared.Http.EvolutionChain;
 using pokedex_shared.Http.Pokemon;
+using pokedex_shared.Http.PokemonGeneration;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Mapper;
+using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
 
@@ -12,7 +14,7 @@ public class Worker(
     ILogger<Worker> logger,
     WorkerOption workerOption,
     PokeApiOption pokeApiOption,
-    IEnumerable<int> ids,
+    PokemonGeneration pokemonGeneration,
     PokemonHttpClient pokemonHttpClient,
     MongoDbService mongoDbService,
     MongoDbGridFsService mongoDbGridFsService) : BackgroundService
@@ -21,14 +23,17 @@ public class Worker(
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogInformation("worker started");
+            logger.LogInformation("worker started fetch - : {pokemonGeneration}", pokemonGeneration);
             try
             {
-                foreach (var index in ids)
+                var generation =
+                    await pokemonHttpClient.Get<PokemonGenerationApiResponse>(GetPokemonGenerationUri(),
+                        cancellationToken);
+                foreach (var generationPokemon in generation.pokemon_species)
                 {
-                    logger.LogInformation("poll id - {index}", index.ToString());
+                    logger.LogInformation("Poll: {name}", generationPokemon.name);
                     var pokemon = await pokemonHttpClient.Get<PokemonApiResponse>(
-                        GetRelativeUri(index),
+                        GetPokemonRelativeUri(generationPokemon.name),
                         cancellationToken);
                     var species = await pokemonHttpClient.Get<SpeciesApiResponse>(new Uri(pokemon.species.url),
                         cancellationToken);
@@ -51,13 +56,24 @@ public class Worker(
                 logger.LogError(e, "ERR: {Message}", e.Message);
                 Environment.Exit(1);
             }
+
+            Environment.Exit(0);
         }
     }
 
-    private Uri GetRelativeUri(int index)
+    private Uri GetPokemonGenerationUri()
+    {
+        int value = (int)pokemonGeneration;
+        return new Uri(
+            $"{pokeApiOption.GetPokemonGenerationUri}"
+                .Replace("{id}", value.ToString())
+            , UriKind.Relative);
+    }
+
+    private Uri GetPokemonRelativeUri(string name)
     {
         return new Uri(
-            $"{pokeApiOption.GetPokemonUri}".Replace("{id}", index.ToString())
+            $"{pokeApiOption.GetPokemonUri}".Replace("{id}", name)
             , UriKind.Relative);
     }
 }
