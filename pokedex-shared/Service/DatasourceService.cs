@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using MongoDB.Driver.GridFS;
 using pokedex_shared.Extension;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
@@ -14,7 +16,8 @@ namespace pokedex_shared.Service;
 public class DatasourceService(
     ILogger<DatasourceService> logger,
     RedisService redis,
-    MongoDbService mongoDbService)
+    MongoDbService mongoDbService,
+    MongoDbGridFsService mongoDbGridFsService)
 {
     private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions = new()
     {
@@ -61,7 +64,7 @@ public class DatasourceService(
         return db;
     }
 
-    public async Task<PokemonDtoCollection> SearchByName(PokemonName search,
+    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbService.SearchByNameAsync(search, cancellationToken);
@@ -76,5 +79,10 @@ public class DatasourceService(
     public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
     {
         return await mongoDbService.FindAllAsync(cancellationToken);
+    }
+
+    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id, CancellationToken cancellationToken = default)
+    {
+        return await mongoDbGridFsService.FindFileByIdAsync(id, cancellationToken);
     }
 }

@@ -1,4 +1,6 @@
-﻿using pokedex_shared.Model.Domain;
+﻿using MongoDB.Bson;
+using MongoDB.Driver.GridFS;
+using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Service;
@@ -16,10 +18,10 @@ public class PokemonService(DatasourceService datasource)
         return await datasource.FindAllAsync(cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> SearchByName(PokemonName search,
+    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.SearchByName(search, cancellationToken);
+        return await datasource.SearchByNameAsync(search, cancellationToken);
     }
 
     public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
@@ -32,5 +34,11 @@ public class PokemonService(DatasourceService datasource)
         CancellationToken cancellationToken = default)
     {
         return await datasource.FindByNameAsync(pokemonName, cancellationToken);
+    }
+
+    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id,
+        CancellationToken cancellationToken = default)
+    {
+        return await datasource.FindFileByIdAsync(id, cancellationToken);
     }
 }

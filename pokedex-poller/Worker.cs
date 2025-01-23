@@ -42,11 +42,9 @@ public class Worker(
                     var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
                         new Uri(species.evolution_chain.url), cancellationToken);
                     var spriteId =
-                        await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default),
-                            $"{pokemonName.Value}-sprite");
+                        await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default), pokemonName);
                     var audioId = await mongoDbGridFsService.InsertAsync(
-                        new Uri(pokemon.cries.legacy ?? pokemon.cries.latest),
-                        $"{pokemonName.Value}-audio");
+                        new Uri(pokemon.cries.legacy ?? pokemon.cries.latest), pokemonName);
                     await mongoDbService.InsertAsync(
                         ApiMapper.ToDocument(pokemon, species, evolutionChain, spriteId, audioId),
                         cancellationToken);

@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using MongoDB.Bson;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Service;
@@ -67,7 +68,18 @@ public class PokemonV1Controller(
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.SearchByName(new PokemonName(search), cancellationToken);
+        var collection = await pokemonService.SearchByNameAsync(new PokemonName(search), cancellationToken);
         return Results.Ok(collection);
+    }
+
+    [HttpGet("file/{id}")]
+    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+    public async Task<IResult> FindFileById(
+        [FromRoute] string id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await pokemonService.FindFileByIdAsync(new ObjectId(id), cancellationToken);
+        return result is not null ? Results.File(result.File, result.ContentType, result.FileName) : Results.NotFound();
     }
 }
