@@ -55,7 +55,7 @@ public class Worker(
                         contentType: "audio/ogg",
                         description: "Cry from PokeAPI",
                         cancellationToken: cancellationToken);
-                    await mongoDbService.UpsertAsync(
+                    await mongoDbService.ReplaceOneAsync(
                         ApiMapper.ToDocument(
                             pokemonApiResponse: pokemon,
                             pokemonSpeciesApiResponse: species,

@@ -53,6 +53,10 @@ public static partial class ApiMapper
 
     private static List<PokemonEvolutionDocument> ToPokemonEvolutions(Chain chain)
     {
+        if (chain.chain.Length == 0)
+        {
+            return [];
+        }
         var list = new List<PokemonEvolutionDocument> { new(0, chain.species.name) };
         return GetEvolution(chain.chain, list);
     }

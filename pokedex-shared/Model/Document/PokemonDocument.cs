@@ -7,7 +7,8 @@ namespace pokedex_shared.Model.Document;
 
 public class PokemonDocument
 {
-    [Required] [BsonElement("pokemon_id")] public required string PokemonId { get; init; }
+    [Required] [BsonId] public required string PokemonId { get; init; }
+
     [Required] [BsonElement("name")] public required string Name { get; init; }
     [Required] [BsonElement("height")] public required string Height { get; init; }
     [Required] [BsonElement("weight")] public required string Weight { get; init; }

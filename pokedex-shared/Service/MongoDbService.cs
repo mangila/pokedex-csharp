@@ -52,7 +52,7 @@ public class MongoDbService
         return document?.ToDto();
     }
 
-    public async Task UpsertAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
+    public async Task ReplaceOneAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
     {
         await _collection.ReplaceOneAsync(
             doc => doc.PokemonId == pokemon.PokemonId,
@@ -60,7 +60,7 @@ public class MongoDbService
             new ReplaceOptions
             {
                 IsUpsert = true,
-                Comment = "Insert from UpsertAsync() - upsert a new Pokemon"
+                Comment = "Insert from ReplaceOneAsync() - replace or insert a new Pokemon"
             },
             cancellationToken: cancellationToken);
     }
