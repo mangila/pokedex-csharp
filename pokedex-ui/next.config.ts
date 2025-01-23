@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    generateBuildId: async () => {
+        return Date.now().toString()
+    }
 };
 
 export default nextConfig;

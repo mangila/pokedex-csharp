@@ -27,9 +27,10 @@ const NAVIGATION: Navigation = [
         icon: <Dashboard/>,
     },
     {
-        segment: 'pokedex',
         title: 'Pokedex',
         icon: <CatchingPokemon/>,
+        segment: 'pokedex',
+        pattern: 'pokedex{/:name}*',
     },
 ];
 
@@ -41,8 +42,8 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             <CssBaseline/>
             <NextAppProvider navigation={NAVIGATION}
                              branding={{
-                                 title: 'Pokedex-ui',
-                                 logo: ""
+                                 title: '',
+                                 logo: <img src={"/logo-pokemon.png"} alt="pokemon logo"/>,
                              }}
                              theme={theme}>
                 <DashboardLayout>

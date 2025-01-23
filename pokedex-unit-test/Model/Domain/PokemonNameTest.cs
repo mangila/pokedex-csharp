@@ -15,7 +15,7 @@ public class PokemonNameTest
         Action act = () => new PokemonName("#");
         act.Should().Throw<ValidationException>();
         // Except Mr.Mime
-        act = () => new PokemonName("Mr.Mime");
+        act = () => new PokemonName("Mr-Mime");
         act.Should().NotThrow<ValidationException>();
         // 49 chars
         act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 49)));

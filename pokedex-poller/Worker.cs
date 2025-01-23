@@ -31,22 +31,37 @@ public class Worker(
                         cancellationToken);
                 foreach (var generationPokemon in generation.pokemonSpecies)
                 {
+                    logger.LogInformation("{name}", generationPokemon.name);
                     var pokemonName = new PokemonName(generationPokemon.name);
-                    logger.LogInformation("{name}", pokemonName.Value);
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                        GetPokemonRelativeUri(pokemonName),
-                        cancellationToken);
+                        uri: GetPokemonRelativeUri(pokemonName),
+                        cancellationToken: cancellationToken);
                     var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
-                        new Uri(pokemon.species.url),
-                        cancellationToken);
+                        uri: new Uri(pokemon.species.url),
+                        cancellationToken: cancellationToken);
                     var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
-                        new Uri(species.evolution_chain.url), cancellationToken);
+                        uri: new Uri(species.evolution_chain.url),
+                        cancellationToken: cancellationToken);
                     var spriteId =
-                        await mongoDbGridFsService.InsertAsync(new Uri(pokemon.sprites.front_default), pokemonName);
+                        await mongoDbGridFsService.InsertAsync(
+                            uri: new Uri(pokemon.sprites.front_default),
+                            fileName: pokemonName.Value + "-sprite.png",
+                            contentType: "image/png",
+                            description: "Sprite from PokeAPI",
+                            cancellationToken: cancellationToken);
                     var audioId = await mongoDbGridFsService.InsertAsync(
-                        new Uri(pokemon.cries.legacy ?? pokemon.cries.latest), pokemonName);
-                    await mongoDbService.InsertAsync(
-                        ApiMapper.ToDocument(pokemon, species, evolutionChain, spriteId, audioId),
+                        uri: new Uri(pokemon.cries.legacy ?? pokemon.cries.latest),
+                        fileName: pokemonName.Value + "-audio.ogg",
+                        contentType: "audio/ogg",
+                        description: "Cry from PokeAPI",
+                        cancellationToken: cancellationToken);
+                    await mongoDbService.UpsertAsync(
+                        ApiMapper.ToDocument(
+                            pokemonApiResponse: pokemon,
+                            pokemonSpeciesApiResponse: species,
+                            evolutionChainApiResponse: evolutionChain,
+                            spriteId: spriteId,
+                            audioId: audioId),
                         cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }

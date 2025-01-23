@@ -24,6 +24,14 @@ public class MongoDbService
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
             .GetCollection<PokemonDocument>(mongoDb.Collection);
+        _collection.Indexes.CreateManyAsync(CreateIndexes(["pokemon_id", "name"]));
+    }
+
+    private static List<CreateIndexModel<PokemonDocument>> CreateIndexes(string[] fieldNames)
+    {
+        return fieldNames
+            .Select(fieldName => Builders<PokemonDocument>.IndexKeys.Ascending(fieldName))
+            .Select(definition => new CreateIndexModel<PokemonDocument>(definition)).ToList();
     }
 
     public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
@@ -44,12 +52,17 @@ public class MongoDbService
         return document?.ToDto();
     }
 
-    public async Task InsertAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
+    public async Task UpsertAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
     {
-        await _collection.InsertOneAsync(pokemon, new InsertOneOptions
-        {
-            Comment = "Insert from InsertAsync() - inserting a new Pokemon"
-        }, cancellationToken);
+        await _collection.ReplaceOneAsync(
+            doc => doc.PokemonId == pokemon.PokemonId,
+            pokemon,
+            new ReplaceOptions
+            {
+                IsUpsert = true,
+                Comment = "Insert from UpsertAsync() - upsert a new Pokemon"
+            },
+            cancellationToken: cancellationToken);
     }
 
     public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,

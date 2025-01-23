@@ -47,39 +47,4 @@ public class PokemonV1Controller(
         var dto = await pokemonService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
-
-    [HttpGet("search/id")]
-    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    public async Task<IResult> QueryById(
-        [FromQuery] List<int> ids,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var collection = await pokemonService.FindAllByPokemonIdAsync(
-            new PokemonIdCollection(ids),
-            cancellationToken);
-        return Results.Ok(collection);
-    }
-
-    [HttpGet("search/name")]
-    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    public async Task<IResult> QueryByName(
-        [FromQuery] string search,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var collection = await pokemonService.SearchByNameAsync(new PokemonName(search), cancellationToken);
-        return Results.Ok(collection);
-    }
-
-    [HttpGet("file/{id}")]
-    [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
-    public async Task<IResult> FindFileById(
-        [FromRoute] string id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var result = await pokemonService.FindFileByIdAsync(new ObjectId(id), cancellationToken);
-        return result is not null ? Results.File(result.File, result.ContentType, result.FileName) : Results.NotFound();
-    }
 }

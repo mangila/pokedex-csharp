@@ -30,42 +30,55 @@ public class MongoDbGridFsService
         });
     }
 
-    public async Task<ObjectId> InsertAsync(Uri uri, PokemonName name)
+    public async Task<ObjectId> InsertAsync(
+        Uri uri,
+        string fileName,
+        string contentType,
+        string description,
+        CancellationToken cancellationToken = default)
     {
+        var filter = Builders<GridFSFileInfo>.Filter.Eq(file => file.Filename, fileName);
+        var cursor = await _bucket.FindAsync(filter, cancellationToken: cancellationToken);
+        var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
+        if (fileInfo is not null)
+        {
+            _logger.LogInformation("File {fileName} is already uploaded", fileName);
+            return fileInfo.Id;
+        }
+
+        _logger.LogInformation("File {fileName} was not found", fileName);
         var httpClient = _httpClientFactory.CreateClient();
-        using var response = await httpClient.GetAsync(uri);
+        using var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();
-        await using var fileStream = await response.Content.ReadAsStreamAsync();
-        return await _bucket.UploadFromStreamAsync($"{name.Value}-{Guid.NewGuid()}.png", fileStream,
+        await using var fileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await _bucket.UploadFromStreamAsync(fileName, fileStream,
             new GridFSUploadOptions
             {
                 Metadata = new BsonDocument
                 {
-                    { "contentType", "image/png" },
-                    { "description", "PNG image file from PokeAPI" },
+                    { "contentType", contentType },
+                    { "description", description },
                     { "uploadDate", BsonDateTime.Create(DateTime.UtcNow) }
                 }
-            });
+            }, cancellationToken);
     }
 
     public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId objectId,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var cursor = await _bucket.FindAsync(Builders<GridFSFileInfo>.Filter.Eq("_id", objectId),
-                cancellationToken: cancellationToken);
-            var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
-            var memoryStream = new MemoryStream();
-            await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
-            memoryStream.Position = 0;
-            return new PokemonFileResult(fileInfo.Filename,
-                fileInfo.Metadata["contentType"].AsString,
-                memoryStream);
-        }
-        catch (Exception)
+        var cursor = await _bucket.FindAsync(Builders<GridFSFileInfo>.Filter.Eq("_id", objectId),
+            cancellationToken: cancellationToken);
+        var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
+        if (fileInfo is null)
         {
             return null;
         }
+
+        var memoryStream = new MemoryStream();
+        await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
+        memoryStream.Position = 0;
+        return new PokemonFileResult(fileInfo.Filename,
+            fileInfo.Metadata["contentType"].AsString,
+            memoryStream);
     }
 }

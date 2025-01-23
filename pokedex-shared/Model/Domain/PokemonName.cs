@@ -7,7 +7,7 @@ public class PokemonName
 {
     [Required]
     [StringLength(50, ErrorMessage = "length cannot be over 50")]
-    [RegularExpression("[A-Za-z.]+", ErrorMessage = "not matching A-Z or a-z")]
+    [RegularExpression("[A-Za-z-]+", ErrorMessage = "not matching A-Z or a-z")]
     public string Value { get; }
 
     public PokemonName(string value)

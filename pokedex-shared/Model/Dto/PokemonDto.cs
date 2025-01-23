@@ -24,8 +24,7 @@ public readonly record struct PokemonDto(
     bool Legendary,
     [property: JsonPropertyName("mythical")]
     bool Mythical,
-    [property: JsonPropertyName("baby")] bool Baby
-);
+    [property: JsonPropertyName("baby")] bool Baby);
 
 public readonly record struct PokemonTypeDto(string type);
 
