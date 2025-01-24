@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 
@@ -30,7 +31,7 @@ public class MongoDbGridFsService
         });
     }
 
-    public async Task<ObjectId> InsertAsync(
+    public async Task<PokemonMediaDocument> InsertAsync(
         Uri uri,
         string fileName,
         string contentType,
@@ -42,25 +43,34 @@ public class MongoDbGridFsService
         var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
         if (fileInfo is not null)
         {
-            _logger.LogInformation("File {fileName} is already uploaded", fileName);
-            return fileInfo.Id;
+            _logger.LogInformation("{fileName} is already uploaded", fileName);
+            return new PokemonMediaDocument(
+                MediaId: fileInfo.Id.ToString(),
+                FileName: fileInfo.Filename,
+                ContentType: fileInfo.Metadata["content_type"].AsString
+            );
         }
 
-        _logger.LogInformation("File {fileName} was not found", fileName);
+        _logger.LogInformation("{fileName} upload", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();
         await using var fileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        return await _bucket.UploadFromStreamAsync(fileName, fileStream,
+        var mediaId = await _bucket.UploadFromStreamAsync(fileName, fileStream,
             new GridFSUploadOptions
             {
                 Metadata = new BsonDocument
                 {
-                    { "contentType", contentType },
+                    { "content_type", contentType },
                     { "description", description },
-                    { "uploadDate", BsonDateTime.Create(DateTime.UtcNow) }
+                    { "upload_date", BsonDateTime.Create(DateTime.UtcNow) }
                 }
             }, cancellationToken);
+        return new PokemonMediaDocument(
+            MediaId: mediaId.ToString(),
+            FileName: fileName,
+            ContentType: contentType
+        );
     }
 
     public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId objectId,
@@ -71,6 +81,7 @@ public class MongoDbGridFsService
         var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
         if (fileInfo is null)
         {
+            _logger.LogInformation("{objectId} not found", objectId.ToString());
             return null;
         }
 

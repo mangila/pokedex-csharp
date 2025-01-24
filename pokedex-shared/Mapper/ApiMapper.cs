@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using MongoDB.Bson;
 using pokedex_shared.Http.EvolutionChain;
 using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.Species;
@@ -19,8 +18,8 @@ public static partial class ApiMapper
         PokemonApiResponse pokemonApiResponse,
         PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse,
-        ObjectId spriteId,
-        ObjectId audioId)
+        List<PokemonMediaDocument> medias
+    )
     {
         return new PokemonDocument
         {
@@ -31,10 +30,9 @@ public static partial class ApiMapper
             Generation = pokemonSpeciesApiResponse.generation.name,
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
             Stats = ToPokemonStats(pokemonApiResponse.stats),
+            Medias = medias,
             Types = ToPokemonTypes(pokemonApiResponse.types),
             Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
-            SpriteId = spriteId,
-            AudioId = audioId,
             Legendary = pokemonSpeciesApiResponse.is_legendary,
             Mythical = pokemonSpeciesApiResponse.is_mythical,
             Baby = pokemonSpeciesApiResponse.is_baby
@@ -57,6 +55,7 @@ public static partial class ApiMapper
         {
             return [];
         }
+
         var list = new List<PokemonEvolutionDocument> { new(0, chain.species.name) };
         return GetEvolution(chain.chain, list);
     }
@@ -84,7 +83,15 @@ public static partial class ApiMapper
 
     private static List<PokemonStatDocument> ToPokemonStats(Stats[] stats)
     {
-        return stats.Select(s => new PokemonStatDocument(s.stat.name, s.base_stat ?? 0)).ToList();
+        var total = 0;
+        var l = stats.Select(s =>
+            {
+                total = total + s.base_stat ?? 0;
+                return new PokemonStatDocument(s.stat.name, s.base_stat ?? 0);
+            }
+        ).ToList();
+        l.Add(new PokemonStatDocument("total", total));
+        return l;
     }
 
     private static List<PokemonTypeDocument> ToPokemonTypes(Types[] types)

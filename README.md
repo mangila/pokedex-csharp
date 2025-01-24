@@ -34,7 +34,7 @@ nUnit3 test project with Testcontainers and FluentAssertion
 
 MongoDB as database and Redis as a IDistributedCache.
 
-* Redis Insight - http://localhost:8001
+* Redis Insight - http://localhost:8082
 * Mongo Express - http://localhost:8081
 
 ## loki

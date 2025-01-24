@@ -11,11 +11,6 @@ public class PokemonHttpClient(
     HttpClient httpClient,
     RedisService redis)
 {
-    private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions = new()
-    {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-    };
-
     public async Task<T> GetAsync<T>(Uri uri, CancellationToken cancellationToken = default) where T : struct
     {
         var key = uri.ToString();
@@ -26,7 +21,7 @@ public class PokemonHttpClient(
         }
 
         var json = await httpClient.GetStringAsync(uri, cancellationToken);
-        await redis.SetAsync(key, json, _distributedCacheEntryOptions, cancellationToken);
+        await redis.SetAsync(key, json, new DistributedCacheEntryOptions(), cancellationToken);
         return JsonSerializer.Deserialize<T>(json, JsonConfig.JsonOptions);
     }
 }

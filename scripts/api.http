@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###
 
-### GET pokemon by ids
+### GET pokemon by name
 GET {{pokemonV1}}/search/name?search=bu
 Content-Type: application/json
 

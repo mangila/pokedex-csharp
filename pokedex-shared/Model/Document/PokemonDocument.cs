@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using pokedex_shared.Model.Dto;
 
@@ -21,18 +20,43 @@ public class PokemonDocument
     [Required] [BsonElement("types")] public required List<PokemonTypeDocument> Types { get; init; }
     [Required] [BsonElement("evolutions")] public required List<PokemonEvolutionDocument> Evolutions { get; init; }
     [Required] [BsonElement("stats")] public required List<PokemonStatDocument> Stats { get; init; }
-    [Required] [BsonElement("audio_id")] public required ObjectId AudioId { get; init; }
-    [Required] [BsonElement("sprite_id")] public required ObjectId SpriteId { get; init; }
+    [Required] [BsonElement("medias")] public required List<PokemonMediaDocument> Medias { get; init; }
     [Required] [BsonElement("legendary")] public required bool Legendary { get; init; }
     [Required] [BsonElement("mythical")] public required bool Mythical { get; init; }
     [Required] [BsonElement("baby")] public required bool Baby { get; init; }
 }
 
-public readonly record struct PokemonTypeDocument(string type);
+public readonly record struct PokemonTypeDocument(
+    [Required]
+    [property: BsonElement("type")]
+    string Type);
 
-public readonly record struct PokemonStatDocument(string type, int value);
+public readonly record struct PokemonStatDocument(
+    [Required]
+    [property: BsonElement("type")]
+    string Type,
+    [Required]
+    [property: BsonElement("value")]
+    int Value);
 
-public readonly record struct PokemonEvolutionDocument(int value, string name);
+public readonly record struct PokemonEvolutionDocument(
+    [Required]
+    [property: BsonElement("value")]
+    int Value,
+    [Required]
+    [property: BsonElement("name")]
+    string Name);
+
+public readonly record struct PokemonMediaDocument(
+    [Required]
+    [property: BsonElement("media_id")]
+    string MediaId,
+    [Required]
+    [property: BsonElement("file_name")]
+    string FileName,
+    [Required]
+    [property: BsonElement("content_type")]
+    string ContentType);
 
 public static class Extensions
 {
@@ -48,8 +72,7 @@ public static class Extensions
             Types: document.Types.ToDtos(),
             Evolutions: document.Evolutions.ToDtos(),
             Stats: document.Stats.ToDtos(),
-            AudioId: document.AudioId.ToString(),
-            SpriteId: document.SpriteId.ToString(),
+            Medias: document.Medias.ToDtos(),
             Legendary: document.Legendary,
             Mythical: document.Mythical,
             Baby: document.Baby
@@ -63,7 +86,7 @@ public static class Extensions
 
     private static PokemonTypeDto ToDto(this PokemonTypeDocument pokemonTypeDocument)
     {
-        return new PokemonTypeDto(pokemonTypeDocument.type);
+        return new PokemonTypeDto(pokemonTypeDocument.Type);
     }
 
     private static List<PokemonEvolutionDto> ToDtos(this List<PokemonEvolutionDocument> pokemonEvolutionDocuments)
@@ -74,8 +97,8 @@ public static class Extensions
     private static PokemonEvolutionDto ToDto(this PokemonEvolutionDocument pokemonEvolutionDocument)
     {
         return new PokemonEvolutionDto(
-            value: pokemonEvolutionDocument.value,
-            name: pokemonEvolutionDocument.name
+            Value: pokemonEvolutionDocument.Value,
+            Name: pokemonEvolutionDocument.Name
         );
     }
 
@@ -87,8 +110,22 @@ public static class Extensions
     private static PokemonStatDto ToDto(this PokemonStatDocument pokemonStatDocument)
     {
         return new PokemonStatDto(
-            value: pokemonStatDocument.value,
-            type: pokemonStatDocument.type
+            Value: pokemonStatDocument.Value,
+            Type: pokemonStatDocument.Type
+        );
+    }
+
+    private static List<PokemonMediaDto> ToDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
+    {
+        return pokemonMediaDocuments.Select(document => document.ToDto()).ToList();
+    }
+
+    private static PokemonMediaDto ToDto(this PokemonMediaDocument pokemonMediaDocument)
+    {
+        return new PokemonMediaDto(
+            MediaId: pokemonMediaDocument.MediaId,
+            FileName: pokemonMediaDocument.FileName,
+            ContentType: pokemonMediaDocument.ContentType
         );
     }
 }

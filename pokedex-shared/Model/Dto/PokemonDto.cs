@@ -16,18 +16,28 @@ public readonly record struct PokemonDto(
     [property: JsonPropertyName("evolutions")]
     List<PokemonEvolutionDto> Evolutions,
     [property: JsonPropertyName("stats")] List<PokemonStatDto> Stats,
-    [property: JsonPropertyName("audio_id")]
-    string AudioId,
-    [property: JsonPropertyName("sprite_id")]
-    string SpriteId,
+    [property: JsonPropertyName("medias")] List<PokemonMediaDto> Medias,
     [property: JsonPropertyName("legendary")]
     bool Legendary,
     [property: JsonPropertyName("mythical")]
     bool Mythical,
     [property: JsonPropertyName("baby")] bool Baby);
 
-public readonly record struct PokemonTypeDto(string type);
+public readonly record struct PokemonTypeDto(
+    [property: JsonPropertyName("type")] string Type);
 
-public readonly record struct PokemonEvolutionDto(int value, string name);
+public readonly record struct PokemonEvolutionDto(
+    [property: JsonPropertyName("value")] int Value,
+    [property: JsonPropertyName("name")] string Name);
 
-public readonly record struct PokemonStatDto(string type, int value);
+public readonly record struct PokemonStatDto(
+    [property: JsonPropertyName("type")] string Type,
+    [property: JsonPropertyName("value")] int Value);
+
+public readonly record struct PokemonMediaDto(
+    [property: JsonPropertyName("media_id")]
+    string MediaId,
+    [property: JsonPropertyName("file_name")]
+    string FileName,
+    [property: JsonPropertyName("content_type")]
+    string ContentType);

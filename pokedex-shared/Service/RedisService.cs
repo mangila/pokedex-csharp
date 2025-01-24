@@ -23,7 +23,10 @@ public class RedisService(
         return JsonSerializer.Deserialize<T>(cacheValue, JsonConfig.JsonOptions);
     }
 
-    public async Task SetAsync(string key, string json, DistributedCacheEntryOptions options,
+    public async Task SetAsync(
+        string key,
+        string json,
+        DistributedCacheEntryOptions options,
         CancellationToken cancellationToken = default)
     {
         await redis.SetStringAsync(key, json, options, cancellationToken);

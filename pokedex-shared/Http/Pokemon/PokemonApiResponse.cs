@@ -35,7 +35,7 @@ public readonly record struct Ability(
 );
 
 public readonly record struct Cries(
-    string latest,
+    string? latest,
     string? legacy
 );
 
@@ -90,7 +90,7 @@ public readonly record struct Sprites(
     object back_female,
     string back_shiny,
     object back_shiny_female,
-    string front_default,
+    string? front_default,
     object front_female,
     string front_shiny,
     object front_shiny_female,
@@ -118,7 +118,7 @@ public readonly record struct Home(
 );
 
 public readonly record struct Official_artwork(
-    string front_default,
+    string? front_default,
     string front_shiny
 );
 
