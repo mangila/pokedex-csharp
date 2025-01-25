@@ -57,7 +57,7 @@ public class MongoDbGridFsCommandService
                 Src: src
             );
         }
-
+        _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();

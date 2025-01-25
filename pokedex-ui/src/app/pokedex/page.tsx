@@ -3,7 +3,10 @@ import {Box, Paper} from "@mui/material";
 
 export default function Page() {
     return <Box>
-        <Paper>
+        <Paper sx={{
+            backgroundColor: "#1111",
+        }}>
+            Kanto
             {PokemonGeneration.GenerationI}
         </Paper>
         <Paper>

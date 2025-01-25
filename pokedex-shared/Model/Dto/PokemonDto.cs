@@ -16,7 +16,8 @@ public readonly record struct PokemonDto(
     [property: JsonPropertyName("evolutions")]
     List<PokemonEvolutionDto> Evolutions,
     [property: JsonPropertyName("stats")] List<PokemonStatDto> Stats,
-    [property: JsonPropertyName("medias")] List<PokemonMediaDto> Medias,
+    [property: JsonPropertyName("images")] List<PokemonImageDto> Images,
+    [property: JsonPropertyName("audios")] List<PokemonAudioDto> Audios,
     [property: JsonPropertyName("legendary")]
     bool Legendary,
     [property: JsonPropertyName("mythical")]
@@ -34,7 +35,16 @@ public readonly record struct PokemonStatDto(
     [property: JsonPropertyName("type")] string Type,
     [property: JsonPropertyName("value")] int Value);
 
-public readonly record struct PokemonMediaDto(
+public readonly record struct PokemonImageDto(
+    [property: JsonPropertyName("media_id")]
+    string MediaId,
+    [property: JsonPropertyName("src")] string Src,
+    [property: JsonPropertyName("file_name")]
+    string FileName,
+    [property: JsonPropertyName("content_type")]
+    string ContentType);
+
+public readonly record struct PokemonAudioDto(
     [property: JsonPropertyName("media_id")]
     string MediaId,
     [property: JsonPropertyName("src")] string Src,

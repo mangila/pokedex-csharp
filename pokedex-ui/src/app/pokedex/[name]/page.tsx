@@ -1,4 +1,4 @@
-﻿import {getPokemonByName, POKEDEX_API_V1_FILE_URL} from "@/api";
+﻿import {getPokemonByName} from "@/api";
 import {PokemonDto} from "@/types";
 import Image from 'next/image';
 import {Box} from "@mui/material";
@@ -10,13 +10,18 @@ export default async function Page({params}: {
     const {name} = await params
     const pokemon: PokemonDto = await getPokemonByName(name)
     return <Box>
-        <Image src={`${POKEDEX_API_V1_FILE_URL}/${pokemon.medias[0].media_id}`}
+        {name}
+        <Image src={pokemon.images[0].src}
                width={200}
                height={200}
                priority
                alt={pokemon.name}/>
-        {name}
-        <AudioCard audioSrc={`${POKEDEX_API_V1_FILE_URL}/${pokemon.medias[2].media_id}`}/>
-        <AudioCard audioSrc={`${POKEDEX_API_V1_FILE_URL}/${pokemon.medias[3].media_id}`}/>
+        <Image src={pokemon.images[1].src}
+               width={200}
+               height={200}
+               priority
+               alt={pokemon.name}/>
+        <AudioCard audioSrc={pokemon.audios[0].src}/>
+        <AudioCard audioSrc={pokemon.audios[1].src}/>
     </Box>
 }

@@ -2,7 +2,6 @@
 import * as process from "node:process";
 
 export const POKEDEX_API_V1_URL = process.env.POKEDEX_API_V1_URL;
-export const POKEDEX_API_V1_FILE_URL = process.env.POKEDEX_API_V1_FILE_URL
 
 export const postLoki = async (request: LokiLogRequest): Promise<boolean> => {
     const uri = "/api/loki";
@@ -37,12 +36,10 @@ export const getPokemonByName = async (pokemonName: string): Promise<PokemonDto>
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-        },
-        cache: 'force-cache',
+        }
     })
     if (!response.ok) {
         throw new Error(response.statusText);
     }
-    const data = await response.json();
-    return data as PokemonDto;
+    return await response.json() as PokemonDto;
 }

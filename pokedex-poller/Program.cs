@@ -28,6 +28,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");
     redisOptions.Configuration = connection;
+    redisOptions.InstanceName = "pokedex-poller:development:";
 });
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDbCommandService(builder.Configuration.GetSection(nameof(MongoDbOption)));

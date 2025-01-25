@@ -1,4 +1,4 @@
-﻿import {getAllPokemons, getPokemonByName} from "@/api";
+﻿import {getAllPokemons} from "@/api";
 import {Box} from "@mui/material";
 import React from "react";
 
@@ -13,15 +13,9 @@ export async function generateStaticParams() {
     }));
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: {
-    params: Promise<{ title: string, name: string }>
-}) {
-    const {name} = await params
-    const pokemon = await getPokemonByName(name)
+export async function generateMetadata() {
     return {
-        title: `pokedex-ui: ${pokemon.name}`,
+        title: "pokedex-ui | pokedex",
     }
 }
 

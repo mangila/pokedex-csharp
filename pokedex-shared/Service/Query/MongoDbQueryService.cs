@@ -14,7 +14,7 @@ public class MongoDbQueryService
     private const string CaseInsensitiveMatching = "i";
     private readonly ILogger<MongoDbQueryService> _logger;
     private readonly IMongoCollection<PokemonDocument> _collection;
-    
+
     public MongoDbQueryService(
         ILogger<MongoDbQueryService> logger,
         IOptions<MongoDbOption> mongoDbOption)

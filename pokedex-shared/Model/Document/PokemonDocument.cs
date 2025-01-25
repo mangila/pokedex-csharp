@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using pokedex_shared.Model.Dto;
 
@@ -76,7 +75,8 @@ public static class Extensions
             Types: document.Types.ToDtos(),
             Evolutions: document.Evolutions.ToDtos(),
             Stats: document.Stats.ToDtos(),
-            Medias: document.Medias.ToDtos(),
+            Audios: document.Medias.ToAudioDtos(),
+            Images: document.Medias.ToImageDtos(),
             Legendary: document.Legendary,
             Mythical: document.Mythical,
             Baby: document.Baby
@@ -119,14 +119,35 @@ public static class Extensions
         );
     }
 
-    private static List<PokemonMediaDto> ToDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
+    private static List<PokemonAudioDto> ToAudioDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
     {
-        return pokemonMediaDocuments.Select(document => document.ToDto()).ToList();
+        return pokemonMediaDocuments
+            .Where(document => document.ContentType.StartsWith("audio"))
+            .Select(document => document.ToAudioDto())
+            .ToList();
     }
 
-    private static PokemonMediaDto ToDto(this PokemonMediaDocument pokemonMediaDocument)
+    private static PokemonAudioDto ToAudioDto(this PokemonMediaDocument pokemonMediaDocument)
     {
-        return new PokemonMediaDto(
+        return new PokemonAudioDto(
+            MediaId: pokemonMediaDocument.MediaId,
+            FileName: pokemonMediaDocument.FileName,
+            ContentType: pokemonMediaDocument.ContentType,
+            Src: pokemonMediaDocument.Src
+        );
+    }
+
+    private static List<PokemonImageDto> ToImageDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
+    {
+        return pokemonMediaDocuments
+            .Where(document => document.ContentType.StartsWith("image"))
+            .Select(document => document.ToImageDto())
+            .ToList();
+    }
+
+    private static PokemonImageDto ToImageDto(this PokemonMediaDocument pokemonMediaDocument)
+    {
+        return new PokemonImageDto(
             MediaId: pokemonMediaDocument.MediaId,
             FileName: pokemonMediaDocument.FileName,
             ContentType: pokemonMediaDocument.ContentType,

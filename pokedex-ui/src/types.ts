@@ -16,7 +16,8 @@ export interface PokemonDto {
     types: PokemonTypeDto[];
     evolutions: PokemonEvolutionDto[];
     stats: PokemonStatDto[];
-    medias: PokemonMediaDto[];
+    images: PokemonImageDto[];
+    audios: PokemonAudioDto[];
     legendary: boolean;
     mythical: boolean;
     baby: boolean;
@@ -36,8 +37,16 @@ export interface PokemonStatDto {
     value: number;
 }
 
-export interface PokemonMediaDto {
+export interface PokemonImageDto {
     media_id: string;
+    src: string;
+    file_name: string;
+    content_type: string;
+}
+
+export interface PokemonAudioDto {
+    media_id: string;
+    src: string;
     file_name: string;
     content_type: string;
 }
@@ -52,4 +61,16 @@ export enum PokemonGeneration {
     GenerationVII = "generation-vii",
     GenerationVIII = "generation-viii",
     GenerationIX = "generation-ix"
+}
+
+export enum PokemonRegion {
+    Kanto = "Kanto",
+    Johto = "Johto",
+    Hoenn = "Hoenn",
+    Sinnoh = "Sinnoh",
+    Unova = "Unova",
+    Kalos = "Kalos",
+    Alola = "Alola",
+    Galar = "Galar",
+    Paldea = "Paldea",
 }

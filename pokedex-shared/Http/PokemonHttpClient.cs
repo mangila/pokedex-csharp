@@ -11,17 +11,19 @@ public class PokemonHttpClient(
     HttpClient httpClient,
     RedisService redis)
 {
+    private readonly string _cacheKeyPrefix = "pokeapi.co:";
+
     public async Task<T> GetAsync<T>(Uri uri, CancellationToken cancellationToken = default) where T : struct
     {
-        var key = uri.ToString();
-        var dto = await redis.GetAsync<T>(key, cancellationToken);
+        string cacheKey = uri.IsAbsoluteUri ? _cacheKeyPrefix + uri.AbsolutePath : _cacheKeyPrefix + uri;
+        var dto = await redis.GetAsync<T>(cacheKey, cancellationToken);
         if (dto.HasValue)
         {
             return dto.Value;
         }
 
         var json = await httpClient.GetStringAsync(uri, cancellationToken);
-        await redis.SetAsync(key, json, new DistributedCacheEntryOptions(), cancellationToken);
+        await redis.SetAsync(cacheKey, json, new DistributedCacheEntryOptions(), cancellationToken);
         return JsonSerializer.Deserialize<T>(json, JsonConfig.JsonOptions);
     }
 }

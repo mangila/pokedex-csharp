@@ -18,6 +18,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");
     redisOptions.Configuration = connection;
+    redisOptions.InstanceName = "pokedex-api:development:";
 });
 // Configure Request timeouts
 builder.Services.AddRequestTimeouts(HttpRequestConfig.ConfigureRequestTimeout);
