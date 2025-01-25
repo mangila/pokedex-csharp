@@ -20,7 +20,7 @@ public static class PokemonHttpClientConfig
         var pokeOptions = section.Get<PokeApiOption>();
         services.AddHttpClient<PokemonHttpClient>(client =>
             {
-                client.BaseAddress = new Uri(pokeOptions.Url);
+                client.BaseAddress = new Uri(pokeOptions!.Url);
                 client.Timeout = TimeSpan.FromMinutes(1);
             })
             .AddPolicyHandler(GetRetryPolicy())

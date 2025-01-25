@@ -27,3 +27,9 @@ GET {{pokemonV1}}/search/name?search=bu
 Content-Type: application/json
 
 ###
+
+### GET pokemon by generation
+GET {{pokemonV1}}/search/generation?generation=generation-
+Content-Type: application/json
+
+###

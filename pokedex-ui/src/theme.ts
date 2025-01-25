@@ -10,7 +10,7 @@ export const theme = createTheme({
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#EF5350',
+                    backgroundColor: '#EF5350', // Pokemon Red
                 },
             },
         },

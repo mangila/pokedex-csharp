@@ -89,4 +89,10 @@ public class DatasourceQueryService(
     {
         return await mongoDbGridFsQueryService.FindFileByIdAsync(id, cancellationToken);
     }
+
+    public async Task<PokemonDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+        CancellationToken cancellationToken)
+    {
+        return await mongoDbQueryService.SearchByGenerationAsync(generation, cancellationToken);
+    }
 }

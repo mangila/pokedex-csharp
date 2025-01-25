@@ -2,7 +2,6 @@
 import LokiTransport from "winston-loki";
 import * as process from "node:process";
 
-// Loki transport configuration
 export const loki = winston.createLogger({
     transports: [
         new LokiTransport({

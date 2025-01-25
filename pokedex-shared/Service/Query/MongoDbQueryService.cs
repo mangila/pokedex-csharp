@@ -24,7 +24,7 @@ public class MongoDbQueryService
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
             .GetCollection<PokemonDocument>(mongoDb.Collection);
-        _collection.Indexes.CreateManyAsync(CreateIndexes(["name"]));
+        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "generation"]));
     }
 
     private static List<CreateIndexModel<PokemonDocument>> CreateIndexes(string[] fieldNames)
@@ -76,6 +76,14 @@ public class MongoDbQueryService
     {
         var ids = pokemonIdCollection.Ids.Select(id => id.Value).ToList();
         var filter = Builders<PokemonDocument>.Filter.In(doc => doc.PokemonId, ids);
+        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+    }
+
+    public async Task<PokemonDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+        CancellationToken cancellationToken)
+    {
+        var filter = Builders<PokemonDocument>.Filter.Where(doc => doc.Generation == generation.Value);
         using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }

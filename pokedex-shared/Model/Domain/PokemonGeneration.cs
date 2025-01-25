@@ -25,8 +25,22 @@ public class PokemonGeneration
     public static readonly PokemonGeneration GenerationVIII = new("generation-viii");
     public static readonly PokemonGeneration GenerationIX = new("generation-ix");
     public string Value { get; }
-
     private PokemonGeneration(string value) => Value = value;
 
-    public override string ToString() => Value;
+    public static PokemonGeneration From(string value)
+    {
+        return value switch
+        {
+            "generation-i" => GenerationI,
+            "generation-ii" => GenerationII,
+            "generation-iii" => GenerationIII,
+            "generation-iv" => GenerationIV,
+            "generation-v" => GenerationV,
+            "generation-vi" => GenerationVI,
+            "generation-vii" => GenerationVII,
+            "generation-viii" => GenerationVIII,
+            "generation-ix" => GenerationIX,
+            _ => throw new NotSupportedException("Unknown pokemon generation")
+        };
+    }
 }

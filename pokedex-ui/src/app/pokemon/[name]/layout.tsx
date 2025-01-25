@@ -13,12 +13,6 @@ export async function generateStaticParams() {
     }));
 }
 
-export async function generateMetadata() {
-    return {
-        title: "pokedex-ui | pokedex",
-    }
-}
-
 export default function Layout({children}: { children: React.ReactNode }) {
     return <Box>{children}</Box>
 }

@@ -39,4 +39,16 @@ public class PokemonV1SearchController(
         var collection = await pokemonQueryService.SearchByNameAsync(new PokemonName(search), cancellationToken);
         return Results.Ok(collection);
     }
+
+    [HttpGet("generation")]
+    public async Task<IResult> QueryByGeneration(
+        [FromQuery] string generation,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var collection =
+            await pokemonQueryService.SearchByGenerationAsync(PokemonGeneration.From(generation),
+                cancellationToken);
+        return Results.Ok(collection);
+    }
 }

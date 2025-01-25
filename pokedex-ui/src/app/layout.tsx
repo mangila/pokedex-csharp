@@ -3,11 +3,11 @@ import {Roboto} from "next/font/google";
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v15-appRouter';
 import {CssBaseline} from "@mui/material";
 import {theme} from "@/theme";
-import {CatchingPokemon, Dashboard} from '@mui/icons-material/';
+import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material/';
 import {NextAppProvider} from "@toolpad/core/nextjs";
-import {Navigation} from "@toolpad/core";
 import {DashboardLayout} from "@toolpad/core/DashboardLayout";
 import {PageContainer} from "@toolpad/core/PageContainer";
+import GitHubLinkIcon from "@/components/GitHubLinkIcon";
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -21,16 +21,38 @@ export const metadata: Metadata = {
     description: "Mangila@Github",
 };
 
-const NAVIGATION: Navigation = [
+const NAVIGATION = [
     {
         title: 'Dashboard',
         icon: <Dashboard/>,
+        segment: 'dashboard',
+    },
+    {
+        title: 'Pokemon',
+        icon: <CatchingPokemon/>,
+        segment: 'pokemon',
+        pattern: 'pokemon{/:name}*',
     },
     {
         title: 'Pokedex',
-        icon: <CatchingPokemon/>,
+        icon: <DeveloperBoard/>,
         segment: 'pokedex',
-        pattern: 'pokedex{/:name}*',
+        children: [
+            {title: 'Generation I', segment: 'generation-i'},
+            {title: 'Generation II', segment: 'generation-ii'},
+            {title: 'Generation III', segment: 'generation-iii'},
+            {title: 'Generation IV', segment: 'generation-iv'},
+            {title: 'Generation V', segment: 'generation-v'},
+            {title: 'Generation VI', segment: 'generation-vi'},
+            {title: 'Generation VII', segment: 'generation-vii'},
+            {title: 'Generation VIII', segment: 'generation-viii'},
+            {title: 'Generation IX', segment: 'generation-ix'},
+        ],
+    },
+    {
+        title: 'Favorites',
+        icon: <Favorite/>,
+        segment: 'favorite',
     },
 ];
 
@@ -42,11 +64,15 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             <CssBaseline/>
             <NextAppProvider navigation={NAVIGATION}
                              branding={{
-                                 title: '',
                                  logo: <img src={"/logo-pokemon.png"} alt="pokemon logo"/>,
+                                 title: '',
                              }}
                              theme={theme}>
-                <DashboardLayout>
+                <DashboardLayout
+                    slots={{
+                        toolbarActions: GitHubLinkIcon
+                    }}
+                >
                     <PageContainer
                         title={""}
                     >

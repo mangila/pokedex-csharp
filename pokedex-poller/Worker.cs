@@ -7,7 +7,6 @@ using pokedex_shared.Mapper;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
-using pokedex_shared.Service;
 using pokedex_shared.Service.Command;
 
 namespace pokedex_poller;
@@ -31,10 +30,10 @@ public class Worker(
                 var generation =
                     await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
                         cancellationToken);
-                foreach (var generationPokemon in generation.pokemonSpecies)
+                foreach (var generationPokemon in generation.PokemonSpecies)
                 {
-                    logger.LogInformation("{name}", generationPokemon.name);
-                    var pokemonName = new PokemonName(generationPokemon.name);
+                    logger.LogInformation("{name}", generationPokemon.Name);
+                    var pokemonName = new PokemonName(generationPokemon.Name);
                     // Fetch 
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
                         uri: GetPokemonRelativeUri(pokemonName),
@@ -52,6 +51,7 @@ public class Worker(
                         cancellationToken: cancellationToken);
                     // Map
                     var document = ApiMapper.ToDocument(
+                        region: generation.Region.Name,
                         pokemonApiResponse: pokemon,
                         pokemonSpeciesApiResponse: species,
                         evolutionChainApiResponse: evolutionChain,

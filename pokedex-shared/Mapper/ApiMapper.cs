@@ -14,17 +14,16 @@ namespace pokedex_shared.Mapper;
  */
 public static partial class ApiMapper
 {
-    public static PokemonDocument ToDocument(
-        PokemonApiResponse pokemonApiResponse,
+    public static PokemonDocument ToDocument(string region, PokemonApiResponse pokemonApiResponse,
         PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse,
-        List<PokemonMediaDocument> medias
-    )
+        List<PokemonMediaDocument> medias)
     {
         return new PokemonDocument
         {
             PokemonId = pokemonApiResponse.id.ToString(),
             Name = pokemonApiResponse.name,
+            Region = region,
             Height = ToMeterHeight(pokemonApiResponse.height),
             Weight = ToKilogramWeight(pokemonApiResponse.weight),
             Generation = pokemonSpeciesApiResponse.generation.name,
