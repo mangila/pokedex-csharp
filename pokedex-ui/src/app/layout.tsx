@@ -47,7 +47,9 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
                              }}
                              theme={theme}>
                 <DashboardLayout>
-                    <PageContainer>
+                    <PageContainer
+                        title={""}
+                    >
                         {children}
                     </PageContainer>
                 </DashboardLayout>

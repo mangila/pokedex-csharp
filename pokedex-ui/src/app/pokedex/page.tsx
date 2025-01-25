@@ -1,12 +1,16 @@
-﻿import {Box, Paper} from "@mui/material";
+﻿import { PokemonGeneration } from "@/types";
+import {Box, Paper} from "@mui/material";
 
 export default function Page() {
     return <Box>
         <Paper>
-            Generation I
+            {PokemonGeneration.GenerationI}
         </Paper>
         <Paper>
-            Generation II
+            {PokemonGeneration.GenerationII}
+        </Paper>
+        <Paper>
+            {PokemonGeneration.GenerationIII}
         </Paper>
     </Box>
 }

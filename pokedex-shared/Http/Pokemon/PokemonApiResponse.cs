@@ -1,4 +1,6 @@
-﻿namespace pokedex_shared.Http.Pokemon;
+﻿using System.Text.Json.Serialization;
+
+namespace pokedex_shared.Http.Pokemon;
 
 public readonly record struct PokemonApiResponse(
     Abilities[] abilities,
@@ -101,6 +103,7 @@ public readonly record struct Sprites(
 public readonly record struct Other(
     Dream_world dream_world,
     Home home,
+    [property: JsonPropertyName("official-artwork")]
     Official_artwork official_artwork,
     Showdown showdown
 );

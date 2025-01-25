@@ -43,7 +43,7 @@ public class MongoDbGridFsService
         var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
         if (fileInfo is not null)
         {
-            _logger.LogInformation("{fileName} is already uploaded", fileName);
+            _logger.LogInformation("GridFs hit - {fileName}", fileName);
             return new PokemonMediaDocument(
                 MediaId: fileInfo.Id.ToString(),
                 FileName: fileInfo.Filename,
@@ -51,7 +51,7 @@ public class MongoDbGridFsService
             );
         }
 
-        _logger.LogInformation("{fileName} upload", fileName);
+        _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -89,7 +89,7 @@ public class MongoDbGridFsService
         await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
         memoryStream.Position = 0;
         return new PokemonFileResult(fileInfo.Filename,
-            fileInfo.Metadata["contentType"].AsString,
+            fileInfo.Metadata["content_type"].AsString,
             memoryStream);
     }
 }

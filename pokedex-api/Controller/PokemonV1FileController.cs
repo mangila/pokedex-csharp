@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Timeouts;
+﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using MongoDB.Bson;
@@ -9,6 +10,7 @@ namespace pokedex_api.Controller;
 
 [ApiController]
 [Route("api/v1/pokemon/file")]
+[Produces(MediaTypeNames.Application.Octet)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 public class PokemonV1FileController(
     ILogger<PokemonV1FileController> logger,

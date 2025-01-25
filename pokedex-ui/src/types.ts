@@ -16,8 +16,7 @@ export interface PokemonDto {
     types: PokemonTypeDto[];
     evolutions: PokemonEvolutionDto[];
     stats: PokemonStatDto[];
-    audio_id: string;
-    sprite_id: string;
+    medias: PokemonMediaDto[];
     legendary: boolean;
     mythical: boolean;
     baby: boolean;
@@ -35,4 +34,22 @@ export interface PokemonEvolutionDto {
 export interface PokemonStatDto {
     type: string;
     value: number;
+}
+
+export interface PokemonMediaDto {
+    media_id: string;
+    file_name: string;
+    content_type: string;
+}
+
+export enum PokemonGeneration {
+    GenerationI = "generation-i",
+    GenerationII = "generation-ii",
+    GenerationIII = "generation-iii",
+    GenerationIV = "generation-iv",
+    GenerationV = "generation-v",
+    GenerationVI = "generation-vi",
+    GenerationVII = "generation-vii",
+    GenerationVIII = "generation-viii",
+    GenerationIX = "generation-ix"
 }
