@@ -37,6 +37,7 @@ public readonly record struct PokemonStatDto(
 public readonly record struct PokemonMediaDto(
     [property: JsonPropertyName("media_id")]
     string MediaId,
+    [property: JsonPropertyName("src")] string Src,
     [property: JsonPropertyName("file_name")]
     string FileName,
     [property: JsonPropertyName("content_type")]

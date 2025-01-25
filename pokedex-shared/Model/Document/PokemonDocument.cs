@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using pokedex_shared.Model.Dto;
 
@@ -51,6 +52,9 @@ public readonly record struct PokemonMediaDocument(
     [Required]
     [property: BsonElement("media_id")]
     string MediaId,
+    [Required]
+    [property: BsonElement("src")]
+    string Src,
     [Required]
     [property: BsonElement("file_name")]
     string FileName,
@@ -125,7 +129,8 @@ public static class Extensions
         return new PokemonMediaDto(
             MediaId: pokemonMediaDocument.MediaId,
             FileName: pokemonMediaDocument.FileName,
-            ContentType: pokemonMediaDocument.ContentType
+            ContentType: pokemonMediaDocument.ContentType,
+            Src: pokemonMediaDocument.Src
         );
     }
 }

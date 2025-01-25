@@ -2,11 +2,12 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using pokedex_shared.Config;
+using pokedex_shared.Service.Query;
 
 namespace pokedex_shared.Service;
 
 public class RedisService(
-    ILogger<DatasourceService> logger,
+    ILogger<DatasourceQueryService> logger,
     IDistributedCache redis)
 {
     public async Task<T?> GetAsync<T>(string key,

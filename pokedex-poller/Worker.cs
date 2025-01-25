@@ -8,6 +8,7 @@ using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
+using pokedex_shared.Service.Command;
 
 namespace pokedex_poller;
 
@@ -17,8 +18,8 @@ public class Worker(
     PokeApiOption pokeApiOption,
     PokemonGeneration pokemonGeneration,
     PokemonHttpClient pokemonHttpClient,
-    MongoDbService mongoDbService,
-    MongoDbGridFsService mongoDbGridFsService) : BackgroundService
+    MongoDbCommandService mongoDbCommandService,
+    MongoDbGridFsCommandService mongoDbGridFsCommandService) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -56,7 +57,7 @@ public class Worker(
                         evolutionChainApiResponse: evolutionChain,
                         medias: medias
                     );
-                    await mongoDbService.ReplaceOneAsync(document, cancellationToken);
+                    await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }
             }
@@ -98,7 +99,7 @@ public class Worker(
 
         if (sprites.front_default is not null)
         {
-            tasks.Add(mongoDbGridFsService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(sprites.front_default),
                 fileName: GetImageFileName(name, "front-default"),
                 contentType: imageContentType,
@@ -108,7 +109,7 @@ public class Worker(
 
         if (sprites.other.official_artwork.front_default is not null)
         {
-            tasks.Add(mongoDbGridFsService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(sprites.other.official_artwork.front_default),
                 fileName: GetImageFileName(name, "official-artwork-front-default"),
                 contentType: imageContentType,
@@ -118,7 +119,7 @@ public class Worker(
 
         if (cries.legacy is not null)
         {
-            tasks.Add(mongoDbGridFsService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.legacy),
                 fileName: GetAudioFileName(name, "legacy"),
                 contentType: audioContentType,
@@ -128,7 +129,7 @@ public class Worker(
 
         if (cries.latest is not null)
         {
-            tasks.Add(mongoDbGridFsService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.latest),
                 fileName: GetAudioFileName(name, "latest"),
                 contentType: audioContentType,

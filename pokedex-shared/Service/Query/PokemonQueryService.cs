@@ -1,44 +1,43 @@
 ﻿using MongoDB.Bson;
-using MongoDB.Driver.GridFS;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 
-namespace pokedex_shared.Service;
+namespace pokedex_shared.Service.Query;
 
-public class PokemonService(DatasourceService datasource)
+public class PokemonQueryService(DatasourceQueryService datasourceQuery)
 {
     public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
+        return await datasourceQuery.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
     public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
     {
-        return await datasource.FindAllAsync(cancellationToken);
+        return await datasourceQuery.FindAllAsync(cancellationToken);
     }
 
     public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.SearchByNameAsync(search, cancellationToken);
+        return await datasourceQuery.SearchByNameAsync(search, cancellationToken);
     }
 
     public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.FindByPokemonIdAsync(pokemonId, cancellationToken);
+        return await datasourceQuery.FindByPokemonIdAsync(pokemonId, cancellationToken);
     }
 
     public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.FindByNameAsync(pokemonName, cancellationToken);
+        return await datasourceQuery.FindByNameAsync(pokemonName, cancellationToken);
     }
 
     public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id,
         CancellationToken cancellationToken = default)
     {
-        return await datasource.FindFileByIdAsync(id, cancellationToken);
+        return await datasourceQuery.FindFileByIdAsync(id, cancellationToken);
     }
 }

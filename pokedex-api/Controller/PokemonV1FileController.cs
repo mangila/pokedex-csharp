@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using MongoDB.Bson;
 using pokedex_api.Config;
 using pokedex_shared.Service;
+using pokedex_shared.Service.Query;
 
 namespace pokedex_api.Controller;
 
@@ -14,7 +15,7 @@ namespace pokedex_api.Controller;
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 public class PokemonV1FileController(
     ILogger<PokemonV1FileController> logger,
-    PokemonService pokemonService)
+    PokemonQueryService pokemonQueryService)
     : ControllerBase
 {
     [HttpGet("{id}")]
@@ -24,7 +25,7 @@ public class PokemonV1FileController(
         CancellationToken cancellationToken = default
     )
     {
-        var result = await pokemonService.FindFileByIdAsync(new ObjectId(id), cancellationToken);
+        var result = await pokemonQueryService.FindFileByIdAsync(new ObjectId(id), cancellationToken);
         return result is not null ? Results.File(result.File, result.ContentType, result.FileName) : Results.NotFound();
     }
 }

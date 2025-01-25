@@ -13,6 +13,10 @@ public static class PokemonHttpClientConfig
     public static IServiceCollection AddPokemonApi(this IServiceCollection services,
         IConfigurationSection section)
     {
+        services.AddOptions<PokeApiOption>()
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         var pokeOptions = section.Get<PokeApiOption>();
         services.AddHttpClient<PokemonHttpClient>(client =>
             {

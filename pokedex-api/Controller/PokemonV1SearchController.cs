@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Service;
+using pokedex_shared.Service.Query;
 
 namespace pokedex_api.Controller;
 
@@ -14,7 +15,7 @@ namespace pokedex_api.Controller;
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 public class PokemonV1SearchController(
     ILogger<PokemonV1SearchController> logger,
-    PokemonService pokemonService)
+    PokemonQueryService pokemonQueryService)
     : ControllerBase
 {
     [HttpGet("id")]
@@ -24,7 +25,7 @@ public class PokemonV1SearchController(
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.FindAllByPokemonIdAsync(
+        var collection = await pokemonQueryService.FindAllByPokemonIdAsync(
             new PokemonIdCollection(ids),
             cancellationToken);
         return Results.Ok(collection);
@@ -37,7 +38,7 @@ public class PokemonV1SearchController(
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.SearchByNameAsync(new PokemonName(search), cancellationToken);
+        var collection = await pokemonQueryService.SearchByNameAsync(new PokemonName(search), cancellationToken);
         return Results.Ok(collection);
     }
 }

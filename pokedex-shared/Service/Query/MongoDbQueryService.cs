@@ -7,16 +7,16 @@ using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 using pokedex_shared.Option;
 
-namespace pokedex_shared.Service;
+namespace pokedex_shared.Service.Query;
 
-public class MongoDbService
+public class MongoDbQueryService
 {
     private const string CaseInsensitiveMatching = "i";
-    private readonly ILogger<MongoDbService> _logger;
+    private readonly ILogger<MongoDbQueryService> _logger;
     private readonly IMongoCollection<PokemonDocument> _collection;
-
-    public MongoDbService(
-        ILogger<MongoDbService> logger,
+    
+    public MongoDbQueryService(
+        ILogger<MongoDbQueryService> logger,
         IOptions<MongoDbOption> mongoDbOption)
     {
         _logger = logger;
@@ -24,7 +24,7 @@ public class MongoDbService
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
             .GetCollection<PokemonDocument>(mongoDb.Collection);
-        _collection.Indexes.CreateManyAsync(CreateIndexes(["pokemon_id", "name"]));
+        _collection.Indexes.CreateManyAsync(CreateIndexes(["name"]));
     }
 
     private static List<CreateIndexModel<PokemonDocument>> CreateIndexes(string[] fieldNames)
@@ -52,19 +52,6 @@ public class MongoDbService
         return document?.ToDto();
     }
 
-    public async Task ReplaceOneAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
-    {
-        await _collection.ReplaceOneAsync(
-            doc => doc.PokemonId == pokemon.PokemonId,
-            pokemon,
-            new ReplaceOptions
-            {
-                IsUpsert = true,
-                Comment = "Insert from ReplaceOneAsync() - replace or insert a new Pokemon"
-            },
-            cancellationToken: cancellationToken);
-    }
-
     public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
@@ -77,19 +64,19 @@ public class MongoDbService
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }
 
+    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    {
+        using var cursor = await _collection.FindAsync(FilterDefinition<PokemonDocument>.Empty,
+            cancellationToken: cancellationToken);
+        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+    }
+
     public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
         var ids = pokemonIdCollection.Ids.Select(id => id.Value).ToList();
         var filter = Builders<PokemonDocument>.Filter.In(doc => doc.PokemonId, ids);
         using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
-    }
-
-    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
-    {
-        using var cursor = await _collection.FindAsync(FilterDefinition<PokemonDocument>.Empty,
-            cancellationToken: cancellationToken);
         return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
     }
 

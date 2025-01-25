@@ -5,6 +5,7 @@ using pokedex_shared.Http;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service;
+using pokedex_shared.Service.Command;
 using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -12,19 +13,13 @@ var builder = Host.CreateApplicationBuilder(args);
 // Configure Serilog with the loaded configuration
 builder.Services.AddSerilog(config =>
     config.ReadFrom.Configuration(builder.Configuration));
-// Add Option Services to DI Container
-var sectionWorkerOption = builder
-    .Configuration
-    .GetRequiredSection(nameof(WorkerOption));
+// Add Option Services to DI Container;
 builder.Services.AddOptions<WorkerOption>()
-    .Bind(sectionWorkerOption)
+    .Bind(builder.Configuration.GetSection(nameof(WorkerOption)))
     .ValidateDataAnnotations()
     .ValidateOnStart();
-var sectionPokemonOption = builder
-    .Configuration
-    .GetRequiredSection(nameof(PokeApiOption));
-builder.Services.AddOptions<PokeApiOption>()
-    .Bind(sectionPokemonOption)
+builder.Services.AddOptions<PokedexApiOption>()
+    .Bind(builder.Configuration.GetSection(nameof(PokedexApiOption)))
     .ValidateDataAnnotations()
     .ValidateOnStart();
 // Add Services to the DI Container
@@ -35,7 +30,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
 });
 builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
-builder.Services.AddMongoDb(builder.Configuration.GetSection(nameof(MongoDbOption)));
+builder.Services.AddMongoDbCommandService(builder.Configuration.GetSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
 
 // Add GenerationI Worker
@@ -45,8 +40,8 @@ builder.Services.AddSingleton<IHostedService>(provider =>
     var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
     var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
     var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
-    var mongoDbService = provider.GetRequiredService<MongoDbService>();
-    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsService>();
+    var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
+    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
     return new Worker(logger,
         workerOption.Value,
         pokeApiOption.Value,

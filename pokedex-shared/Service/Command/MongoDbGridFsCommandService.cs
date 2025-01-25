@@ -4,24 +4,26 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using pokedex_shared.Model.Document;
-using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 
-namespace pokedex_shared.Service;
+namespace pokedex_shared.Service.Command;
 
-public class MongoDbGridFsService
+public class MongoDbGridFsCommandService
 {
-    private readonly ILogger<MongoDbGridFsService> _logger;
+    private readonly ILogger<MongoDbGridFsCommandService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly GridFSBucket _bucket;
+    private readonly PokedexApiOption _pokedexApiOption;
 
-    public MongoDbGridFsService(
-        ILogger<MongoDbGridFsService> logger,
+    public MongoDbGridFsCommandService(
+        ILogger<MongoDbGridFsCommandService> logger,
         IOptions<MongoDbOption> mongoDbOption,
+        IOptions<PokedexApiOption> pokedexApiOption,
         IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _pokedexApiOption = pokedexApiOption.Value;
         var mongoDb = mongoDbOption.Value;
         var db = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database);
@@ -41,17 +43,21 @@ public class MongoDbGridFsService
         var filter = Builders<GridFSFileInfo>.Filter.Eq(file => file.Filename, fileName);
         var cursor = await _bucket.FindAsync(filter, cancellationToken: cancellationToken);
         var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
+        string? getFileUri;
+        string? src;
         if (fileInfo is not null)
         {
             _logger.LogInformation("GridFs hit - {fileName}", fileName);
+            getFileUri = _pokedexApiOption.GetFileUri.Replace("{id}", fileInfo.Id.ToString());
+            src = $"{_pokedexApiOption.Url}/{getFileUri}";
             return new PokemonMediaDocument(
                 MediaId: fileInfo.Id.ToString(),
                 FileName: fileInfo.Filename,
-                ContentType: fileInfo.Metadata["content_type"].AsString
+                ContentType: fileInfo.Metadata["content_type"].AsString,
+                Src: src
             );
         }
 
-        _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -66,30 +72,13 @@ public class MongoDbGridFsService
                     { "upload_date", BsonDateTime.Create(DateTime.UtcNow) }
                 }
             }, cancellationToken);
+        getFileUri = _pokedexApiOption.GetFileUri.Replace("{id}", mediaId.ToString());
+        src = $"{_pokedexApiOption.Url}/{getFileUri}";
         return new PokemonMediaDocument(
             MediaId: mediaId.ToString(),
             FileName: fileName,
-            ContentType: contentType
+            ContentType: contentType,
+            Src: src
         );
-    }
-
-    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId objectId,
-        CancellationToken cancellationToken)
-    {
-        var cursor = await _bucket.FindAsync(Builders<GridFSFileInfo>.Filter.Eq("_id", objectId),
-            cancellationToken: cancellationToken);
-        var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
-        if (fileInfo is null)
-        {
-            _logger.LogInformation("{objectId} not found", objectId.ToString());
-            return null;
-        }
-
-        var memoryStream = new MemoryStream();
-        await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
-        memoryStream.Position = 0;
-        return new PokemonFileResult(fileInfo.Filename,
-            fileInfo.Metadata["content_type"].AsString,
-            memoryStream);
     }
 }

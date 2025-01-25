@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Service;
+using pokedex_shared.Service.Query;
 
 namespace pokedex_api.Controller;
 
@@ -15,14 +16,14 @@ namespace pokedex_api.Controller;
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 public class PokemonV1Controller(
     ILogger<PokemonV1Controller> logger,
-    PokemonService pokemonService)
+    PokemonQueryService pokemonQueryService)
     : ControllerBase
 {
     [HttpGet]
     [RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
     public async Task<IResult> FindAll(CancellationToken cancellationToken = default)
     {
-        var collection = await pokemonService.FindAllAsync(cancellationToken);
+        var collection = await pokemonQueryService.FindAllAsync(cancellationToken);
         return Results.Ok(collection);
     }
 
@@ -33,7 +34,7 @@ public class PokemonV1Controller(
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonService.FindOneByPokemonIdAsync(new PokemonId(id.ToString()), cancellationToken);
+        var dto = await pokemonQueryService.FindOneByPokemonIdAsync(new PokemonId(id.ToString()), cancellationToken);
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 
@@ -44,7 +45,7 @@ public class PokemonV1Controller(
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
+        var dto = await pokemonQueryService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
         return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
     }
 }
