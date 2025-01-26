@@ -9,11 +9,14 @@ export default async function Page({params}: {
     const pokemons = await findAllPokemonsByGeneration(generation as PokemonGeneration)
     return <Box sx={{
         display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
     }}>
         {pokemons.map(pokemon => (
             <Box key={pokemon.pokemon_id}>
-                <img src={pokemon.images[0].src} alt={pokemon.name}/>
-                {pokemon.name}
+                <Box>
+                    <img src={pokemon.images[0].src} alt={pokemon.name}/>
+                </Box>
             </Box>
         ))}
     </Box>
