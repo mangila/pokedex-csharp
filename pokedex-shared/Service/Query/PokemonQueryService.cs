@@ -33,14 +33,14 @@ public class PokemonQueryService(DatasourceQueryService datasourceQuery)
         return await datasourceQuery.SearchByGenerationAsync(generation, cancellationToken);
     }
 
-    public async Task<PokemonDetailedDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindByPokemonIdAsync(pokemonId, cancellationToken);
     }
 
-    public async Task<PokemonDetailedDto?> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();

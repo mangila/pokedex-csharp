@@ -3,8 +3,8 @@
 namespace pokedex_unit_test.Extension;
 
 [TestFixture]
-[TestOf(typeof(Extensions))]
-public class ExtensionsTest
+[TestOf(typeof(ExtensionMapper))]
+public class ExtensionMapperTest
 {
 
     [Test]

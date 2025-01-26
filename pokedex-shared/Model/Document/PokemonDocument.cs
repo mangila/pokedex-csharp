@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
+using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Model.Document;
@@ -7,74 +8,27 @@ namespace pokedex_shared.Model.Document;
 public class PokemonDocument
 {
     [Required] [BsonId] public required string PokemonId { get; init; }
-
     [Required] [BsonElement("name")] public required string Name { get; init; }
     [Required] [BsonElement("region")] public required string Region { get; init; }
     [Required] [BsonElement("height")] public required string Height { get; init; }
     [Required] [BsonElement("weight")] public required string Weight { get; init; }
-
-    [Required]
-    [BsonElement("description")]
-    public required string Description { get; init; }
-
+    [Required] [BsonElement("description")] public required string Description { get; init; }
     [Required] [BsonElement("generation")] public required string Generation { get; init; }
     [Required] [BsonElement("types")] public required List<PokemonTypeDocument> Types { get; init; }
     [Required] [BsonElement("evolutions")] public required List<PokemonEvolutionDocument> Evolutions { get; init; }
     [Required] [BsonElement("stats")] public required List<PokemonStatDocument> Stats { get; init; }
-    [Required] [BsonElement("medias")] public required List<PokemonMediaDocument> Medias { get; init; }
+    [Required] [BsonElement("images")] public required List<PokemonMediaDocument> Images { get; init; }
+    [Required] [BsonElement("audios")] public required List<PokemonMediaDocument> Audios { get; init; }
     [Required] [BsonElement("legendary")] public required bool Legendary { get; init; }
     [Required] [BsonElement("mythical")] public required bool Mythical { get; init; }
     [Required] [BsonElement("baby")] public required bool Baby { get; init; }
 }
 
-public readonly record struct PokemonTypeDocument(
-    [Required]
-    [property: BsonElement("type")]
-    string Type);
-
-public readonly record struct PokemonStatDocument(
-    [Required]
-    [property: BsonElement("type")]
-    string Type,
-    [Required]
-    [property: BsonElement("value")]
-    int Value);
-
-public readonly record struct PokemonEvolutionDocument(
-    [Required]
-    [property: BsonElement("value")]
-    int Value,
-    [Required]
-    [property: BsonElement("name")]
-    string Name);
-
-public readonly record struct PokemonMediaDocument(
-    [Required]
-    [property: BsonElement("media_id")]
-    string MediaId,
-    [Required]
-    [property: BsonElement("src")]
-    string Src,
-    [Required]
-    [property: BsonElement("file_name")]
-    string FileName,
-    [Required]
-    [property: BsonElement("content_type")]
-    string ContentType);
-
 public static class Extensions
 {
-    public static PokemonDetailedDtoCollection ToDetailedDtoCollection(this List<PokemonDocument> pokemonDocuments)
+    public static PokemonDto ToDto(this PokemonDocument document)
     {
-        var l = pokemonDocuments
-            .Select(document => document.ToDetailedDto())
-            .ToList();
-        return new PokemonDetailedDtoCollection(l);
-    }
-
-    public static PokemonDetailedDto ToDetailedDto(this PokemonDocument document)
-    {
-        return new PokemonDetailedDto(
+        return new PokemonDto(
             PokemonId: document.PokemonId,
             Name: document.Name,
             Region: document.Region,
@@ -85,92 +39,11 @@ public static class Extensions
             Types: document.Types.ToDtos(),
             Evolutions: document.Evolutions.ToDtos(),
             Stats: document.Stats.ToDtos(),
-            Audios: document.Medias.ToAudioDtos(),
-            Images: document.Medias.ToImageDtos(),
+            Audios: document.Audios.ToDtos(),
+            Images: document.Images.ToDtos(),
             Legendary: document.Legendary,
             Mythical: document.Mythical,
             Baby: document.Baby
-        );
-    }
-
-    public static PokemonNameImagesDto ToNameImagesDto(this PokemonDocument pokemonDocument)
-    {
-        return new PokemonNameImagesDto(
-            PokemonId: pokemonDocument.PokemonId,
-            Name: pokemonDocument.Name,
-            Images: pokemonDocument.Medias.ToImageDtos()
-        );
-    }
-
-    private static List<PokemonTypeDto> ToDtos(this List<PokemonTypeDocument> pokemonTypeDocuments)
-    {
-        return pokemonTypeDocuments.Select(document => document.ToDto()).ToList();
-    }
-
-    private static PokemonTypeDto ToDto(this PokemonTypeDocument pokemonTypeDocument)
-    {
-        return new PokemonTypeDto(pokemonTypeDocument.Type);
-    }
-
-    private static List<PokemonEvolutionDto> ToDtos(this List<PokemonEvolutionDocument> pokemonEvolutionDocuments)
-    {
-        return pokemonEvolutionDocuments.Select(document => document.ToDto()).ToList();
-    }
-
-    private static PokemonEvolutionDto ToDto(this PokemonEvolutionDocument pokemonEvolutionDocument)
-    {
-        return new PokemonEvolutionDto(
-            Value: pokemonEvolutionDocument.Value,
-            Name: pokemonEvolutionDocument.Name
-        );
-    }
-
-    private static List<PokemonStatDto> ToDtos(this List<PokemonStatDocument> pokemonStatDocuments)
-    {
-        return pokemonStatDocuments.Select(document => document.ToDto()).ToList();
-    }
-
-    private static PokemonStatDto ToDto(this PokemonStatDocument pokemonStatDocument)
-    {
-        return new PokemonStatDto(
-            Value: pokemonStatDocument.Value,
-            Type: pokemonStatDocument.Type
-        );
-    }
-
-    private static List<PokemonAudioDto> ToAudioDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
-    {
-        return pokemonMediaDocuments
-            .Where(document => document.ContentType.StartsWith("audio"))
-            .Select(document => document.ToAudioDto())
-            .ToList();
-    }
-
-    private static PokemonAudioDto ToAudioDto(this PokemonMediaDocument pokemonMediaDocument)
-    {
-        return new PokemonAudioDto(
-            MediaId: pokemonMediaDocument.MediaId,
-            FileName: pokemonMediaDocument.FileName,
-            ContentType: pokemonMediaDocument.ContentType,
-            Src: pokemonMediaDocument.Src
-        );
-    }
-
-    private static List<PokemonImageDto> ToImageDtos(this List<PokemonMediaDocument> pokemonMediaDocuments)
-    {
-        return pokemonMediaDocuments
-            .Where(document => document.ContentType.StartsWith("image"))
-            .Select(document => document.ToImageDto())
-            .ToList();
-    }
-
-    private static PokemonImageDto ToImageDto(this PokemonMediaDocument pokemonMediaDocument)
-    {
-        return new PokemonImageDto(
-            MediaId: pokemonMediaDocument.MediaId,
-            FileName: pokemonMediaDocument.FileName,
-            ContentType: pokemonMediaDocument.ContentType,
-            Src: pokemonMediaDocument.Src
         );
     }
 }

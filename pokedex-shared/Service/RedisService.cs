@@ -11,7 +11,7 @@ public class RedisService(
     IDistributedCache redis)
 {
     public async Task<T?> GetAsync<T>(string key,
-        CancellationToken cancellationToken = default) where T : struct
+        CancellationToken cancellationToken = default) where T : class
     {
         var cacheValue = await redis.GetStringAsync(key, cancellationToken);
         if (cacheValue is null)

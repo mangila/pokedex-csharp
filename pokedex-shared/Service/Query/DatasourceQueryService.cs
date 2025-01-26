@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using pokedex_shared.Extension;
+using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Service.Query;
 
@@ -26,18 +26,18 @@ public class DatasourceQueryService(
         SlidingExpiration = TimeSpan.FromMinutes(10),
     };
 
-    public async Task<PokemonDetailedDto?> FindByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDocument?> FindByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = CacheKeyPrefixPokemonId + pokemonId.Value;
-        var cacheValue = await redis.GetAsync<PokemonDetailedDto>(cacheKey, cancellationToken);
+        var cacheValue = await redis.GetAsync<PokemonDocument>(cacheKey, cancellationToken);
         if (cacheValue is not null)
         {
             return cacheValue;
         }
 
         var db = await mongoDbQueryService.FindOneByPokemonIdAsync(pokemonId, cancellationToken);
-        if (!db.HasValue)
+        if (db is null)
         {
             return db;
         }
@@ -47,18 +47,18 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<PokemonDetailedDto?> FindByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDocument?> FindByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = CacheKeyPrefixName + pokemonName.Value;
-        var cacheValue = await redis.GetAsync<PokemonDetailedDto>(cacheKey, cancellationToken);
+        var cacheValue = await redis.GetAsync<PokemonDocument>(cacheKey, cancellationToken);
         if (cacheValue is not null)
         {
             return cacheValue;
         }
 
         var db = await mongoDbQueryService.FindOneByNameAsync(pokemonName, cancellationToken);
-        if (!db.HasValue)
+        if (db is null)
         {
             return db;
         }

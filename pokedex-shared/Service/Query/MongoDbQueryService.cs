@@ -4,7 +4,6 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Model.Dto;
 using pokedex_shared.Option;
 using static MongoDB.Driver.Builders<pokedex_shared.Model.Document.PokemonDocument>;
 
@@ -35,22 +34,20 @@ public class MongoDbQueryService
             .Select(definition => new CreateIndexModel<PokemonDocument>(definition)).ToList();
     }
 
-    public async Task<PokemonDetailedDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDocument?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        var result = await _collection
+        return await _collection
             .Find(doc => doc.PokemonId == pokemonId.Value)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-        return result?.ToDetailedDto();
     }
 
-    public async Task<PokemonDetailedDto?> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDocument?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        var result = await _collection
+        return await _collection
             .Find(doc => doc.Name == pokemonName.Value)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-        return result?.ToDetailedDto();
     }
 
     public async Task<PokemonNameImagesDtoCollection> SearchByNameAsync(PokemonName search,

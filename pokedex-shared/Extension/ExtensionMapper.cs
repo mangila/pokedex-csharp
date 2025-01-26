@@ -4,7 +4,7 @@ using pokedex_shared.Config;
 
 namespace pokedex_shared.Extension;
 
-public static class Extensions
+public static class ExtensionMapper
 {
     public static void Validate<T>(this T type)
     {

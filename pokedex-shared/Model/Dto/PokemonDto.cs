@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using pokedex_shared.Model.Dto.Embedded;
 
 namespace pokedex_shared.Model.Dto;
 
-public readonly record struct PokemonDetailedDto(
+public readonly record struct PokemonDto(
     [property: JsonPropertyName("pokemon_id")]
     string PokemonId,
     [property: JsonPropertyName("name")] string Name,
@@ -17,63 +18,10 @@ public readonly record struct PokemonDetailedDto(
     [property: JsonPropertyName("evolutions")]
     List<PokemonEvolutionDto> Evolutions,
     [property: JsonPropertyName("stats")] List<PokemonStatDto> Stats,
-    [property: JsonPropertyName("images")] List<PokemonImageDto> Images,
-    [property: JsonPropertyName("audios")] List<PokemonAudioDto> Audios,
+    [property: JsonPropertyName("images")] List<PokemonMediaDto> Images,
+    [property: JsonPropertyName("audios")] List<PokemonMediaDto> Audios,
     [property: JsonPropertyName("legendary")]
     bool Legendary,
     [property: JsonPropertyName("mythical")]
     bool Mythical,
     [property: JsonPropertyName("baby")] bool Baby);
-
-public readonly record struct PokemonDetailedDtoCollection(
-    [property: JsonPropertyName("pokemons")]
-    List<PokemonDetailedDto> Collection)
-{
-    public PokemonDetailedDtoCollection() : this([])
-    {
-    }
-}
-
-public readonly record struct PokemonTypeDto(
-    [property: JsonPropertyName("type")] string Type);
-
-public readonly record struct PokemonEvolutionDto(
-    [property: JsonPropertyName("value")] int Value,
-    [property: JsonPropertyName("name")] string Name);
-
-public readonly record struct PokemonStatDto(
-    [property: JsonPropertyName("type")] string Type,
-    [property: JsonPropertyName("value")] int Value);
-
-public readonly record struct PokemonImageDto(
-    [property: JsonPropertyName("media_id")]
-    string MediaId,
-    [property: JsonPropertyName("src")] string Src,
-    [property: JsonPropertyName("file_name")]
-    string FileName,
-    [property: JsonPropertyName("content_type")]
-    string ContentType);
-
-public readonly record struct PokemonAudioDto(
-    [property: JsonPropertyName("media_id")]
-    string MediaId,
-    [property: JsonPropertyName("src")] string Src,
-    [property: JsonPropertyName("file_name")]
-    string FileName,
-    [property: JsonPropertyName("content_type")]
-    string ContentType);
-
-public readonly record struct PokemonNameImagesDto(
-    [property: JsonPropertyName("pokemon_id")]
-    string PokemonId,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("images")] List<PokemonImageDto> Images);
-
-public readonly record struct PokemonNameImagesDtoCollection(
-    [property: JsonPropertyName("pokemons")]
-    List<PokemonNameImagesDto> Collection)
-{
-    public PokemonNameImagesDtoCollection() : this([])
-    {
-    }
-}

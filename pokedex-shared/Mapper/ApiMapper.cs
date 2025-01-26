@@ -29,7 +29,8 @@ public static partial class ApiMapper
             Generation = pokemonSpeciesApiResponse.generation.name,
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
             Stats = ToPokemonStats(pokemonApiResponse.stats),
-            Medias = medias,
+            Images = ToPokemonImages(medias),
+            Audios = ToPokemonAudios(medias),
             Types = ToPokemonTypes(pokemonApiResponse.types),
             Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
             Legendary = pokemonSpeciesApiResponse.is_legendary,
@@ -96,6 +97,20 @@ public static partial class ApiMapper
     private static List<PokemonTypeDocument> ToPokemonTypes(Types[] types)
     {
         return types.Select(t => new PokemonTypeDocument(t.type.name)).ToList();
+    }
+
+    private static List<PokemonMediaDocument> ToPokemonAudios(List<PokemonMediaDocument> medias)
+    {
+        return medias
+            .Where(document => document.ContentType.StartsWith("audio"))
+            .ToList();
+    }
+
+    private static List<PokemonMediaDocument> ToPokemonImages(List<PokemonMediaDocument> medias)
+    {
+        return medias
+            .Where(document => document.ContentType.StartsWith("image"))
+            .ToList();
     }
 
     [GeneratedRegex(@"[\r\n\t\f]+")]
