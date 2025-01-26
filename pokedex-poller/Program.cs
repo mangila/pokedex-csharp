@@ -15,11 +15,11 @@ builder.Services.AddSerilog(config =>
     config.ReadFrom.Configuration(builder.Configuration));
 // Add Option Services to DI Container;
 builder.Services.AddOptions<WorkerOption>()
-    .Bind(builder.Configuration.GetSection(nameof(WorkerOption)))
+    .Bind(builder.Configuration.GetRequiredSection(nameof(WorkerOption)))
     .ValidateDataAnnotations()
     .ValidateOnStart();
 builder.Services.AddOptions<PokedexApiOption>()
-    .Bind(builder.Configuration.GetSection(nameof(PokedexApiOption)))
+    .Bind(builder.Configuration.GetRequiredSection(nameof(PokedexApiOption)))
     .ValidateDataAnnotations()
     .ValidateOnStart();
 // Add Services to the DI Container
@@ -30,8 +30,8 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
     redisOptions.InstanceName = "pokedex-poller:development:";
 });
-builder.Services.AddPokemonApi(builder.Configuration.GetSection(nameof(PokeApiOption)));
-builder.Services.AddMongoDbCommandService(builder.Configuration.GetSection(nameof(MongoDbOption)));
+builder.Services.AddPokemonApi(builder.Configuration.GetRequiredSection(nameof(PokeApiOption)));
+builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
 
 // Add GenerationI Worker

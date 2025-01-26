@@ -21,10 +21,10 @@ public class PokemonHttpClient(
     public async Task<T> GetAsync<T>(Uri uri, CancellationToken cancellationToken = default) where T : struct
     {
         var cacheKey = uri.IsAbsoluteUri ? CacheKeyPrefix + uri.AbsolutePath : CacheKeyPrefix + uri;
-        var dto = await redis.GetAsync<T>(cacheKey, cancellationToken);
-        if (dto.HasValue)
+        var cacheValue = await redis.GetAsync<T>(cacheKey, cancellationToken);
+        if (!Equals(cacheValue, default(T)))
         {
-            return dto.Value;
+            return cacheValue;
         }
 
         var json = await httpClient.GetStringAsync(uri, cancellationToken);

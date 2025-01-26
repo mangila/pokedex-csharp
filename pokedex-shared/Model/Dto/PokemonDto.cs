@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using pokedex_shared.Model.Dto.Embedded;
 
 namespace pokedex_shared.Model.Dto;
@@ -14,12 +15,12 @@ public readonly record struct PokemonDto(
     string Description,
     [property: JsonPropertyName("generation")]
     string Generation,
-    [property: JsonPropertyName("types")] List<PokemonTypeDto> Types,
+    [property: JsonPropertyName("types")] ImmutableList<PokemonTypeDto> Types,
     [property: JsonPropertyName("evolutions")]
-    List<PokemonEvolutionDto> Evolutions,
-    [property: JsonPropertyName("stats")] List<PokemonStatDto> Stats,
-    [property: JsonPropertyName("images")] List<PokemonMediaDto> Images,
-    [property: JsonPropertyName("audios")] List<PokemonMediaDto> Audios,
+    ImmutableList<PokemonEvolutionDto> Evolutions,
+    [property: JsonPropertyName("stats")] ImmutableList<PokemonStatDto> Stats,
+    [property: JsonPropertyName("images")] ImmutableList<PokemonMediaDto> Images,
+    [property: JsonPropertyName("audios")] ImmutableList<PokemonMediaDto> Audios,
     [property: JsonPropertyName("legendary")]
     bool Legendary,
     [property: JsonPropertyName("mythical")]

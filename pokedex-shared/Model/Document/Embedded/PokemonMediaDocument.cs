@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 using pokedex_shared.Model.Dto.Embedded;
 
@@ -20,11 +21,11 @@ public readonly record struct PokemonMediaDocument(
 
 public static partial class Extensions
 {
-    public static List<PokemonMediaDto> ToDtos(this List<PokemonMediaDocument> documents)
+    public static ImmutableList<PokemonMediaDto> ToDtos(this List<PokemonMediaDocument> documents)
     {
         return documents
             .Select(document => document.ToDto())
-            .ToList();
+            .ToImmutableList();
     }
 
     public static PokemonMediaDto ToDto(this PokemonMediaDocument document)

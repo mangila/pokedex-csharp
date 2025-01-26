@@ -14,10 +14,11 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         var details = GetProblemDetails(exception);
         logger.LogError(exception, "ERR: {Message}", exception.Message);
         httpContext.Response.ContentType = "application/problem+json";
-        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        httpContext.Response.StatusCode = details.Status ?? 500;
         await httpContext.Response.WriteAsJsonAsync(details, cancellationToken);
         return true;
     }
+    
 
     private static ProblemDetails GetProblemDetails(Exception exception)
     {

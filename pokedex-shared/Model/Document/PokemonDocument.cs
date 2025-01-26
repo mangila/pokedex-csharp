@@ -5,14 +5,18 @@ using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Model.Document;
 
-public class PokemonDocument
+public readonly record struct PokemonDocument
 {
     [Required] [BsonId] public required string PokemonId { get; init; }
     [Required] [BsonElement("name")] public required string Name { get; init; }
     [Required] [BsonElement("region")] public required string Region { get; init; }
     [Required] [BsonElement("height")] public required string Height { get; init; }
     [Required] [BsonElement("weight")] public required string Weight { get; init; }
-    [Required] [BsonElement("description")] public required string Description { get; init; }
+
+    [Required]
+    [BsonElement("description")]
+    public required string Description { get; init; }
+
     [Required] [BsonElement("generation")] public required string Generation { get; init; }
     [Required] [BsonElement("types")] public required List<PokemonTypeDocument> Types { get; init; }
     [Required] [BsonElement("evolutions")] public required List<PokemonEvolutionDocument> Evolutions { get; init; }

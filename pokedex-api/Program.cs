@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure API Controllers
 builder.Services.AddControllers();
 // Configure MongoDB
-builder.Services.AddMongoDbQueryService(builder.Configuration.GetSection(nameof(MongoDbOption)));
+builder.Services.AddMongoDbQueryService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 // Configure Redis
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {

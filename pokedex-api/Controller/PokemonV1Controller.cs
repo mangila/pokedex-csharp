@@ -31,8 +31,8 @@ public class PokemonV1Controller(
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonQueryService.FindOneByPokemonIdAsync(new PokemonId(id.ToString()), cancellationToken);
-        return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
+        var dto = await pokemonQueryService.FindOneByPokemonIdAsync(new PokemonId(id), cancellationToken);
+        return dto.Equals(default) ? Results.NotFound() : Results.Ok(dto);
     }
 
     [HttpGet("{name}")]
@@ -42,6 +42,6 @@ public class PokemonV1Controller(
     )
     {
         var dto = await pokemonQueryService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
-        return dto.HasValue ? Results.Ok(dto) : Results.NotFound();
+        return dto.Equals(default) ? Results.NotFound() : Results.Ok(dto);
     }
 }

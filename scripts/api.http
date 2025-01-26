@@ -5,7 +5,7 @@ Content-Type: application/json
 ###
 
 ### GET pokemon by id
-GET {{pokemonV1}}/1
+GET {{pokemonV1}}/2
 Content-Type: application/json
 
 ###
@@ -30,6 +30,12 @@ Content-Type: application/json
 
 ### GET pokemon by generation
 GET {{pokemonV1}}/search/generation?generation=generation-i
+Content-Type: application/json
+
+###
+
+### GET pokemon by generation
+GET {{pokemonV1}}/file/6796637dc816b9abf6e87d84
 Content-Type: application/json
 
 ###

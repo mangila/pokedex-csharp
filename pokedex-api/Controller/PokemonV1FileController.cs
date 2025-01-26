@@ -20,12 +20,17 @@ public class PokemonV1FileController(
 {
     [HttpGet("{id}")]
     public async Task<IResult> FindFileById(
-        [FromRoute] string id,
+        [FromRoute] ObjectId id,
         CancellationToken cancellationToken = default
     )
     {
-        Response.Headers.CacheControl = "public, max-age=43200";
-        var result = await pokemonQueryService.FindFileByIdAsync(new ObjectId(id), cancellationToken);
-        return result is not null ? Results.File(result.File, result.ContentType, result.FileName) : Results.NotFound();
+        var result = await pokemonQueryService.FindFileByIdAsync(id, cancellationToken);
+        if (result is not null)
+        {
+            Response.Headers.CacheControl = "public, max-age=43200";
+            return Results.File(result.File, result.ContentType, result.FileName);
+        }
+
+        return Results.NotFound();
     }
 }

@@ -4,7 +4,7 @@ using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.PokemonGeneration;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Mapper;
-using pokedex_shared.Model.Document;
+using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service.Command;
@@ -20,11 +20,15 @@ public class Worker(
     MongoDbCommandService mongoDbCommandService,
     MongoDbGridFsCommandService mongoDbGridFsCommandService) : BackgroundService
 {
+    private const string ImageContentType = "image/png";
+    private const string AudioContentType = "audio/ogg";
+    private const string Description = "Media from PokeAPI";
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogInformation("worker started - {pokemonGeneration}", pokemonGeneration);
+            logger.LogInformation("worker started - {pokemonGeneration}", pokemonGeneration.Value);
             try
             {
                 var generation =
@@ -38,16 +42,21 @@ public class Worker(
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
                         uri: GetPokemonRelativeUri(pokemonName),
                         cancellationToken: cancellationToken);
+                    var images = await FetchImagesAsync(
+                        name: pokemonName,
+                        sprites: pokemon.sprites,
+                        cancellationToken: cancellationToken
+                    );
+                    var cries = await FetchCriesAsync(
+                        name: pokemonName,
+                        cries: pokemon.cries,
+                        cancellationToken: cancellationToken
+                    );
                     var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
                         uri: new Uri(pokemon.species.url),
                         cancellationToken: cancellationToken);
                     var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
                         uri: new Uri(species.evolution_chain.url),
-                        cancellationToken: cancellationToken);
-                    var medias = await FetchMediaAsync(
-                        name: pokemonName,
-                        sprites: pokemon.sprites,
-                        cries: pokemon.cries,
                         cancellationToken: cancellationToken);
                     // Map
                     var document = ApiMapper.ToDocument(
@@ -55,7 +64,7 @@ public class Worker(
                         pokemonApiResponse: pokemon,
                         pokemonSpeciesApiResponse: species,
                         evolutionChainApiResponse: evolutionChain,
-                        medias: medias
+                        mediaCollection: [..images, ..cries]
                     );
                     await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
@@ -63,7 +72,7 @@ public class Worker(
             }
             catch (OperationCanceledException)
             {
-                logger.LogInformation("worker cancelled - {pokemonGeneration}", pokemonGeneration);
+                logger.LogInformation("worker cancelled");
                 Environment.Exit(0);
             }
             catch (Exception e)
@@ -91,44 +100,18 @@ public class Worker(
             , UriKind.Relative);
     }
 
-    private async Task<List<PokemonMediaDocument>> FetchMediaAsync(
-        PokemonName name,
-        Sprites sprites,
-        Cries cries,
-        CancellationToken cancellationToken = default)
+    private async Task<List<PokemonMediaDocument>> FetchCriesAsync(PokemonName name, Cries cries,
+        CancellationToken cancellationToken)
     {
         var tasks = new List<Task<PokemonMediaDocument>>();
-        var imageContentType = "image/png";
-        var audioContentType = "audio/ogg";
-        var description = "Media from PokeAPI";
-
-        if (sprites.front_default is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(sprites.front_default),
-                fileName: GetImageFileName(name, "front-default"),
-                contentType: imageContentType,
-                description: description,
-                cancellationToken: cancellationToken));
-        }
-
-        if (sprites.other.official_artwork.front_default is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(sprites.other.official_artwork.front_default),
-                fileName: GetImageFileName(name, "official-artwork-front-default"),
-                contentType: imageContentType,
-                description: description,
-                cancellationToken: cancellationToken));
-        }
 
         if (cries.legacy is not null)
         {
             tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.legacy),
                 fileName: GetAudioFileName(name, "legacy"),
-                contentType: audioContentType,
-                description: description,
+                contentType: AudioContentType,
+                description: Description,
                 cancellationToken: cancellationToken));
         }
 
@@ -137,11 +120,38 @@ public class Worker(
             tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.latest),
                 fileName: GetAudioFileName(name, "latest"),
-                contentType: audioContentType,
-                description: description,
+                contentType: AudioContentType,
+                description: Description,
                 cancellationToken: cancellationToken));
         }
 
+        return (await Task.WhenAll(tasks)).ToList();
+    }
+
+    private async Task<List<PokemonMediaDocument>> FetchImagesAsync(PokemonName name, Sprites sprites,
+        CancellationToken cancellationToken)
+    {
+        var tasks = new List<Task<PokemonMediaDocument>>();
+
+        if (sprites.front_default is not null)
+        {
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
+                uri: new Uri(sprites.front_default),
+                fileName: GetImageFileName(name, "front-default"),
+                contentType: ImageContentType,
+                description: Description,
+                cancellationToken: cancellationToken));
+        }
+
+        if (sprites.other.official_artwork.front_default is not null)
+        {
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
+                uri: new Uri(sprites.other.official_artwork.front_default),
+                fileName: GetImageFileName(name, "official-artwork-front-default"),
+                contentType: ImageContentType,
+                description: Description,
+                cancellationToken: cancellationToken));
+        }
 
         return (await Task.WhenAll(tasks)).ToList();
     }

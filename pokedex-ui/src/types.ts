@@ -9,6 +9,7 @@ export interface LokiLogRequest {
 export interface PokemonDto {
     pokemon_id: string;
     name: string;
+    region: string;
     height: string;
     weight: string;
     description: string;
@@ -16,15 +17,11 @@ export interface PokemonDto {
     types: PokemonTypeDto[];
     evolutions: PokemonEvolutionDto[];
     stats: PokemonStatDto[];
-    images: PokemonImageDto[];
-    audios: PokemonAudioDto[];
+    images: PokemonMediaDto[];
+    audios: PokemonMediaDto[];
     legendary: boolean;
     mythical: boolean;
     baby: boolean;
-}
-
-export interface PokemonTypeDto {
-    type: string;
 }
 
 export interface PokemonEvolutionDto {
@@ -37,18 +34,21 @@ export interface PokemonStatDto {
     value: number;
 }
 
-export interface PokemonImageDto {
+export interface PokemonTypeDto {
+    type: string;
+}
+
+export interface PokemonMediaDto {
     media_id: string;
     src: string;
     file_name: string;
     content_type: string;
 }
 
-export interface PokemonAudioDto {
-    media_id: string;
-    src: string;
-    file_name: string;
-    content_type: string;
+export interface PokemonMediaProjectionDto {
+    pokemon_id: string;
+    name: string;
+    images: PokemonMediaDto[];
 }
 
 export enum PokemonGeneration {

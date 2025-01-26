@@ -4,6 +4,7 @@ using pokedex_shared.Http.EvolutionChain;
 using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Model.Document;
+using pokedex_shared.Model.Document.Embedded;
 
 namespace pokedex_shared.Mapper;
 
@@ -17,7 +18,7 @@ public static partial class ApiMapper
     public static PokemonDocument ToDocument(string region, PokemonApiResponse pokemonApiResponse,
         PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse,
-        List<PokemonMediaDocument> medias)
+        List<PokemonMediaDocument> mediaCollection)
     {
         return new PokemonDocument
         {
@@ -29,8 +30,8 @@ public static partial class ApiMapper
             Generation = pokemonSpeciesApiResponse.generation.name,
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
             Stats = ToPokemonStats(pokemonApiResponse.stats),
-            Images = ToPokemonImages(medias),
-            Audios = ToPokemonAudios(medias),
+            Images = ToPokemonImages(mediaCollection),
+            Audios = ToPokemonAudios(mediaCollection),
             Types = ToPokemonTypes(pokemonApiResponse.types),
             Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
             Legendary = pokemonSpeciesApiResponse.is_legendary,

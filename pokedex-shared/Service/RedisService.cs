@@ -10,14 +10,14 @@ public class RedisService(
     ILogger<DatasourceQueryService> logger,
     IDistributedCache redis)
 {
-    public async Task<T?> GetAsync<T>(string key,
-        CancellationToken cancellationToken = default) where T : class
+    public async Task<T> GetAsync<T>(string key,
+        CancellationToken cancellationToken = default) where T : struct
     {
         var cacheValue = await redis.GetStringAsync(key, cancellationToken);
         if (cacheValue is null)
         {
             logger.LogInformation("Cache miss - {key}", key);
-            return null;
+            return default;
         }
 
         logger.LogInformation("Cache hit - {key}", key);

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-using pokedex_shared.Model.Document;
+using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Option;
 
 namespace pokedex_shared.Service.Command;
@@ -57,6 +57,7 @@ public class MongoDbGridFsCommandService
                 Src: src
             );
         }
+
         _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(uri, cancellationToken);
