@@ -2,7 +2,7 @@
 
 namespace pokedex_shared.Model.Dto;
 
-public readonly record struct PokemonDto(
+public readonly record struct PokemonDetailedDto(
     [property: JsonPropertyName("pokemon_id")]
     string PokemonId,
     [property: JsonPropertyName("name")] string Name,
@@ -24,6 +24,15 @@ public readonly record struct PokemonDto(
     [property: JsonPropertyName("mythical")]
     bool Mythical,
     [property: JsonPropertyName("baby")] bool Baby);
+
+public readonly record struct PokemonDetailedDtoCollection(
+    [property: JsonPropertyName("pokemons")]
+    List<PokemonDetailedDto> Collection)
+{
+    public PokemonDetailedDtoCollection() : this([])
+    {
+    }
+}
 
 public readonly record struct PokemonTypeDto(
     [property: JsonPropertyName("type")] string Type);
@@ -53,3 +62,18 @@ public readonly record struct PokemonAudioDto(
     string FileName,
     [property: JsonPropertyName("content_type")]
     string ContentType);
+
+public readonly record struct PokemonNameImagesDto(
+    [property: JsonPropertyName("pokemon_id")]
+    string PokemonId,
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("images")] List<PokemonImageDto> Images);
+
+public readonly record struct PokemonNameImagesDtoCollection(
+    [property: JsonPropertyName("pokemons")]
+    List<PokemonNameImagesDto> Collection)
+{
+    public PokemonNameImagesDtoCollection() : this([])
+    {
+    }
+}

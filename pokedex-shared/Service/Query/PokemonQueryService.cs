@@ -6,44 +6,51 @@ namespace pokedex_shared.Service.Query;
 
 public class PokemonQueryService(DatasourceQueryService datasourceQuery)
 {
-    public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
+    public async Task<PokemonNameImagesDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PokemonNameImagesDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindAllAsync(cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
+    public async Task<PokemonNameImagesDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.SearchByNameAsync(search, cancellationToken);
     }
-    
-    public async Task<PokemonDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+
+    public async Task<PokemonNameImagesDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.SearchByGenerationAsync(generation, cancellationToken);
     }
 
-    public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDetailedDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindByPokemonIdAsync(pokemonId, cancellationToken);
     }
 
-    public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDetailedDto?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindByNameAsync(pokemonName, cancellationToken);
     }
 
     public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id,
         CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await datasourceQuery.FindFileByIdAsync(id, cancellationToken);
     }
 }

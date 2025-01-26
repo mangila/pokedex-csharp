@@ -6,6 +6,7 @@ using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 using pokedex_shared.Option;
+using static MongoDB.Driver.Builders<pokedex_shared.Model.Document.PokemonDocument>;
 
 namespace pokedex_shared.Service.Query;
 
@@ -30,76 +31,95 @@ public class MongoDbQueryService
     private static List<CreateIndexModel<PokemonDocument>> CreateIndexes(string[] fieldNames)
     {
         return fieldNames
-            .Select(fieldName => Builders<PokemonDocument>.IndexKeys.Ascending(fieldName))
+            .Select(fieldName => IndexKeys.Ascending(fieldName))
             .Select(definition => new CreateIndexModel<PokemonDocument>(definition)).ToList();
     }
 
-    public async Task<PokemonDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDetailedDto?> FindOneByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.PokemonId == pokemonId.Value,
-            cancellationToken: cancellationToken);
-        var document = await cursor.FirstOrDefaultAsync(cancellationToken);
-        return document?.ToDto();
+        var result = await _collection
+            .Find(doc => doc.PokemonId == pokemonId.Value)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        return result?.ToDetailedDto();
     }
 
-    public async Task<PokemonDto?> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDetailedDto?> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(pokemonDocument => pokemonDocument.Name == pokemonName.Value,
-            cancellationToken: cancellationToken);
-        var document = await cursor.FirstOrDefaultAsync(cancellationToken);
-        return document?.ToDto();
+        var result = await _collection
+            .Find(doc => doc.Name == pokemonName.Value)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        return result?.ToDetailedDto();
     }
 
-    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
+    public async Task<PokemonNameImagesDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<PokemonDocument>.Filter.Regex(
+        var filter = Filter.Regex(
             doc => doc.Name,
             new BsonRegularExpression(search.Value, CaseInsensitiveMatching)
         );
-
-        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+        var projection = Projection
+            .Include(doc => doc.Name)
+            .Include(doc => doc.Medias);
+        var result = await _collection
+            .Find(filter)
+            .Project<PokemonDocument>(projection)
+            .ToListAsync(cancellationToken: cancellationToken);
+        var dtos = result
+            .Select(doc => doc.ToNameImagesDto())
+            .ToList();
+        return new PokemonNameImagesDtoCollection(dtos);
     }
 
-    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PokemonNameImagesDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
     {
-        using var cursor = await _collection.FindAsync(FilterDefinition<PokemonDocument>.Empty,
-            cancellationToken: cancellationToken);
-        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+        var projection = Projection
+            .Include(doc => doc.Name)
+            .Include(doc => doc.Medias);
+        var result = await _collection
+            .Find(FilterDefinition<PokemonDocument>.Empty)
+            .Project<PokemonDocument>(projection)
+            .ToListAsync(cancellationToken: cancellationToken);
+        var dtos = result
+            .Select(doc => doc.ToNameImagesDto())
+            .ToList();
+        return new PokemonNameImagesDtoCollection(dtos);
     }
 
-    public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
+    public async Task<PokemonNameImagesDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
-        var ids = pokemonIdCollection.Ids.Select(id => id.Value).ToList();
-        var filter = Builders<PokemonDocument>.Filter.In(doc => doc.PokemonId, ids);
-        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
+        var ids = pokemonIdCollection.Ids
+            .Select(id => id.Value)
+            .ToList();
+        var filter = Filter.In(doc => doc.PokemonId, ids);
+        var projection = Projection
+            .Include(doc => doc.Name)
+            .Include(doc => doc.Medias);
+        var result = await _collection
+            .Find(filter)
+            .Project<PokemonDocument>(projection)
+            .ToListAsync(cancellationToken: cancellationToken);
+        var dtos = result
+            .Select(doc => doc.ToNameImagesDto())
+            .ToList();
+        return new PokemonNameImagesDtoCollection(dtos);
     }
 
-    public async Task<PokemonDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<PokemonNameImagesDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
-        var filter = Builders<PokemonDocument>.Filter.Where(doc => doc.Generation == generation.Value);
-        using var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-        return await GetPokemonDtoCollectionAsync(cursor, cancellationToken);
-    }
-
-    private static async Task<PokemonDtoCollection> GetPokemonDtoCollectionAsync(IAsyncCursor<PokemonDocument> cursor,
-        CancellationToken cancellationToken = default)
-    {
-        var collection = new PokemonDtoCollection();
-        while (await cursor.MoveNextAsync(cancellationToken))
-        {
-            foreach (var document in cursor.Current)
-            {
-                collection.pokemons.Add(document.ToDto());
-            }
-        }
-
-        return collection;
+        var projection = Projection
+            .Include(doc => doc.Name)
+            .Include(doc => doc.Medias);
+        var filter = Filter.Where(doc => doc.Generation == generation.Value);
+        var result = await _collection
+            .Find(filter)
+            .Project<PokemonDocument>(projection)
+            .ToListAsync(cancellationToken: cancellationToken);
+        var dtos = result.Select(doc => doc.ToNameImagesDto()).ToList();
+        return new PokemonNameImagesDtoCollection(dtos);
     }
 }

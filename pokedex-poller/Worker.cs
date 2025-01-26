@@ -61,6 +61,11 @@ public class Worker(
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("worker cancelled - {pokemonGeneration}", pokemonGeneration);
+                Environment.Exit(0);
+            }
             catch (Exception e)
             {
                 logger.LogError(e, "ERR: {Message}", e.Message);

@@ -51,6 +51,23 @@ builder.Services.AddSingleton<IHostedService>(provider =>
         mongoDbService,
         mongoDbGridFsService);
 });
+// Add GenerationII Worker
+builder.Services.AddSingleton<IHostedService>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<Worker>>();
+    var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
+    var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
+    var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
+    var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
+    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
+    return new Worker(logger,
+        workerOption.Value,
+        pokeApiOption.Value,
+        PokemonGeneration.GenerationII,
+        pokemonClient,
+        mongoDbService,
+        mongoDbGridFsService);
+});
 
 var host = builder.Build();
 host.Run();

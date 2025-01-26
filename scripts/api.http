@@ -23,13 +23,13 @@ Content-Type: application/json
 ###
 
 ### GET pokemon by name
-GET {{pokemonV1}}/search/name?search=bu
+GET {{pokemonV1}}/search/name?search=b2
 Content-Type: application/json
 
 ###
 
 ### GET pokemon by generation
-GET {{pokemonV1}}/search/generation?generation=generation-
+GET {{pokemonV1}}/search/generation?generation=generation-i
 Content-Type: application/json
 
 ###

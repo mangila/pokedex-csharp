@@ -64,9 +64,17 @@ public readonly record struct PokemonMediaDocument(
 
 public static class Extensions
 {
-    public static PokemonDto ToDto(this PokemonDocument document)
+    public static PokemonDetailedDtoCollection ToDetailedDtoCollection(this List<PokemonDocument> pokemonDocuments)
     {
-        return new PokemonDto(
+        var l = pokemonDocuments
+            .Select(document => document.ToDetailedDto())
+            .ToList();
+        return new PokemonDetailedDtoCollection(l);
+    }
+
+    public static PokemonDetailedDto ToDetailedDto(this PokemonDocument document)
+    {
+        return new PokemonDetailedDto(
             PokemonId: document.PokemonId,
             Name: document.Name,
             Region: document.Region,
@@ -82,6 +90,15 @@ public static class Extensions
             Legendary: document.Legendary,
             Mythical: document.Mythical,
             Baby: document.Baby
+        );
+    }
+
+    public static PokemonNameImagesDto ToNameImagesDto(this PokemonDocument pokemonDocument)
+    {
+        return new PokemonNameImagesDto(
+            PokemonId: pokemonDocument.PokemonId,
+            Name: pokemonDocument.Name,
+            Images: pokemonDocument.Medias.ToImageDtos()
         );
     }
 

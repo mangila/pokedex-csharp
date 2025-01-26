@@ -18,19 +18,19 @@ public class DatasourceQueryService(
     MongoDbQueryService mongoDbQueryService,
     MongoDbGridFsQueryService mongoDbGridFsQueryService)
 {
-    private readonly string _cacheKeyPrefixPokemonId = "id:";
-    private readonly string _cacheKeyPrefixName = "name:";
+    private const string CacheKeyPrefixPokemonId = "id:";
+    private const string CacheKeyPrefixName = "name:";
 
     private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions = new()
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+        SlidingExpiration = TimeSpan.FromMinutes(10),
     };
 
-    public async Task<PokemonDto?> FindByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonDetailedDto?> FindByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = _cacheKeyPrefixPokemonId + pokemonId.Value;
-        var cacheValue = await redis.GetAsync<PokemonDto>(cacheKey, cancellationToken);
+        var cacheKey = CacheKeyPrefixPokemonId + pokemonId.Value;
+        var cacheValue = await redis.GetAsync<PokemonDetailedDto>(cacheKey, cancellationToken);
         if (cacheValue is not null)
         {
             return cacheValue;
@@ -47,11 +47,11 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<PokemonDto?> FindByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonDetailedDto?> FindByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = _cacheKeyPrefixName + pokemonName.Value;
-        var cacheValue = await redis.GetAsync<PokemonDto>(cacheKey, cancellationToken);
+        var cacheKey = CacheKeyPrefixName + pokemonName.Value;
+        var cacheValue = await redis.GetAsync<PokemonDetailedDto>(cacheKey, cancellationToken);
         if (cacheValue is not null)
         {
             return cacheValue;
@@ -68,19 +68,19 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<PokemonDtoCollection> SearchByNameAsync(PokemonName search,
+    public async Task<PokemonNameImagesDtoCollection> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.SearchByNameAsync(search, cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
+    public async Task<PokemonNameImagesDtoCollection> FindAllByPokemonIdAsync(PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PokemonNameImagesDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.FindAllAsync(cancellationToken);
     }
@@ -90,7 +90,7 @@ public class DatasourceQueryService(
         return await mongoDbGridFsQueryService.FindFileByIdAsync(id, cancellationToken);
     }
 
-    public async Task<PokemonDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<PokemonNameImagesDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         return await mongoDbQueryService.SearchByGenerationAsync(generation, cancellationToken);

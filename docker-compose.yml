@@ -1,5 +1,5 @@
 ﻿networks:
-  loki:
+  app:
 
 services:
   # Redis & Redis Insight
@@ -10,6 +10,8 @@ services:
       - "8001:8001"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    networks:
+      - app
   # Mongo    
   mongo:
     image: mongo:latest
@@ -18,6 +20,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - app
   # Mongo-express
   mongo-express:
     image: mongo-express:latest
@@ -30,6 +34,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    networks:
+      - app
   # Loki
   loki:
     image: grafana/loki:latest
@@ -37,7 +43,7 @@ services:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - loki
+      - app
   # Promtail
   promtail:
     image: grafana/promtail:latest
@@ -45,7 +51,7 @@ services:
       - /var/log:/var/log
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - loki
+      - app
   # Grafana
   grafana:
     environment:
@@ -75,4 +81,4 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - loki
+      - app
