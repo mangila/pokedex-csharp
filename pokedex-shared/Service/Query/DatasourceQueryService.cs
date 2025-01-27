@@ -69,25 +69,25 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonMediaProjection>> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.SearchByNameAsync(search, cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> FindAllByPokemonIdAsync(
+    public async Task<List<PokemonMediaProjection>> FindAllByPokemonIdAsync(
         PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<PokemonMediaProjection>> FindAllAsync(CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryService.FindAllAsync(cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<List<PokemonMediaProjection>> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         return await mongoDbQueryService.SearchByGenerationAsync(generation, cancellationToken);

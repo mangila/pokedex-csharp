@@ -9,7 +9,9 @@ export default function GitHubLinkIcon() {
         <Link href="https://github.com/mangila/pokedex-DOTNET"
               target="_blank"
         >
-            <IconButton>
+            <IconButton sx={{
+                color: 'white',
+            }}>
                 <GitHub/>
             </IconButton>
         </Link>

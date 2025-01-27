@@ -2,7 +2,6 @@
 import {Box} from "@mui/material";
 import React from "react";
 
-export const revalidate = 60
 
 export const dynamicParams = false
 

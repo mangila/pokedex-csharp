@@ -9,18 +9,32 @@ namespace pokedex_unit_test.Model.Domain;
 public class PokemonNameTest
 {
     [Test]
-    public void Test()
+    public void TestSpecialChars()
     {
-        // No special stuffs
         Action act = () => new PokemonName("#");
         act.Should().Throw<ValidationException>();
-        // Some exceptions 
-        act = () => new PokemonName("Mr-Mime");
+        act = () => new PokemonName("@");
+        act.Should().Throw<ValidationException>();
+        act = () => new PokemonName("123");
+        act.Should().Throw<ValidationException>();
+        act = () => new PokemonName("2");
+        act.Should().Throw<ValidationException>();
+    }
+
+    [Test]
+    public void TestExceptionNames()
+    {
+        var act = () => new PokemonName("Mr-mime");
         act.Should().NotThrow<ValidationException>();
-        // 50 chars
-        act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 50)));
+        act = () => new PokemonName("porygon2");
         act.Should().NotThrow<ValidationException>();
-        // 51 chars
+    }
+
+    [Test]
+    public void TestLength()
+    {
+        var act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 50)));
+        act.Should().NotThrow<ValidationException>();
         act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 51)));
         act.Should().Throw<ValidationException>();
     }

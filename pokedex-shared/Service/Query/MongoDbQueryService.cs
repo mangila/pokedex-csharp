@@ -39,7 +39,7 @@ public class MongoDbQueryService
         CancellationToken cancellationToken = default)
     {
         return await _collection
-            .Find(doc => doc.PokemonId == pokemonId.Value)
+            .Find(doc => doc.PokemonId.ToString() == pokemonId.Value)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
@@ -51,7 +51,7 @@ public class MongoDbQueryService
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonMediaProjection>> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         var filter = Filter.Regex(
@@ -63,48 +63,51 @@ public class MongoDbQueryService
             .Include(doc => doc.Images);
         return await _collection
             .Find(filter)
-            .Project<PokemonMediaProjectionDocument>(projection)
+            .Project<PokemonMediaProjection>(projection)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<PokemonMediaProjection>> FindAllAsync(CancellationToken cancellationToken = default)
     {
         var projection = Projection
             .Include(doc => doc.Name)
             .Include(doc => doc.Images);
         return await _collection
             .Find(FilterDefinition<PokemonDocument>.Empty)
-            .Project<PokemonMediaProjectionDocument>(projection)
+            .Project<PokemonMediaProjection>(projection)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> FindAllByPokemonIdAsync(
+    public async Task<List<PokemonMediaProjection>> FindAllByPokemonIdAsync(
         PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
         var ids = pokemonIdCollection.Ids
             .Select(id => id.Value)
             .ToList();
-        var filter = Filter.In(doc => doc.PokemonId, ids);
+        var filter = Filter
+            .In(doc => doc.PokemonId.ToString(), ids);
         var projection = Projection
             .Include(doc => doc.Name)
             .Include(doc => doc.Images);
         return await _collection
             .Find(filter)
-            .Project<PokemonMediaProjectionDocument>(projection)
+            .Project<PokemonMediaProjection>(projection)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjectionDocument>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<List<PokemonMediaProjection>> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         var projection = Projection
             .Include(doc => doc.Name)
             .Include(doc => doc.Images);
-        var filter = Filter.Where(doc => doc.Generation == generation.Value);
+        var filter = Filter
+            .Where(doc => doc.Generation == generation.Value);
         return await _collection
             .Find(filter)
-            .Project<PokemonMediaProjectionDocument>(projection)
+            .Sort(Sort.Ascending(p => p.PokemonId))
+            .Project<PokemonMediaProjection>(projection)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 }

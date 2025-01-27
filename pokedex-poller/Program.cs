@@ -34,40 +34,25 @@ builder.Services.AddPokemonApi(builder.Configuration.GetRequiredSection(nameof(P
 builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
 
-// Add GenerationI Worker
-builder.Services.AddSingleton<IHostedService>(provider =>
+foreach (var pokemonGeneration in PokemonGeneration.ToArray())
 {
-    var logger = provider.GetRequiredService<ILogger<Worker>>();
-    var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
-    var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
-    var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
-    var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
-    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
-    return new Worker(logger,
-        workerOption.Value,
-        pokeApiOption.Value,
-        PokemonGeneration.GenerationI,
-        pokemonClient,
-        mongoDbService,
-        mongoDbGridFsService);
-});
-// Add GenerationII Worker
-builder.Services.AddSingleton<IHostedService>(provider =>
-{
-    var logger = provider.GetRequiredService<ILogger<Worker>>();
-    var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
-    var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
-    var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
-    var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
-    var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
-    return new Worker(logger,
-        workerOption.Value,
-        pokeApiOption.Value,
-        PokemonGeneration.GenerationII,
-        pokemonClient,
-        mongoDbService,
-        mongoDbGridFsService);
-});
+    builder.Services.AddSingleton<IHostedService>(provider =>
+    {
+        var logger = provider.GetRequiredService<ILogger<Worker>>();
+        var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
+        var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
+        var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
+        var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
+        var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
+        return new Worker(logger,
+            workerOption.Value,
+            pokeApiOption.Value,
+            pokemonGeneration,
+            pokemonClient,
+            mongoDbService,
+            mongoDbGridFsService);
+    });
+}
 
 var host = builder.Build();
 host.Run();

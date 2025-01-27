@@ -34,9 +34,15 @@ public class Worker(
                 var generation =
                     await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
                         cancellationToken);
+                var count = 1;
                 foreach (var generationPokemon in generation.PokemonSpecies)
                 {
-                    logger.LogInformation("{name}", generationPokemon.Name);
+                    logger.LogInformation("{name} - ({count}/{length}) - {generation}",
+                        generationPokemon.Name,
+                        count,
+                        generation.PokemonSpecies.Length,
+                        pokemonGeneration.Value);
+
                     var pokemonName = new PokemonName(generationPokemon.Name);
                     // Fetch 
                     var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
@@ -68,6 +74,7 @@ public class Worker(
                     );
                     await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
                     await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
+                    count++;
                 }
             }
             catch (OperationCanceledException)
@@ -81,7 +88,7 @@ public class Worker(
                 Environment.Exit(1);
             }
 
-            Environment.Exit(0);
+            break;
         }
     }
 

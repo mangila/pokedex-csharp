@@ -22,7 +22,7 @@ public static partial class ApiMapper
     {
         return new PokemonDocument
         {
-            PokemonId = pokemonApiResponse.id.ToString(),
+            PokemonId = pokemonApiResponse.id,
             Name = pokemonApiResponse.name,
             Region = region,
             Height = ToMeterHeight(pokemonApiResponse.height),

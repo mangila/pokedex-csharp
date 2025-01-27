@@ -43,4 +43,20 @@ public class PokemonGeneration
             _ => throw new NotSupportedException("Unknown pokemon generation")
         };
     }
+
+    public static PokemonGeneration[] ToArray()
+    {
+        return
+        [
+            GenerationI,
+            GenerationII,
+            GenerationIII,
+            GenerationIV,
+            GenerationV,
+            GenerationVI,
+            GenerationVII,
+            GenerationVIII,
+            GenerationIX
+        ];
+    }
 }
