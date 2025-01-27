@@ -12,62 +12,41 @@ using pokedex_shared.Service.Command;
 
 namespace pokedex_poller;
 
-public class Worker : BackgroundService
+public class Worker(
+    ILogger<Worker> logger,
+    IOptions<WorkerOption> workerOption,
+    IOptions<PokeApiOption> pokeApiOption,
+    PokemonGeneration pokemonGeneration,
+    PokemonHttpClient pokemonHttpClient,
+    MongoDbCommandService mongoDbCommandService,
+    MongoDbGridFsCommandService mongoDbGridFsCommandService,
+    Random random,
+    Action<string, bool> onWorkerStarted,
+    Action<string, bool> onWorkerCompleted)
+    : BackgroundService
 {
     private const string ImageContentType = "image/png";
     private const string AudioContentType = "audio/ogg";
     private const string Description = "Media from PokeAPI";
 
-    private readonly ILogger<Worker> _logger;
-    private readonly string _pokemonGeneration;
-    private readonly PokemonHttpClient _pokemonHttpClient;
-    private readonly MongoDbCommandService _mongoDbCommandService;
-    private readonly MongoDbGridFsCommandService _mongoDbGridFsCommandService;
-    private readonly Random _random;
-    private readonly Action<string, bool> _onWorkerStarted;
-    private readonly Action<string, bool> _onWorkerCompleted;
-    private readonly PokeApiOption _pokeApiOption;
-    private readonly WorkerOption _workerOption;
+    private readonly string _pokemonGeneration = pokemonGeneration.Value;
+    private readonly PokeApiOption _pokeApiOption = pokeApiOption.Value;
+    private readonly WorkerOption _workerOption = workerOption.Value;
     private bool _isDone;
-
-    public Worker(
-        ILogger<Worker> logger,
-        IOptions<WorkerOption> workerOption,
-        IOptions<PokeApiOption> pokeApiOption,
-        PokemonGeneration pokemonGeneration,
-        PokemonHttpClient pokemonHttpClient,
-        MongoDbCommandService mongoDbCommandService,
-        MongoDbGridFsCommandService mongoDbGridFsCommandService,
-        Random random,
-        Action<string, bool> onWorkerStarted,
-        Action<string, bool> onWorkerCompleted)
-    {
-        _logger = logger;
-        _pokemonGeneration = pokemonGeneration.Value;
-        _pokemonHttpClient = pokemonHttpClient;
-        _mongoDbCommandService = mongoDbCommandService;
-        _mongoDbGridFsCommandService = mongoDbGridFsCommandService;
-        _random = random;
-        _onWorkerStarted = onWorkerStarted;
-        _onWorkerCompleted = onWorkerCompleted;
-        _pokeApiOption = pokeApiOption.Value;
-        _workerOption = workerOption.Value;
-        _isDone = false;
-    }
 
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("worker started: {time} - {pokemonGeneration}",
+        logger.LogInformation("worker started: {time} - {pokemonGeneration}",
             DateTime.Now,
             _pokemonGeneration);
-        _onWorkerStarted.Invoke(_pokemonGeneration, _isDone);
+        onWorkerStarted.Invoke(_pokemonGeneration, _isDone);
         return base.StartAsync(cancellationToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("worker stopped: {time} - {pokemonGeneration}",
+        logger.LogInformation("worker stopped: {time} - {pokemonGeneration}",
             DateTimeOffset.Now,
             _pokemonGeneration);
         return base.StopAsync(cancellationToken);
@@ -75,11 +54,11 @@ public class Worker : BackgroundService
 
     private Task CompleteAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
+        logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
             DateTimeOffset.Now,
             _pokemonGeneration);
         _isDone = true;
-        _onWorkerCompleted.Invoke(_pokemonGeneration, _isDone);
+        onWorkerCompleted.Invoke(_pokemonGeneration, _isDone);
         return base.StopAsync(cancellationToken);
     }
 
@@ -88,12 +67,12 @@ public class Worker : BackgroundService
         try
         {
             var generation =
-                await _pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
+                await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
                     cancellationToken);
             var count = 1;
             foreach (var generationPokemon in generation.PokemonSpecies)
             {
-                _logger.LogInformation("{name} - ({count}/{length}) - {generation}",
+                logger.LogInformation("{name} - ({count}/{length}) - {generation}",
                     generationPokemon.Name,
                     count,
                     generation.PokemonSpecies.Length,
@@ -101,7 +80,7 @@ public class Worker : BackgroundService
 
                 var pokemonName = new PokemonName(generationPokemon.Name);
                 // Fetch 
-                var pokemon = await _pokemonHttpClient.GetAsync<PokemonApiResponse>(
+                var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
                     uri: GetPokemonRelativeUri(pokemonName),
                     cancellationToken: cancellationToken);
                 var images = await FetchImagesAsync(
@@ -114,10 +93,10 @@ public class Worker : BackgroundService
                     cries: pokemon.cries,
                     cancellationToken: cancellationToken
                 );
-                var species = await _pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
+                var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
                     uri: new Uri(pokemon.species.url),
                     cancellationToken: cancellationToken);
-                var evolutionChain = await _pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
+                var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
                     uri: new Uri(species.evolution_chain.url),
                     cancellationToken: cancellationToken);
                 // Map
@@ -128,8 +107,8 @@ public class Worker : BackgroundService
                     evolutionChainApiResponse: evolutionChain,
                     mediaCollection: [..images, ..cries]
                 );
-                await _mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
-                var jitter = _random.Next(
+                await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
+                var jitter = random.Next(
                     _workerOption.Interval.Min,
                     _workerOption.Interval.Max);
                 await Task.Delay(TimeSpan.FromSeconds(jitter), cancellationToken);
@@ -144,7 +123,7 @@ public class Worker : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "ERR: {Message}", e.Message);
+            logger.LogError(e, "ERR: {Message}", e.Message);
             Environment.Exit(1);
         }
     }
@@ -171,7 +150,7 @@ public class Worker : BackgroundService
 
         if (cries.legacy is not null)
         {
-            tasks.Add(_mongoDbGridFsCommandService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.legacy),
                 fileName: GetAudioFileName(name, "legacy"),
                 contentType: AudioContentType,
@@ -181,7 +160,7 @@ public class Worker : BackgroundService
 
         if (cries.latest is not null)
         {
-            tasks.Add(_mongoDbGridFsCommandService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(cries.latest),
                 fileName: GetAudioFileName(name, "latest"),
                 contentType: AudioContentType,
@@ -199,7 +178,7 @@ public class Worker : BackgroundService
 
         if (sprites.front_default is not null)
         {
-            tasks.Add(_mongoDbGridFsCommandService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(sprites.front_default),
                 fileName: GetImageFileName(name, "front-default"),
                 contentType: ImageContentType,
@@ -209,7 +188,7 @@ public class Worker : BackgroundService
 
         if (sprites.other.official_artwork.front_default is not null)
         {
-            tasks.Add(_mongoDbGridFsCommandService.InsertAsync(
+            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
                 uri: new Uri(sprites.other.official_artwork.front_default),
                 fileName: GetImageFileName(name, "official-artwork-front-default"),
                 contentType: ImageContentType,
