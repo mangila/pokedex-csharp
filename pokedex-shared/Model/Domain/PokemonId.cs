@@ -3,7 +3,7 @@ using pokedex_shared.Extension;
 
 namespace pokedex_shared.Model.Domain;
 
-public class PokemonId
+public readonly record struct PokemonId
 {
     [Required]
     [StringLength(5, ErrorMessage = "length cannot be over 5")]

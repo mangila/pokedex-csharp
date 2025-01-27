@@ -18,7 +18,8 @@ public class Worker(
     PokemonGeneration pokemonGeneration,
     PokemonHttpClient pokemonHttpClient,
     MongoDbCommandService mongoDbCommandService,
-    MongoDbGridFsCommandService mongoDbGridFsCommandService) : BackgroundService
+    MongoDbGridFsCommandService mongoDbGridFsCommandService,
+    Action<PokemonGeneration, bool> onWorkerCompleted) : BackgroundService
 {
     private const string ImageContentType = "image/png";
     private const string AudioContentType = "audio/ogg";
@@ -40,67 +41,79 @@ public class Worker(
         return base.StopAsync(cancellationToken);
     }
 
+    private Task RanToCompletion(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
+            DateTimeOffset.Now,
+            pokemonGeneration.Value);
+        onWorkerCompleted.Invoke(pokemonGeneration, true);
+        return base.StopAsync(cancellationToken);
+    }
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            try
+            var random = new Random();
+            var generation =
+                await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
+                    cancellationToken);
+            var count = 1;
+            foreach (var generationPokemon in generation.PokemonSpecies)
             {
-                var generation =
-                    await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
-                        cancellationToken);
-                var count = 1;
-                foreach (var generationPokemon in generation.PokemonSpecies)
-                {
-                    logger.LogInformation("{name} - ({count}/{length}) - {generation}",
-                        generationPokemon.Name,
-                        count,
-                        generation.PokemonSpecies.Length,
-                        pokemonGeneration.Value);
+                logger.LogInformation("{name} - ({count}/{length}) - {generation}",
+                    generationPokemon.Name,
+                    count,
+                    generation.PokemonSpecies.Length,
+                    pokemonGeneration.Value);
 
-                    var pokemonName = new PokemonName(generationPokemon.Name);
-                    // Fetch 
-                    var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                        uri: GetPokemonRelativeUri(pokemonName),
-                        cancellationToken: cancellationToken);
-                    var images = await FetchImagesAsync(
-                        name: pokemonName,
-                        sprites: pokemon.sprites,
-                        cancellationToken: cancellationToken
-                    );
-                    var cries = await FetchCriesAsync(
-                        name: pokemonName,
-                        cries: pokemon.cries,
-                        cancellationToken: cancellationToken
-                    );
-                    var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
-                        uri: new Uri(pokemon.species.url),
-                        cancellationToken: cancellationToken);
-                    var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
-                        uri: new Uri(species.evolution_chain.url),
-                        cancellationToken: cancellationToken);
-                    // Map
-                    var document = ApiMapper.ToDocument(
-                        region: generation.Region.Name,
-                        pokemonApiResponse: pokemon,
-                        pokemonSpeciesApiResponse: species,
-                        evolutionChainApiResponse: evolutionChain,
-                        mediaCollection: [..images, ..cries]
-                    );
-                    await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
-                    await Task.Delay(TimeSpan.FromSeconds(workerOption.Interval), cancellationToken);
-                    count++;
-                }
+                var pokemonName = new PokemonName(generationPokemon.Name);
+                // Fetch 
+                var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
+                    uri: GetPokemonRelativeUri(pokemonName),
+                    cancellationToken: cancellationToken);
+                var images = await FetchImagesAsync(
+                    name: pokemonName,
+                    sprites: pokemon.sprites,
+                    cancellationToken: cancellationToken
+                );
+                var cries = await FetchCriesAsync(
+                    name: pokemonName,
+                    cries: pokemon.cries,
+                    cancellationToken: cancellationToken
+                );
+                var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
+                    uri: new Uri(pokemon.species.url),
+                    cancellationToken: cancellationToken);
+                var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
+                    uri: new Uri(species.evolution_chain.url),
+                    cancellationToken: cancellationToken);
+                // Map
+                var document = ApiMapper.ToDocument(
+                    region: generation.Region.Name,
+                    pokemonApiResponse: pokemon,
+                    pokemonSpeciesApiResponse: species,
+                    evolutionChainApiResponse: evolutionChain,
+                    mediaCollection: [..images, ..cries]
+                );
+                await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
+                var jitter = random.Next(
+                    workerOption.Interval.Min,
+                    workerOption.Interval.Max);
+                await Task.Delay(TimeSpan.FromSeconds(jitter), cancellationToken);
+                count++;
             }
-            catch (OperationCanceledException)
-            {
-                // Do nothing
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "ERR: {Message}", e.Message);
-                Environment.Exit(1);
-            }
+
+            await RanToCompletion(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // Do nothing, stopping...
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "ERR: {Message}", e.Message);
+            Environment.Exit(1);
         }
     }
 

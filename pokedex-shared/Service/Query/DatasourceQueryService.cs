@@ -43,7 +43,7 @@ public class DatasourceQueryService(
             return default;
         }
 
-        var json = await db.ToJsonAsync(cancellationToken);
+        var json = await db.ToJsonValueTypeAsync(cancellationToken);
         await redis.SetAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
         return db;
     }
@@ -64,7 +64,7 @@ public class DatasourceQueryService(
             return default;
         }
 
-        var json = await db.ToJsonAsync(cancellationToken);
+        var json = await db.ToJsonValueTypeAsync(cancellationToken);
         await redis.SetAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
         return db;
     }

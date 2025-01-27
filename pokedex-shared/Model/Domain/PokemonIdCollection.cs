@@ -1,11 +1,14 @@
-﻿namespace pokedex_shared.Model.Domain;
+﻿using System.Collections.Immutable;
 
-public class PokemonIdCollection
+namespace pokedex_shared.Model.Domain;
+
+public readonly record struct PokemonIdCollection
 {
-    public readonly List<PokemonId> Ids;
+    public readonly ImmutableList<PokemonId> Ids;
 
     public PokemonIdCollection(List<int> ids)
     {
-        Ids = ids.Select(id => new PokemonId(id.ToString())).ToList();
+        Ids = ids.Select(id => new PokemonId(id.ToString()))
+            .ToImmutableList();
     }
 }

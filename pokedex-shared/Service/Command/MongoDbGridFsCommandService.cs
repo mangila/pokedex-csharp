@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Option;
+using static MongoDB.Driver.Builders<MongoDB.Driver.GridFS.GridFSFileInfo>;
 
 namespace pokedex_shared.Service.Command;
 
@@ -40,9 +41,11 @@ public class MongoDbGridFsCommandService
         string description,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<GridFSFileInfo>.Filter.Eq(file => file.Filename, fileName);
-        var cursor = await _bucket.FindAsync(filter, cancellationToken: cancellationToken);
-        var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
+        var filter = Filter
+            .Eq(file => file.Filename, fileName);
+        var fileInfo = await _bucket
+            .Find(filter, cancellationToken: cancellationToken)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         string? getFileUri;
         string? src;
         if (fileInfo is not null)

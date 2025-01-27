@@ -27,7 +27,7 @@ public static class HttpRequestConfig
                     Detail = "Request timed out by Default Policy",
                     Status = StatusCodes.Status408RequestTimeout,
                 };
-                await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
+                await context.Response.WriteAsync(await problemDetails.ToJsonReferenceTypeAsync());
             }
         };
         requestTimeoutOptions.AddPolicy(Policies.OneMinute, new RequestTimeoutPolicy
@@ -43,7 +43,7 @@ public static class HttpRequestConfig
                     Detail = $"Request timed out by {Policies.OneMinute}",
                     Status = StatusCodes.Status408RequestTimeout,
                 };
-                await context.Response.WriteAsync(await problemDetails.ToJsonAsync());
+                await context.Response.WriteAsync(await problemDetails.ToJsonReferenceTypeAsync());
             }
         });
     }

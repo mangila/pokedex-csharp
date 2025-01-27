@@ -30,16 +30,16 @@ public class MongoDbGridFsQueryService
     public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId objectId,
         CancellationToken cancellationToken)
     {
-        var cursor = await _bucket.FindAsync(Builders<GridFSFileInfo>.Filter.Eq("_id", objectId),
-            cancellationToken: cancellationToken);
-        var fileInfo = await cursor.FirstOrDefaultAsync(cancellationToken);
+        var fileInfo = await (await _bucket
+                .FindAsync(Builders<GridFSFileInfo>.Filter.Eq("_id", objectId), cancellationToken: cancellationToken))
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (fileInfo is null)
         {
             _logger.LogInformation("{objectId} not found", objectId.ToString());
             return null;
         }
 
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
         memoryStream.Position = 0;
         return new PokemonFileResult(fileInfo.Filename,

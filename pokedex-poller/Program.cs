@@ -34,10 +34,23 @@ builder.Services.AddPokemonApi(builder.Configuration.GetRequiredSection(nameof(P
 builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
 
+var cts = new CancellationTokenSource();
+var completedWorkers = new Dictionary<PokemonGeneration, bool>();
+
+var onWorkerCompleted = (PokemonGeneration generation, bool done) =>
+{
+    completedWorkers[generation] = done;
+    if (completedWorkers.Values.All(isDone => isDone))
+    {
+        cts.Cancel();
+    }
+};
+
 foreach (var pokemonGeneration in PokemonGeneration.ToArray())
 {
     builder.Services.AddSingleton<IHostedService>(provider =>
     {
+        completedWorkers.Add(pokemonGeneration, false);
         var logger = provider.GetRequiredService<ILogger<Worker>>();
         var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
         var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
@@ -50,9 +63,10 @@ foreach (var pokemonGeneration in PokemonGeneration.ToArray())
             pokemonGeneration,
             pokemonClient,
             mongoDbService,
-            mongoDbGridFsService);
+            mongoDbGridFsService,
+            onWorkerCompleted);
     });
 }
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync(cts.Token);

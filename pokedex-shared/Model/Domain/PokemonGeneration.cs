@@ -13,7 +13,7 @@
  *  Scarlet, Violet (Gen 9) <br></br>
  * </summary>
  */
-public class PokemonGeneration
+public readonly record struct PokemonGeneration
 {
     public static readonly PokemonGeneration GenerationI = new("generation-i");
     public static readonly PokemonGeneration GenerationII = new("generation-ii");

@@ -25,10 +25,11 @@ public class PokemonV1FileController(
     )
     {
         var result = await pokemonQueryService.FindFileByIdAsync(id, cancellationToken);
-        if (result is not null)
+        if (result.HasValue)
         {
+            var file = result.Value;
             Response.Headers.CacheControl = "public, max-age=43200";
-            return Results.File(result.File, result.ContentType, result.FileName);
+            return Results.File(file.File, file.ContentType, file.FileName);
         }
 
         return Results.NotFound();
