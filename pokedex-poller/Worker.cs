@@ -72,6 +72,10 @@ public class Worker(
             var count = 1;
             foreach (var generationPokemon in generation.PokemonSpecies)
             {
+                var jitter = random.Next(
+                    _workerOption.Interval.Min,
+                    _workerOption.Interval.Max);
+                await Task.Delay(TimeSpan.FromSeconds(jitter), cancellationToken);
                 logger.LogInformation("{name} - ({count}/{length}) - {generation}",
                     generationPokemon.Name,
                     count,
@@ -108,10 +112,6 @@ public class Worker(
                     mediaCollection: [..images, ..cries]
                 );
                 await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
-                var jitter = random.Next(
-                    _workerOption.Interval.Min,
-                    _workerOption.Interval.Max);
-                await Task.Delay(TimeSpan.FromSeconds(jitter), cancellationToken);
                 count++;
             }
 
