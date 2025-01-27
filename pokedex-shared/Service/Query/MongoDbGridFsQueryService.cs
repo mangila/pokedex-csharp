@@ -39,7 +39,7 @@ public class MongoDbGridFsQueryService
             return null;
         }
 
-        using var memoryStream = new MemoryStream();
+        var memoryStream = new MemoryStream();
         await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
         memoryStream.Position = 0;
         return new PokemonFileResult(fileInfo.Filename,
