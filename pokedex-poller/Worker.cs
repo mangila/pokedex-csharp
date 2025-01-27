@@ -19,6 +19,7 @@ public class Worker(
     PokemonHttpClient pokemonHttpClient,
     MongoDbCommandService mongoDbCommandService,
     MongoDbGridFsCommandService mongoDbGridFsCommandService,
+    Random random,
     Action<PokemonGeneration, bool> onWorkerCompleted) : BackgroundService
 {
     private const string ImageContentType = "image/png";
@@ -54,7 +55,6 @@ public class Worker(
     {
         try
         {
-            var random = new Random();
             var generation =
                 await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
                     cancellationToken);

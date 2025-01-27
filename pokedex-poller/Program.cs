@@ -64,6 +64,7 @@ foreach (var pokemonGeneration in PokemonGeneration.ToArray())
             pokemonClient,
             mongoDbService,
             mongoDbGridFsService,
+            new Random(),
             onWorkerCompleted);
     });
 }
