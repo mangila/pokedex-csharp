@@ -35,12 +35,14 @@ builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSecti
 builder.Services.AddSingleton<RedisService>();
 
 var cts = new CancellationTokenSource();
-var completedWorkers = new Dictionary<PokemonGeneration, bool>();
+var workers = new Dictionary<string, bool>();
 
-var onWorkerCompleted = (PokemonGeneration generation, bool done) =>
+var onWorkerStarted = (string generation, bool done) => { workers.Add(generation, done); };
+
+var onWorkerCompleted = (string generation, bool done) =>
 {
-    completedWorkers[generation] = done;
-    if (completedWorkers.Values.All(isDone => isDone))
+    workers[generation] = done;
+    if (workers.Values.All(isDone => isDone))
     {
         cts.Cancel();
     }
@@ -48,25 +50,17 @@ var onWorkerCompleted = (PokemonGeneration generation, bool done) =>
 
 foreach (var pokemonGeneration in PokemonGeneration.ToArray())
 {
-    builder.Services.AddSingleton<IHostedService>(provider =>
-    {
-        completedWorkers.Add(pokemonGeneration, false);
-        var logger = provider.GetRequiredService<ILogger<Worker>>();
-        var workerOption = provider.GetRequiredService<IOptions<WorkerOption>>();
-        var pokeApiOption = provider.GetRequiredService<IOptions<PokeApiOption>>();
-        var pokemonClient = provider.GetRequiredService<PokemonHttpClient>();
-        var mongoDbService = provider.GetRequiredService<MongoDbCommandService>();
-        var mongoDbGridFsService = provider.GetRequiredService<MongoDbGridFsCommandService>();
-        return new Worker(logger,
-            workerOption.Value,
-            pokeApiOption.Value,
-            pokemonGeneration,
-            pokemonClient,
-            mongoDbService,
-            mongoDbGridFsService,
-            new Random(),
-            onWorkerCompleted);
-    });
+    builder.Services.AddSingleton<IHostedService>(provider => new Worker(
+        logger: provider.GetRequiredService<ILogger<Worker>>(),
+        workerOption: provider.GetRequiredService<IOptions<WorkerOption>>(),
+        pokeApiOption: provider.GetRequiredService<IOptions<PokeApiOption>>(),
+        pokemonGeneration: pokemonGeneration,
+        pokemonHttpClient: provider.GetRequiredService<PokemonHttpClient>(),
+        mongoDbCommandService: provider.GetRequiredService<MongoDbCommandService>(),
+        mongoDbGridFsCommandService: provider.GetRequiredService<MongoDbGridFsCommandService>(),
+        random: new Random(),
+        onWorkerStarted: onWorkerStarted,
+        onWorkerCompleted: onWorkerCompleted));
 }
 
 var host = builder.Build();
