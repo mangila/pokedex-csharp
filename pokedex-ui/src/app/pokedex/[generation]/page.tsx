@@ -1,6 +1,7 @@
 ﻿import {findAllPokemonsByGeneration} from "@/api";
 import {PokemonGeneration} from "@/types";
-import {ButtonBase, Grid2, Tooltip} from "@mui/material";
+import {padWithLeadingZeros} from "@/utils";
+import {ButtonBase, Grid2, Tooltip, Typography} from "@mui/material";
 import Image from "next/image";
 import Link from 'next/link';
 
@@ -20,17 +21,24 @@ export default async function Page({params}: {
                             sx={{
                                 borderRadius: 4,
                                 '&:hover': {
-                                    backgroundColor: '#1565c0',
+                                    backgroundColor: '#EF5350',
                                 },
                             }}
                         >
-                            <Image
-                                priority
-                                src={pokemon.images[0].src}
-                                alt={pokemon.name}
-                                width={96}
-                                height={96}
-                            />
+                            <Grid2 container direction="column">
+                                <Image
+                                    priority
+                                    src={pokemon.images[0].src}
+                                    alt={pokemon.name}
+                                    width={96}
+                                    height={96}
+                                />
+                                <Typography
+                                    fontSize={12}
+                                    color={"textSecondary"}>
+                                    #{padWithLeadingZeros(pokemon.pokemon_id, 4)}
+                                </Typography>
+                            </Grid2>
                         </ButtonBase>
                     </Tooltip>
                 </Grid2>
