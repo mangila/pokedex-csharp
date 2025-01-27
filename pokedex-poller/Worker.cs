@@ -24,11 +24,26 @@ public class Worker(
     private const string AudioContentType = "audio/ogg";
     private const string Description = "Media from PokeAPI";
 
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("worker started: {time} - {pokemonGeneration}",
+            DateTime.Now,
+            pokemonGeneration.Value);
+        return base.StartAsync(cancellationToken);
+    }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("worker stopped: {time} - {pokemonGeneration}",
+            DateTimeOffset.Now,
+            pokemonGeneration.Value);
+        return base.StopAsync(cancellationToken);
+    }
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogInformation("worker started - {pokemonGeneration}", pokemonGeneration.Value);
             try
             {
                 var generation =
@@ -79,16 +94,13 @@ public class Worker(
             }
             catch (OperationCanceledException)
             {
-                logger.LogInformation("worker cancelled");
-                Environment.Exit(0);
+                // Do nothing
             }
             catch (Exception e)
             {
                 logger.LogError(e, "ERR: {Message}", e.Message);
                 Environment.Exit(1);
             }
-
-            break;
         }
     }
 
