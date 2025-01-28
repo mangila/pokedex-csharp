@@ -1,12 +1,14 @@
-﻿import {Box} from "@mui/material";
-import React from "react";
+﻿"use client"
 
-export async function generateMetadata() {
-    return {
-        title: "pokedex-ui | dashboard",
-    }
-}
+import React from "react";
+import {DashboardLayout, PageContainer} from "@toolpad/core";
 
 export default function Layout({children}: { children: React.ReactNode }) {
-    return <Box>{children}</Box>
+    return <>
+        <DashboardLayout>
+            <PageContainer>
+                {children}
+            </PageContainer>
+        </DashboardLayout>
+    </>
 }

@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
         fetches: {
             fullUrl: true,
         },
-    },
+    }
 };
 
 export default nextConfig;

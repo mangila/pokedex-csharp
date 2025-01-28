@@ -1,7 +1,7 @@
 ﻿export type Loglevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LokiLogRequest {
-    loglevel: Loglevel;
+    level: Loglevel;
     message: string;
     data: unknown
 }

@@ -1,7 +1,13 @@
-﻿export default function Loading() {
-    return (
-        <div>
-            <h1>Loading... page</h1>
-        </div>
-    );
+﻿"use client"
+import {DashboardLayout, PageContainer} from "@toolpad/core";
+import React from "react";
+
+export default function Loading() {
+    return <>
+        <DashboardLayout>
+            <PageContainer>
+                Loading...
+            </PageContainer>
+        </DashboardLayout>
+    </>
 }

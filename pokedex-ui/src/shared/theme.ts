@@ -1,7 +1,7 @@
 ﻿'use client';
 import {createTheme} from '@mui/material/styles';
 
-export const theme = createTheme({
+const theme = createTheme({
 
     typography: {
         fontFamily: 'var(--font-roboto)',
@@ -16,3 +16,5 @@ export const theme = createTheme({
         },
     },
 });
+
+export default theme;

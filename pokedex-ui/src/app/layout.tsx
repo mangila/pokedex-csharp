@@ -2,12 +2,12 @@ import type {Metadata} from "next";
 import {Roboto} from "next/font/google";
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v15-appRouter';
 import {CssBaseline} from "@mui/material";
-import {theme} from "@/theme";
-import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material/';
+import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material';
 import {NextAppProvider} from "@toolpad/core/nextjs";
-import {DashboardLayout} from "@toolpad/core/DashboardLayout";
-import {PageContainer} from "@toolpad/core/PageContainer";
-import GitHubLinkIcon from "@/components/GitHubLinkIcon";
+import Image from "next/image";
+import theme from "@shared/theme";
+import {APP_NAME} from "@shared/utils";
+import {Suspense} from "react";
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -17,7 +17,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-    title: "pokedex-ui",
+    title: APP_NAME,
     description: "Mangila@Github",
 };
 
@@ -62,24 +62,20 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <body className={roboto.variable}>
         <AppRouterCacheProvider>
             <CssBaseline/>
-            <NextAppProvider navigation={NAVIGATION}
-                             branding={{
-                                 logo: <img src={"/logo-pokemon.png"} alt="pokemon logo"/>,
-                                 title: '',
-                             }}
-                             theme={theme}>
-                <DashboardLayout
-                    slots={{
-                        toolbarActions: GitHubLinkIcon
-                    }}
-                >
-                    <PageContainer
-                        title={""}
-                    >
-                        {children}
-                    </PageContainer>
-                </DashboardLayout>
-            </NextAppProvider>
+            <Suspense fallback={<div>loading..</div>}>
+                <NextAppProvider navigation={NAVIGATION}
+                                 branding={{
+                                     logo: <Image
+                                         width={100}
+                                         height={100}
+                                         src={"/logo-pokemon.png"}
+                                         alt="pokemon logo"/>,
+                                     title: '',
+                                 }}
+                                 theme={theme}>
+                    {children}
+                </NextAppProvider>
+            </Suspense>
         </AppRouterCacheProvider>
         </body>
         </html>

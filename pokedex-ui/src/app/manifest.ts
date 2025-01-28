@@ -1,8 +1,9 @@
 ﻿import type {MetadataRoute} from 'next'
+import {APP_NAME} from '@shared/utils'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'pokedx-ui',
+        name: APP_NAME,
         description: 'Mangila@Github',
         start_url: '/',
         icons: [
