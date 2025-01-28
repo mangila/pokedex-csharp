@@ -1,8 +1,9 @@
 ﻿import {LokiLogRequest, PokemonDto, PokemonGeneration, PokemonMediaProjectionDto} from "./types";
 import {APP_NAME, ENV, LOKI_PUSH_URL, POKEDEX_API_V1_URL} from "./utils";
 
+
 export const pushToLoki = async (request: LokiLogRequest): Promise<boolean> => {
-    const timestamp = Date.now().toString();
+    const timestamp = (Date.now() * 1000000).toString() // nanoseconds
     const payload = {
         streams: [
             {
@@ -20,7 +21,6 @@ export const pushToLoki = async (request: LokiLogRequest): Promise<boolean> => {
     });
     return response.ok;
 };
-
 export const getAllPokemons = async (): Promise<PokemonMediaProjectionDto[]> => {
     const uri = `${POKEDEX_API_V1_URL}/pokemon`
     const response = await fetch(uri, {
@@ -51,23 +51,16 @@ export const findAllPokemonsByGeneration = async (generation: PokemonGeneration)
     return json.pokemons as PokemonMediaProjectionDto[];
 }
 
-export const getPokemonByName = async (pokemonName: string): Promise<PokemonDto> => {
+export const getPokemonByName = async (pokemonName: string): Promise<PokemonDto | undefined> => {
     const uri = `${POKEDEX_API_V1_URL}/pokemon/${pokemonName}`;
-    try {
-        const response = await fetch(uri, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        if (!response.ok) {
-            // @ts-expect-error fetch failed
-            return undefined
+    const response = await fetch(uri, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
         }
-        return await response.json() as PokemonDto;
-    } catch (error) {
-        console.error(error);
-        // @ts-expect-error fetch failed - network or something
+    })
+    if (!response.ok) {
         return undefined;
     }
+    return await response.json() as PokemonDto;
 }
