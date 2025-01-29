@@ -38,6 +38,7 @@ builder.Services.AddSingleton<RedisService>();
 builder.Services.AddSingleton<DatasourceQueryService>();
 
 var app = builder.Build();
+app.UseCors(policyBuilder => { policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseRequestTimeouts();

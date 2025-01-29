@@ -12,7 +12,7 @@ namespace pokedex_api.Controller;
 [Route("api/v1/pokemon/search")]
 [Produces(MediaTypeNames.Application.Json)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
-[RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+[RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1SearchController(
     ILogger<PokemonV1SearchController> logger,
     PokemonQueryService pokemonQueryService)

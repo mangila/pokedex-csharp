@@ -13,9 +13,8 @@ export default async function Page({params}: {
         notFound();
     }
     return <Box>
-        {name}
         {pokemon.description}
-        <Image src={pokemon.images[0].src}
+        <Image src={pokemon.images[1].src}
                width={200}
                height={200}
                priority

@@ -6,6 +6,14 @@ export interface LokiLogRequest {
     data: unknown
 }
 
+export interface PaginationResultDto {
+    total_count: number;
+    total_pages: number;
+    current_page: number;
+    page_size: number;
+    pokemons: PokemonDto[];
+}
+
 export interface PokemonDto {
     pokemon_id: string;
     name: string;

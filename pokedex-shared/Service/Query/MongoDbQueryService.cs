@@ -78,6 +78,45 @@ public class MongoDbQueryService
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
+    /**
+     * <summary>
+     *  Pagination logic
+     *  1. Get total documents
+     *  2. Total / PageSize = To get the total pages to Paginate with
+     *  3. Skip documents with -1 (zero indexed)
+     *  4. Limit with the page size
+     *  5. Sort ascending on PokemonId
+     *  Might be more performance with range query, but then we need the boundary value.
+     * </summary>
+     */
+    public async Task<PaginationResultDocument> FindAllAsync(int page, int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var count = await _collection.CountDocumentsAsync(
+            FilterDefinition<PokemonDocument>.Empty,
+            null,
+            cancellationToken);
+
+        var totalPages = (int)Math.Ceiling((double)count / pageSize);
+
+        var documents = await _collection
+            .Find(FilterDefinition<PokemonDocument>.Empty)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .Sort(Sort.Ascending(p => p.PokemonId))
+            .ToListAsync(cancellationToken);
+
+        return new PaginationResultDocument
+        {
+            TotalCount = count,
+            TotalPages = totalPages,
+            CurrentPage = page,
+            PageSize = pageSize,
+            Documents = documents
+        };
+    }
+
+
     public async Task<List<PokemonMediaProjection>> FindAllByPokemonIdAsync(
         PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)

@@ -1,16 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
+﻿using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
+using pokedex_shared.Http.Species;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Model.Document;
 
 public readonly record struct PokemonDocument(
-    [Required]
-    [property: BsonId]
-    [property: BsonRepresentation(BsonType.Int32)]
-    int PokemonId,
+    [Required] [property: BsonId] int PokemonId,
     [Required]
     [property: BsonElement("name")]
     string Name,
@@ -55,8 +53,15 @@ public readonly record struct PokemonDocument(
     bool Baby
 );
 
-public static class Extensions
+public static partial class Extensions
 {
+    public static ImmutableList<PokemonDto> ToDtos(this List<PokemonDocument> documents)
+    {
+        return documents
+            .Select(document => document.ToDto())
+            .ToImmutableList();
+    }
+
     public static PokemonDto ToDto(this PokemonDocument document)
     {
         return new PokemonDto(

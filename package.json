@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "husky",
     "test-backend": "dotnet test pokedex.sln",
-    "lint-ui": "npm run lint --prefix ./pokedex-ui"
+    "lint-ui": "npm run lint --prefix ./pokedex-ui",
+    "build": "dotnet build && npm run build --prefix ./pokedex-ui"
   }
 }

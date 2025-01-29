@@ -9,7 +9,7 @@ public static class HttpRequestConfig
 {
     public static class Policies
     {
-        public const string OneMinute = "OneMinute";
+        public const string ThreeMinute = "ThreeMinute";
     }
 
     public static void ConfigureRequestTimeout(RequestTimeoutOptions requestTimeoutOptions)
@@ -30,9 +30,9 @@ public static class HttpRequestConfig
                 await context.Response.WriteAsync(await problemDetails.ToJsonReferenceTypeAsync());
             }
         };
-        requestTimeoutOptions.AddPolicy(Policies.OneMinute, new RequestTimeoutPolicy
+        requestTimeoutOptions.AddPolicy(Policies.ThreeMinute, new RequestTimeoutPolicy
         {
-            Timeout = TimeSpan.FromMinutes(1),
+            Timeout = TimeSpan.FromMinutes(3),
             TimeoutStatusCode = StatusCodes.Status408RequestTimeout,
             WriteTimeoutResponse = async context =>
             {
@@ -40,7 +40,7 @@ public static class HttpRequestConfig
                 var problemDetails = new ProblemDetails
                 {
                     Title = "Request Timeout",
-                    Detail = $"Request timed out by {Policies.OneMinute}",
+                    Detail = $"Request timed out by {Policies.ThreeMinute}",
                     Status = StatusCodes.Status408RequestTimeout,
                 };
                 await context.Response.WriteAsync(await problemDetails.ToJsonReferenceTypeAsync());

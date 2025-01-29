@@ -1,11 +1,16 @@
-﻿export function padWithLeadingZeros(pokemonId: string, totalLength: number): string {
+﻿export const padWithLeadingZeros = (pokemonId: string, totalLength: number): string => {
     while (pokemonId.length < totalLength) {
         pokemonId = '0' + pokemonId;
     }
     return pokemonId;
 }
 
-export const POKEDEX_API_V1_URL: string = process.env.POKEDEX_API_V1_URL;
+export const capitalizeFirstLetter = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const POKEDEX_API_V1_URL: string = process.env.NEXT_PUBLIC_POKEDEX_API_V1_URL;
 export const LOKI_PUSH_URL: string = process.env.LOKI_PUSH_URL;
 export const ENV = process.env.NODE_ENV;
 export const APP_NAME = process.env.APP_NAME;

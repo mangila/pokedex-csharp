@@ -1,7 +1,6 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using MongoDB.Bson;
 using pokedex_api.Config;
 using pokedex_shared.Service.Query;
@@ -11,8 +10,7 @@ namespace pokedex_api.Controller;
 [ApiController]
 [Route("api/v1/pokemon/file")]
 [Produces(MediaTypeNames.Application.Octet)]
-[EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
-[RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+[RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1FileController(
     ILogger<PokemonV1FileController> logger,
     PokemonQueryService pokemonQueryService)
@@ -28,7 +26,7 @@ public class PokemonV1FileController(
         if (result.HasValue)
         {
             var file = result.Value;
-            Response.Headers.CacheControl = "public, max-age=43200";
+            Response.Headers.CacheControl = $"public, max-age=${TimeSpan.FromMinutes(10).Seconds}";
             return Results.File(file.File, file.ContentType, file.FileName);
         }
 

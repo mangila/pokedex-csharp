@@ -1,7 +1,7 @@
 ﻿import Image from "next/image";
 import {Grid2, Tooltip, Typography} from "@mui/material";
 import {PokemonMediaProjectionDto} from "@shared/types";
-import {BLUR_IMAGE, padWithLeadingZeros} from "@shared/utils";
+import {BLUR_IMAGE, capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
 import Link from "next/link";
 
 interface PokemonImageProps {
@@ -12,9 +12,10 @@ interface PokemonImageProps {
 
 export default function PokemonGenerationDisplay(props: PokemonImageProps) {
     const {pokemon, width, height} = props;
+    const name = capitalizeFirstLetter(pokemon.name);
     return <Link
         href={`/pokemon/${pokemon.name}`}>
-        <Tooltip title={pokemon.name} placement="bottom" arrow>
+        <Tooltip title={name} placement="bottom" arrow>
             <Grid2
                 container
                 alignItems="center"

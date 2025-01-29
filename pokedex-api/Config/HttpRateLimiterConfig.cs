@@ -11,6 +11,9 @@ public static class HttpRateLimiterConfig
         public const string FixedWindow = "FixedWindow";
     }
 
+    private const int PermitLimit = 500;
+    private const int QueueLimit = PermitLimit / 2;
+
     public static void ConfigureRateLimiter(RateLimiterOptions rateLimiterOptions)
     {
         rateLimiterOptions.AddPolicy<object>(policyName: Policies.FixedWindow, context =>
@@ -20,8 +23,8 @@ public static class HttpRateLimiterConfig
                 factory: partition => new FixedWindowRateLimiterOptions
                 {
                     AutoReplenishment = true,
-                    PermitLimit = 300,
-                    QueueLimit = 0,
+                    PermitLimit = PermitLimit,
+                    QueueLimit = QueueLimit,
                     Window = TimeSpan.FromMinutes(1),
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 });
@@ -30,7 +33,6 @@ public static class HttpRateLimiterConfig
         rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         rateLimiterOptions.OnRejected = (context, token) =>
         {
-            // Set RetryAfter header with FixedWindow value.
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
             {
                 var retryAfterValue = retryAfter.TotalSeconds.ToString(NumberFormatInfo.InvariantInfo);

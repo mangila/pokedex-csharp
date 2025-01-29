@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -12,16 +13,24 @@ namespace pokedex_api.Controller;
 [Route("api/v1/pokemon")]
 [Produces(MediaTypeNames.Application.Json)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
-[RequestTimeout(HttpRequestConfig.Policies.OneMinute)]
+[RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1Controller(
     ILogger<PokemonV1Controller> logger,
     PokemonQueryService pokemonQueryService)
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IResult> FindAll(CancellationToken cancellationToken = default)
+    public async Task<IResult> FindAll(
+        [Required] [FromQuery] [Range(0, int.MaxValue, ErrorMessage = "The Page must be a non-negative integer.")]
+        int page,
+        [Required] [FromQuery] [Range(0, int.MaxValue, ErrorMessage = "The Page size must be a non-negative integer.")]
+        int pageSize,
+        CancellationToken cancellationToken = default)
     {
-        var collection = await pokemonQueryService.FindAllAsync(cancellationToken);
+        var collection = await pokemonQueryService.FindAllAsync(
+            page,
+            pageSize,
+            cancellationToken);
         return Results.Ok(collection);
     }
 

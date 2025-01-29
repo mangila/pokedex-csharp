@@ -82,9 +82,10 @@ public class DatasourceQueryService(
         return await mongoDbQueryService.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjection>> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PaginationResultDocument> FindAllAsync(int page, int pageSize,
+        CancellationToken cancellationToken = default)
     {
-        return await mongoDbQueryService.FindAllAsync(cancellationToken);
+        return await mongoDbQueryService.FindAllAsync(page, pageSize, cancellationToken);
     }
 
     public async Task<List<PokemonMediaProjection>> SearchByGenerationAsync(PokemonGeneration generation,

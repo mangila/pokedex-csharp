@@ -19,12 +19,12 @@ public class PokemonQueryService(DatasourceQueryService datasourceQuery)
         return collection.ToDtoCollection();
     }
 
-    public async Task<PokemonMediaProjectionDtoCollection> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PaginationResultDto> FindAllAsync(int page, int pageSize,
+        CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var collection = await datasourceQuery
-            .FindAllAsync(cancellationToken);
-        return collection.ToDtoCollection();
+        var paginationResult = await datasourceQuery.FindAllAsync(page, pageSize, cancellationToken);
+        return paginationResult.ToDto();
     }
 
     public async Task<PokemonMediaProjectionDtoCollection> SearchByNameAsync(PokemonName search,

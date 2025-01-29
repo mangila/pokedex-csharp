@@ -35,8 +35,7 @@ nUnit3 test project with Testcontainers and FluentAssertion
 MongoDB as database and Redis as a IDistributedCache.
 
 * Redis Insight - http://localhost:8082
-* Mongo Express - http://localhost:8081
-
+* Mongo Compass ConnectionString - `mongodb://admin:password@localhost:27017`
 ## loki
 
 * Grafana with Loki datasource - http://localhost:3000
