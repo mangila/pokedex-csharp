@@ -1,13 +1,14 @@
 ﻿"use client"
 
-import {DashboardLayout, PageContainer} from "@toolpad/core";
+import {PageContainer} from "@toolpad/core";
 import React from "react";
 import Image from "next/image";
 import {Typography} from "@mui/material";
+import PokemonDashboardLayout from "@components/PokemonDashboardLayout";
 
 export default function NotFound() {
     return <>
-        <DashboardLayout>
+        <PokemonDashboardLayout>
             <PageContainer>
                 <Typography>
                     404 | Not found
@@ -18,6 +19,6 @@ export default function NotFound() {
                        priority
                        alt={"missingno"}/>
             </PageContainer>
-        </DashboardLayout>
+        </PokemonDashboardLayout>
     </>
 }

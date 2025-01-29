@@ -1,8 +1,9 @@
 ﻿'use client'
 
 import React from 'react'
-import {DashboardLayout, PageContainer} from "@toolpad/core";
+import {PageContainer} from "@toolpad/core";
 import {Button, Typography} from '@mui/material';
+import PokemonDashboardLayout from '@components/PokemonDashboardLayout';
 
 export default function Error({
                                   error,
@@ -12,7 +13,7 @@ export default function Error({
     reset: () => void
 }) {
     return <>
-        <DashboardLayout>
+        <PokemonDashboardLayout>
             <PageContainer>
                 <Typography gutterBottom>
                     Something went wrong.
@@ -28,6 +29,6 @@ export default function Error({
                     Try again
                 </Button>
             </PageContainer>
-        </DashboardLayout>
+        </PokemonDashboardLayout>
     </>
 }

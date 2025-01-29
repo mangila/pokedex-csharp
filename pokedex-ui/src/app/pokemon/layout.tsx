@@ -1,9 +1,10 @@
 ﻿"use client"
 import React from "react";
-import {DashboardLayout, PageContainer, useActivePage} from "@toolpad/core";
+import {PageContainer, useActivePage} from "@toolpad/core";
 import {useParams} from "next/navigation";
 import {capitalizeFirstLetter} from "@shared/utils";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import PokemonDashboardLayout from "@components/PokemonDashboardLayout";
 
 // Set active breadcrumbs for the active Pokemon or nothing if in /pokemon
 export default function Layout({children}: { children: React.ReactNode }) {
@@ -17,20 +18,20 @@ export default function Layout({children}: { children: React.ReactNode }) {
             path,
         }];
         return <>
-            <DashboardLayout>
+            <PokemonDashboardLayout>
                 <PageContainer title={title} breadcrumbs={breadcrumbs}>
                     {children}
                 </PageContainer>
-            </DashboardLayout>
+            </PokemonDashboardLayout>
         </>
     }
     return <>
         <QueryClientProvider client={new QueryClient}>
-            <DashboardLayout>
+            <PokemonDashboardLayout>
                 <PageContainer>
                     {children}
                 </PageContainer>
-            </DashboardLayout>
+            </PokemonDashboardLayout>
         </QueryClientProvider>
     </>
 }

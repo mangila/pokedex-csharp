@@ -4,7 +4,6 @@ import {AppRouterCacheProvider} from '@mui/material-nextjs/v15-appRouter';
 import {CssBaseline} from "@mui/material";
 import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material';
 import {NextAppProvider} from "@toolpad/core/nextjs";
-import Image from "next/image";
 import theme from "@shared/theme";
 import {APP_NAME} from "@shared/utils";
 import {Suspense} from "react";
@@ -64,15 +63,6 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             <CssBaseline/>
             <Suspense fallback={<div>loading..</div>}>
                 <NextAppProvider navigation={NAVIGATION}
-                                 branding={{
-                                     logo: <Image
-                                         priority
-                                         width={100}
-                                         height={100}
-                                         src={"/logo-pokemon.png"}
-                                         alt="pokemon logo"/>,
-                                     title: '',
-                                 }}
                                  theme={theme}>
                     {children}
                 </NextAppProvider>
