@@ -30,8 +30,8 @@ public class DatasourceQueryService(
     public async Task<PokemonDocument> FindByPokemonIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = CacheKeyPrefixPokemonId + pokemonId.Value;
-        var cacheValue = await redis.GetAsync<PokemonDocument>(cacheKey, cancellationToken);
+        var cacheKey = string.Concat(CacheKeyPrefixPokemonId, pokemonId.Value);
+        var cacheValue = await redis.GetValueTypeAsync<PokemonDocument>(cacheKey, cancellationToken);
         if (cacheValue != default)
         {
             return cacheValue;
@@ -51,8 +51,8 @@ public class DatasourceQueryService(
     public async Task<PokemonDocument> FindByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
-        var cacheKey = CacheKeyPrefixName + pokemonName.Value;
-        var cacheValue = await redis.GetAsync<PokemonDocument>(cacheKey, cancellationToken);
+        var cacheKey = string.Concat(CacheKeyPrefixName, pokemonName.Value);
+        var cacheValue = await redis.GetValueTypeAsync<PokemonDocument>(cacheKey, cancellationToken);
         if (cacheValue != default)
         {
             return cacheValue;

@@ -19,7 +19,7 @@ public static class ExtensionMapper
         }
     }
 
-    public static async Task<T> DeserializeJsonAsync<T>(this string json,
+    public static async Task<T> DeserializeValueTypeJsonAsync<T>(this string json,
         CancellationToken cancellationToken = default) where T : struct
     {
         var bytes = Encoding.UTF8.GetBytes(json);

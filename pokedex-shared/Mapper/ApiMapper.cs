@@ -5,6 +5,7 @@ using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Document.Embedded;
+using pokedex_shared.Model.Domain;
 using EvolutionChain = pokedex_shared.Http.EvolutionChain.EvolutionChain;
 
 namespace pokedex_shared.Mapper;
@@ -17,18 +18,21 @@ namespace pokedex_shared.Mapper;
 public static partial class ApiMapper
 {
     public static PokemonDocument ToDocument(
+        PokemonId pokemonId,
+        PokemonName pokemonName,
         string generation,
         string region,
         List<PokemonMediaDocument> images,
         List<PokemonMediaDocument> audios,
+        PokemonApiResponse[] varieties,
         PokemonApiResponse pokemonApiResponse,
         PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
         EvolutionChainApiResponse evolutionChainApiResponse)
     {
         return new PokemonDocument
         {
-            PokemonId = pokemonApiResponse.Id,
-            Name = pokemonApiResponse.Name,
+            PokemonId = Convert.ToInt32(pokemonId.Value),
+            Name = pokemonName.Value,
             JapaneseSignName = ToJapaneseSignName(pokemonSpeciesApiResponse.Names),
             Region = region,
             Height = ToMeterHeight(pokemonApiResponse.Height),
@@ -43,8 +47,16 @@ public static partial class ApiMapper
             Baby = pokemonSpeciesApiResponse.Baby,
             Images = images,
             Audios = audios,
-            Varieties = []
+            Varieties = ToVarieties(pokemonName, varieties)
         };
+    }
+
+    private static List<PokemonVarietyDocument> ToVarieties(PokemonName pokemonName, PokemonApiResponse[] varieties)
+    {
+        return varieties
+            .Where(response => response.Name != pokemonName.Value)
+            .Select(response => new PokemonVarietyDocument(response.Id, response.Name))
+            .ToList();
     }
 
     private static string ToJapaneseSignName(Names[] names)

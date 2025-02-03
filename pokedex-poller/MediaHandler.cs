@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using pokedex_shared.Extension;
 using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
+using pokedex_shared.Service;
 using pokedex_shared.Service.Command;
 
 namespace pokedex_poller;
@@ -15,8 +18,17 @@ namespace pokedex_poller;
 public class MediaHandler(
     ILogger<MediaHandler> logger,
     IOptions<WorkerOption> workerOption,
+    RedisService redisService,
     MongoDbGridFsCommandService mongoDbGridFsCommandService)
 {
+    private const string CacheKeySpritesPrefix = "pokeapi.co:sprites:";
+    private const string CacheKeyAudioPrefix = "pokeapi.co:audio:";
+
+    private readonly DistributedCacheEntryOptions _options = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(3)
+    };
+
     private readonly WorkerOption _workerOption = workerOption.Value;
     private readonly Random _random = new();
 
@@ -269,12 +281,24 @@ public class MediaHandler(
         {
             if (entry != default)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
-                mediaDocuments.Add(
-                    await mongoDbGridFsCommandService.InsertAsync(
-                        entry,
-                        cancellationToken)
-                );
+                var cacheKey = string.Concat(CacheKeySpritesPrefix, entry.Uri.AbsolutePath);
+                var cacheValue = await redisService.GetValueTypeAsync<PokemonMediaEntry>(
+                    cacheKey,
+                    cancellationToken);
+                if (cacheValue == default)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+                    mediaDocuments.Add(
+                        await mongoDbGridFsCommandService.InsertAsync(
+                            entry,
+                            cancellationToken)
+                    );
+                    await redisService.SetAsync(
+                        cacheKey,
+                        await entry.ToJsonValueTypeAsync(cancellationToken: cancellationToken),
+                        _options,
+                        cancellationToken);
+                }
             }
         }
 
@@ -298,12 +322,24 @@ public class MediaHandler(
         {
             if (entry != default)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
-                mediaDocuments.Add(
-                    await mongoDbGridFsCommandService.InsertAsync(
-                        entry,
-                        cancellationToken)
-                );
+                var cacheKey = string.Concat(CacheKeyAudioPrefix, entry.Uri.AbsolutePath);
+                var cacheValue = await redisService.GetValueTypeAsync<PokemonMediaEntry>(
+                    cacheKey,
+                    cancellationToken);
+                if (cacheValue == default)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+                    mediaDocuments.Add(
+                        await mongoDbGridFsCommandService.InsertAsync(
+                            entry,
+                            cancellationToken)
+                    );
+                    await redisService.SetAsync(
+                        cacheKey,
+                        await entry.ToJsonValueTypeAsync(cancellationToken: cancellationToken),
+                        _options,
+                        cancellationToken);
+                }
             }
         }
 

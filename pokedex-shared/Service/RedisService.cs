@@ -9,7 +9,7 @@ public class RedisService(
     ILogger<DatasourceQueryService> logger,
     IDistributedCache redis)
 {
-    public async Task<T> GetAsync<T>(string key,
+    public async Task<T> GetValueTypeAsync<T>(string key,
         CancellationToken cancellationToken = default) where T : struct
     {
         var cacheValue = await redis.GetStringAsync(key, cancellationToken);
@@ -21,7 +21,7 @@ public class RedisService(
 
         logger.LogInformation("Cache hit - {key}", key);
 
-        return await cacheValue.DeserializeJsonAsync<T>(cancellationToken);
+        return await cacheValue.DeserializeValueTypeJsonAsync<T>(cancellationToken);
     }
 
     public async Task SetAsync(

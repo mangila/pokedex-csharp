@@ -69,7 +69,6 @@ public class Worker(
                     _pokemonGeneration);
 
                 // Fetch
-                var pokemonName = new PokemonName(generationPokemon.Name);
                 var species =
                     await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
                         uri: new Uri(generationPokemon.Url),
@@ -77,12 +76,14 @@ public class Worker(
                 var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
                     uri: new Uri(species.EvolutionChain.Url),
                     cancellationToken: cancellationToken);
-                foreach (var variety in species.Varieties)
+                var tasks = species.Varieties.Select(variety => pokemonHttpClient.GetAsync<PokemonApiResponse>(
+                    uri: new Uri(variety.Pokemon.Url),
+                    cancellationToken: cancellationToken));
+                var pokemonVarieties = await Task.WhenAll(tasks);
+                foreach (var pokemon in pokemonVarieties)
                 {
-                    var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                        uri: new Uri(variety.Pokemon.Url),
-                        cancellationToken: cancellationToken);
                     var pokemonId = new PokemonId(pokemon.Id);
+                    var pokemonName = new PokemonName(pokemon.Name);
                     var images = await mediaHandler.FetchImagesAsync(
                         name: pokemonName,
                         sprites: pokemon.Sprites,
@@ -92,10 +93,13 @@ public class Worker(
                         cries: pokemon.Cries,
                         cancellationToken: cancellationToken);
                     var document = ApiMapper.ToDocument(
+                        pokemonId: pokemonId,
+                        pokemonName: pokemonName,
                         generation: _pokemonGeneration,
                         region: generation.Region.Name,
                         images: images,
                         audios: audios,
+                        varieties: pokemonVarieties,
                         pokemonApiResponse: pokemon,
                         pokemonSpeciesApiResponse: species,
                         evolutionChainApiResponse: evolutionChain

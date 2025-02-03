@@ -53,7 +53,9 @@ public readonly record struct PokemonDocument(
     [Required]
     [property: BsonElement("audios")]
     List<PokemonMediaDocument> Audios,
-    [property: BsonElement("varieties")] List<PokemonVarietyDocument> Varieties
+    [Required]
+    [property: BsonElement("varieties")]
+    List<PokemonVarietyDocument> Varieties
 );
 
 public static partial class Extensions

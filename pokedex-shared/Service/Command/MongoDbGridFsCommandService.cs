@@ -45,22 +45,17 @@ public class MongoDbGridFsCommandService
         var fileInfo = await _bucket
             .Find(filter, cancellationToken: cancellationToken)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-        string? getFileUri;
-        string? src;
+
         if (fileInfo is not null)
         {
-            _logger.LogInformation("GridFs hit - {fileName}", fileName);
-            getFileUri = _pokedexApiOption.GetFileUri.Replace("{id}", fileInfo.Id.ToString());
-            src = $"{_pokedexApiOption.Url}/{getFileUri}";
             return new PokemonMediaDocument(
                 MediaId: fileInfo.Id.ToString(),
                 FileName: fileInfo.Filename,
                 ContentType: fileInfo.Metadata["content_type"].AsString,
-                Src: src
+                Src: GetSrc(fileInfo.Id.ToString())
             );
         }
 
-        _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
         using var response = await httpClient.GetAsync(entry.Uri, cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -74,13 +69,21 @@ public class MongoDbGridFsCommandService
                     { "description", entry.Description },
                 }
             }, cancellationToken);
-        getFileUri = _pokedexApiOption.GetFileUri.Replace("{id}", mediaId.ToString());
-        src = $"{_pokedexApiOption.Url}/{getFileUri}";
         return new PokemonMediaDocument(
             MediaId: mediaId.ToString(),
             FileName: fileName,
             ContentType: entry.GetContentType(),
-            Src: src
+            Src: GetSrc(mediaId.ToString())
         );
+    }
+
+    private string GetSrc(string mediaId)
+    {
+        return $"{_pokedexApiOption.Url}/{GetFileUri(mediaId)}";
+    }
+
+    private string GetFileUri(string mediaId)
+    {
+        return _pokedexApiOption.GetFileUri.Replace("{id}", mediaId);
     }
 }
