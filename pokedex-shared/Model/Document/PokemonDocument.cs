@@ -9,8 +9,8 @@ namespace pokedex_shared.Model.Document;
 public readonly record struct PokemonDocument(
     [Required] [property: BsonId] int PokemonId,
     [Required]
-    [property: BsonElement("en-name")]
-    string EnglishName,
+    [property: BsonElement("name")]
+    string Name,
     [Required]
     [property: BsonElement("jp-hrkt-name")]
     string JapaneseSignName,
@@ -69,7 +69,7 @@ public static partial class Extensions
     {
         return new PokemonDto(
             PokemonId: document.PokemonId.ToString(),
-            Name: document.EnglishName,
+            Name: document.Name,
             Region: document.Region,
             Height: document.Height,
             Weight: document.Weight,

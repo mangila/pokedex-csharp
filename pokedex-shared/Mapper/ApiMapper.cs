@@ -28,7 +28,7 @@ public static partial class ApiMapper
         return new PokemonDocument
         {
             PokemonId = pokemonApiResponse.Id,
-            EnglishName = pokemonApiResponse.Name,
+            Name = pokemonApiResponse.Name,
             JapaneseSignName = ToJapaneseSignName(pokemonSpeciesApiResponse.Names),
             Region = region,
             Height = ToMeterHeight(pokemonApiResponse.Height),
