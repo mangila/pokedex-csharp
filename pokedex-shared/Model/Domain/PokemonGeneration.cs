@@ -15,15 +15,15 @@
  */
 public readonly record struct PokemonGeneration
 {
-    public static readonly PokemonGeneration GenerationI = new("generation-i");
-    public static readonly PokemonGeneration GenerationII = new("generation-ii");
-    public static readonly PokemonGeneration GenerationIII = new("generation-iii");
-    public static readonly PokemonGeneration GenerationIV = new("generation-iv");
-    public static readonly PokemonGeneration GenerationV = new("generation-v");
-    public static readonly PokemonGeneration GenerationVI = new("generation-vi");
-    public static readonly PokemonGeneration GenerationVII = new("generation-vii");
-    public static readonly PokemonGeneration GenerationVIII = new("generation-viii");
-    public static readonly PokemonGeneration GenerationIX = new("generation-ix");
+    private static readonly PokemonGeneration GenerationI = new("generation-i");
+    private static readonly PokemonGeneration GenerationII = new("generation-ii");
+    private static readonly PokemonGeneration GenerationIII = new("generation-iii");
+    private static readonly PokemonGeneration GenerationIV = new("generation-iv");
+    private static readonly PokemonGeneration GenerationV = new("generation-v");
+    private static readonly PokemonGeneration GenerationVI = new("generation-vi");
+    private static readonly PokemonGeneration GenerationVII = new("generation-vii");
+    private static readonly PokemonGeneration GenerationVIII = new("generation-viii");
+    private static readonly PokemonGeneration GenerationIX = new("generation-ix");
     public string Value { get; }
     private PokemonGeneration(string value) => Value = value;
 

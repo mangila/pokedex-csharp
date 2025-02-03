@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using pokedex_shared.Extension;
+using pokedex_shared.Common;
 
 namespace pokedex_shared.Model.Domain;
 
@@ -13,12 +13,12 @@ public readonly record struct PokemonId
     public PokemonId(string value)
     {
         Value = value;
-        this.Validate();
+        this.ValidateValueType();
     }
 
     public PokemonId(int value)
     {
         Value = value.ToString();
-        this.Validate();
+        this.ValidateValueType();
     }
 }

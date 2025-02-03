@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using pokedex_api.Config;
 using pokedex_api.ExceptionHandler;
-using pokedex_shared.Config;
-using pokedex_shared.Option;
+using pokedex_shared.Common.Option;
+using pokedex_shared.Database;
 using pokedex_shared.Service;
-using pokedex_shared.Service.Query;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure API Controllers
 builder.Services.AddControllers();
 // Configure MongoDB
-builder.Services.AddMongoDbQueryService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
+builder.Services.AddMongoDbQueryRepository(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 // Configure Redis
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
@@ -33,7 +32,7 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 // Add Singleton Services
-builder.Services.AddSingleton<PokemonQueryService>();
+builder.Services.AddSingleton<PokemonService>();
 builder.Services.AddSingleton<RedisService>();
 builder.Services.AddSingleton<DatasourceQueryService>();
 

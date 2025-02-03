@@ -1,4 +1,4 @@
-﻿using pokedex_shared.Model.Dto.Collection;
+﻿using pokedex_shared.Model.Dto;
 
 namespace pokedex_shared.Model.Document;
 
@@ -7,7 +7,7 @@ public readonly record struct PaginationResultDocument(
     int TotalPages,
     int CurrentPage,
     int PageSize,
-    List<PokemonDocument> Documents
+    List<PokemonSpeciesDocument> Documents
 );
 
 public static partial class Extensions

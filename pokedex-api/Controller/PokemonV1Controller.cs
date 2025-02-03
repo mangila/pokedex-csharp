@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Service.Query;
+using pokedex_shared.Model.Dto;
+using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;
 
@@ -16,18 +17,23 @@ namespace pokedex_api.Controller;
 [RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1Controller(
     ILogger<PokemonV1Controller> logger,
-    PokemonQueryService pokemonQueryService)
+    PokemonService pokemonService)
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IResult> FindAll(
+    [ProducesResponseType<List<PaginationResultDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IResult> FindByPagination(
         [Required] [FromQuery] [Range(0, int.MaxValue, ErrorMessage = "The Page must be a non-negative integer.")]
         int page,
-        [Required] [FromQuery] [Range(0, int.MaxValue, ErrorMessage = "The Page size must be a non-negative integer.")]
+        [Required]
+        [FromQuery]
+        [Range(0, 100, ErrorMessage = "The Page size must be a non-negative integer and in the range 1-100")]
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var collection = await pokemonQueryService.FindAllAsync(
+        var collection = await pokemonService.FindByPaginationAsync(
             page,
             pageSize,
             cancellationToken);
@@ -35,22 +41,30 @@ public class PokemonV1Controller(
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IResult> FindByPokemonId(
+    [ProducesResponseType<PokemonSpeciesDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IResult> FindById(
         [FromRoute] int id,
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonQueryService.FindOneByPokemonIdAsync(new PokemonId(id), cancellationToken);
+        var dto = await pokemonService.FindOneByPokemonIdAsync(new PokemonId(id), cancellationToken);
         return dto.Equals(default) ? Results.NotFound() : Results.Ok(dto);
     }
 
     [HttpGet("{name}")]
+    [ProducesResponseType<PokemonSpeciesDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> FindByPokemonName(
         [FromRoute] string name,
         CancellationToken cancellationToken = default
     )
     {
-        var dto = await pokemonQueryService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
+        var dto = await pokemonService.FindOneByNameAsync(new PokemonName(name), cancellationToken);
         return dto.Equals(default) ? Results.NotFound() : Results.Ok(dto);
     }
 }

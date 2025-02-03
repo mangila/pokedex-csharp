@@ -1,13 +1,12 @@
 using Microsoft.Extensions.Options;
 using pokedex_poller;
-using pokedex_shared.Config;
-using pokedex_shared.Http;
+using pokedex_shared.Common.Option;
+using pokedex_shared.Database;
+using pokedex_shared.Database.Command;
+using pokedex_shared.Integration.PokeApi;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Option;
 using pokedex_shared.Service;
-using pokedex_shared.Service.Command;
 using Serilog;
-using MediaHandler = pokedex_poller.MediaHandler;
 
 var builder = Host.CreateApplicationBuilder(args);
 // Load Serilog from configuration
@@ -31,15 +30,14 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
     redisOptions.InstanceName = "pokedex-poller:development:";
 });
-builder.Services.AddPokemonApi(builder.Configuration.GetRequiredSection(nameof(PokeApiOption)));
-builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
+builder.Services.AddPokeApi(builder.Configuration.GetRequiredSection(nameof(PokeApiOption)));
+builder.Services.AddMongoDbCommandRepository(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
-builder.Services.AddSingleton<MediaHandler>();
+builder.Services.AddSingleton<PokemonHandler>();
+builder.Services.AddSingleton<PokemonMediaHandler>();
 
 var cts = new CancellationTokenSource();
 var workers = new Dictionary<string, bool>();
-
-var onWorkerStarted = (string generation, bool done) => { workers.Add(generation, done); };
 
 var onWorkerCompleted = (string generation, bool done) =>
 {
@@ -52,17 +50,14 @@ var onWorkerCompleted = (string generation, bool done) =>
 
 foreach (var pokemonGeneration in PokemonGeneration.ToArray())
 {
+    workers.Add(pokemonGeneration.Value, false);
     builder.Services.AddSingleton<IHostedService>(provider => new Worker(
         logger: provider.GetRequiredService<ILogger<Worker>>(),
         workerOption: provider.GetRequiredService<IOptions<WorkerOption>>(),
-        pokeApiOption: provider.GetRequiredService<IOptions<PokeApiOption>>(),
         pokemonGeneration: pokemonGeneration,
-        pokemonHttpClient: provider.GetRequiredService<PokemonHttpClient>(),
-        mongoDbCommandService: provider.GetRequiredService<MongoDbCommandService>(),
-        mongoDbGridFsCommandService: provider.GetRequiredService<MongoDbGridFsCommandService>(),
-        mediaHandler: provider.GetRequiredService<MediaHandler>(),
-        random: new Random(),
-        onWorkerStarted: onWorkerStarted,
+        mongoDbCommandRepository: provider.GetRequiredService<MongoDbCommandRepository>(),
+        pokemonHandler: provider.GetRequiredService<PokemonHandler>(),
+        pokemonMediaHandler: provider.GetRequiredService<PokemonMediaHandler>(),
         onWorkerCompleted: onWorkerCompleted));
 }
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using pokedex_api.Config;
-using pokedex_shared.Service.Query;
+using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;
 
@@ -13,16 +13,20 @@ namespace pokedex_api.Controller;
 [RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1FileController(
     ILogger<PokemonV1FileController> logger,
-    PokemonQueryService pokemonQueryService)
+    PokemonService pokemonService)
     : ControllerBase
 {
     [HttpGet("{id}")]
+    [ProducesResponseType<FileResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> FindFileById(
         [FromRoute] ObjectId id,
         CancellationToken cancellationToken = default
     )
     {
-        var result = await pokemonQueryService.FindFileByIdAsync(id, cancellationToken);
+        var result = await pokemonService.FindFileByIdAsync(id, cancellationToken);
         if (result.HasValue)
         {
             var file = result.Value;

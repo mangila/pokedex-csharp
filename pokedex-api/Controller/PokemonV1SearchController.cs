@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Service.Query;
+using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;
 
@@ -15,39 +15,51 @@ namespace pokedex_api.Controller;
 [RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
 public class PokemonV1SearchController(
     ILogger<PokemonV1SearchController> logger,
-    PokemonQueryService pokemonQueryService)
+    PokemonService pokemonService)
     : ControllerBase
 {
     [HttpGet("id")]
+    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryById(
         [FromQuery] List<int> ids,
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonQueryService.FindAllByPokemonIdAsync(
+        var collection = await pokemonService.FindAllByPokemonIdAsync(
             new PokemonIdCollection(ids),
             cancellationToken);
         return Results.Ok(collection);
     }
 
     [HttpGet("name")]
+    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryByName(
         [FromQuery] string search,
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonQueryService.SearchByNameAsync(new PokemonName(search), cancellationToken);
+        var collection = await pokemonService.SearchByNameAsync(new PokemonName(search), cancellationToken);
         return Results.Ok(collection);
     }
 
     [HttpGet("generation")]
+    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryByGeneration(
         [FromQuery] string generation,
         CancellationToken cancellationToken = default
     )
     {
         var collection =
-            await pokemonQueryService.SearchByGenerationAsync(PokemonGeneration.From(generation),
+            await pokemonService.SearchByGenerationAsync(PokemonGeneration.From(generation),
                 cancellationToken);
         return Results.Ok(collection);
     }

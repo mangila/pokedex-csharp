@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
-using pokedex_shared.Extension;
+using pokedex_shared.Common;
 
 namespace pokedex_api.Config;
 

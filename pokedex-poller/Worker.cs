@@ -1,41 +1,32 @@
 using Microsoft.Extensions.Options;
-using pokedex_shared.Http;
-using pokedex_shared.Http.EvolutionChain;
-using pokedex_shared.Http.Pokemon;
-using pokedex_shared.Http.PokemonGeneration;
-using pokedex_shared.Http.Species;
-using pokedex_shared.Mapper;
+using pokedex_shared.Common.Option;
+using pokedex_shared.Database.Command;
+using pokedex_shared.Integration.PokeApi;
+using pokedex_shared.Model.Document;
+using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
-using pokedex_shared.Option;
-using pokedex_shared.Service.Command;
 
 namespace pokedex_poller;
 
 public class Worker(
     ILogger<Worker> logger,
     IOptions<WorkerOption> workerOption,
-    IOptions<PokeApiOption> pokeApiOption,
     PokemonGeneration pokemonGeneration,
-    PokemonHttpClient pokemonHttpClient,
-    MongoDbCommandService mongoDbCommandService,
-    MongoDbGridFsCommandService mongoDbGridFsCommandService,
-    MediaHandler mediaHandler,
-    Random random,
-    Action<string, bool> onWorkerStarted,
+    MongoDbCommandRepository mongoDbCommandRepository,
+    PokemonHandler pokemonHandler,
+    PokemonMediaHandler pokemonMediaHandler,
     Action<string, bool> onWorkerCompleted)
     : BackgroundService
 {
     private readonly string _pokemonGeneration = pokemonGeneration.Value;
-    private readonly PokeApiOption _pokeApiOption = pokeApiOption.Value;
     private readonly WorkerOption _workerOption = workerOption.Value;
-    private bool _isDone;
+    private readonly Random _random = new();
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("worker started: {time} - {pokemonGeneration}",
             DateTimeOffset.Now,
             _pokemonGeneration);
-        onWorkerStarted.Invoke(_pokemonGeneration, _isDone);
         return base.StartAsync(cancellationToken);
     }
 
@@ -44,8 +35,7 @@ public class Worker(
         logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
             DateTimeOffset.Now,
             _pokemonGeneration);
-        _isDone = true;
-        onWorkerCompleted.Invoke(_pokemonGeneration, _isDone);
+        onWorkerCompleted.Invoke(_pokemonGeneration, true);
         return Task.CompletedTask;
     }
 
@@ -53,65 +43,62 @@ public class Worker(
     {
         try
         {
-            var generation =
-                await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(
-                    uri: GetPokemonGenerationRelativeUri(),
-                    cancellationToken: cancellationToken);
-            var count = 1;
+            var counter = new Counter(1);
+            var generation = await pokemonHandler.GetGenerationAsync(pokemonGeneration, cancellationToken);
             foreach (var generationPokemon in generation.PokemonSpecies)
             {
                 // Wait
                 await Task.Delay(TimeSpan.FromSeconds(GetJitter()), cancellationToken);
                 logger.LogInformation("{name} - ({count}/{length}) - {generation}",
                     generationPokemon.Name,
-                    count,
+                    counter.ToString(),
                     generation.PokemonSpecies.Length,
                     _pokemonGeneration);
 
                 // Fetch
-                var species =
-                    await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
-                        uri: new Uri(generationPokemon.Url),
-                        cancellationToken: cancellationToken);
-                var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
-                    uri: new Uri(species.EvolutionChain.Url),
-                    cancellationToken: cancellationToken);
-                var tasks = species.Varieties.Select(variety => pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                    uri: new Uri(variety.Pokemon.Url),
-                    cancellationToken: cancellationToken));
-                var pokemonVarieties = await Task.WhenAll(tasks);
+                var species = await pokemonHandler.GetSpeciesAsync(
+                    generationPokemon,
+                    cancellationToken);
+                var pokemonId = new PokemonId(species.Id);
+                var pokemonName = new PokemonName(species.Name);
+                var evolutionChain =
+                    await pokemonHandler.GetEvolutionChainAsync(
+                        species.EvolutionChain,
+                        cancellationToken);
+                var pokemonVarieties = await pokemonHandler.GetVarietiesAsync(
+                    species,
+                    cancellationToken);
+                var pokemonDocuments = new List<PokemonDocument>();
                 foreach (var pokemon in pokemonVarieties)
                 {
-                    var pokemonId = new PokemonId(pokemon.Id);
-                    var pokemonName = new PokemonName(pokemon.Name);
-                    var images = await mediaHandler.FetchImagesAsync(
+                    var images = await pokemonMediaHandler.FetchImagesAsync(
                         name: pokemonName,
                         sprites: pokemon.Sprites,
                         cancellationToken: cancellationToken);
-                    var audios = await mediaHandler.FetchAudiosAsync(
+                    var audios = await pokemonMediaHandler.FetchAudiosAsync(
                         name: pokemonName,
                         cries: pokemon.Cries,
                         cancellationToken: cancellationToken);
-                    var document = ApiMapper.ToDocument(
-                        pokemonId: pokemonId,
-                        pokemonName: pokemonName,
-                        generation: _pokemonGeneration,
-                        region: generation.Region.Name,
-                        images: images,
-                        audios: audios,
-                        varieties: pokemonVarieties,
-                        pokemonApiResponse: pokemon,
-                        pokemonSpeciesApiResponse: species,
-                        evolutionChainApiResponse: evolutionChain
-                    );
-                    await mongoDbCommandService.ReplaceOneAsync(
-                        document: document,
-                        cancellationToken: cancellationToken
-                    );
+                    pokemonDocuments.Add(PokeApiMapper.ToPokemonDocument(
+                            name: new PokemonName(pokemon.Name), 
+                            isDefault: pokemon.Default,
+                            weight: pokemon.Weight,
+                            height: pokemon.Height,
+                            types: pokemon.Types,
+                            stats: pokemon.Stats,
+                            images: images,
+                            audios: audios
+                        ));
                 }
 
-                // Map
-                count++;
+                var d = new PokemonSpeciesDocument();
+
+                await mongoDbCommandRepository.ReplaceOneAsync(
+                    document: document,
+                    cancellationToken: cancellationToken
+                );
+
+                counter.Increment();
             }
 
             await CompleteAsync();
@@ -129,16 +116,23 @@ public class Worker(
 
     private int GetJitter()
     {
-        return random.Next(
+        return _random.Next(
             _workerOption.Interval.Min,
             _workerOption.Interval.Max);
     }
 
-    private Uri GetPokemonGenerationRelativeUri()
+    private class Counter(int initialValue)
     {
-        return new Uri(
-            $"{_pokeApiOption.GetPokemonGenerationUri}"
-                .Replace("{id}", _pokemonGeneration)
-            , UriKind.Relative);
+        private int Value { get; set; } = initialValue;
+
+        public void Increment()
+        {
+            Value++;
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }
