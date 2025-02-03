@@ -269,7 +269,7 @@ public class MediaHandler(
         {
             if (entry != default)
             {
-                await Task.Delay(TimeSpan.FromSeconds(GetJitter()), cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
                 mediaDocuments.Add(
                     await mongoDbGridFsCommandService.InsertAsync(
                         entry,
