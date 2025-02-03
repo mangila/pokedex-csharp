@@ -4,7 +4,6 @@ using MongoDB.Bson;
 using pokedex_shared.Common;
 using pokedex_shared.Database.Query;
 using pokedex_shared.Model.Document;
-using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 
@@ -29,17 +28,17 @@ public class DatasourceQueryService(
         SlidingExpiration = TimeSpan.FromMinutes(10),
     };
 
-    public async Task<PokemonDocument> FindByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = string.Concat(CacheKeyPrefixPokemonId, pokemonId.Value);
-        var cacheValue = await redis.GetValueTypeAsync<PokemonDocument>(cacheKey, cancellationToken);
+        var cacheValue = await redis.GetValueTypeAsync<PokemonSpeciesDocument>(cacheKey, cancellationToken);
         if (cacheValue != default)
         {
             return cacheValue;
         }
 
-        var db = await mongoDbQueryRepository.FindOneByPokemonIdAsync(pokemonId, cancellationToken);
+        var db = await mongoDbQueryRepository.FindOneByIdAsync(pokemonId, cancellationToken);
         if (db == default)
         {
             return default;
@@ -50,11 +49,11 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<PokemonDocument> FindByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDocument> FindByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = string.Concat(CacheKeyPrefixName, pokemonName.Value);
-        var cacheValue = await redis.GetValueTypeAsync<PokemonDocument>(cacheKey, cancellationToken);
+        var cacheValue = await redis.GetValueTypeAsync<PokemonSpeciesDocument>(cacheKey, cancellationToken);
         if (cacheValue != default)
         {
             return cacheValue;
@@ -71,26 +70,26 @@ public class DatasourceQueryService(
         return db;
     }
 
-    public async Task<List<PokemonMediaProjection>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryRepository.SearchByNameAsync(search, cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjection>> FindAllByPokemonIdAsync(
+    public async Task<List<PokemonSpeciesDocument>> FindAllByIdsAsync(
         PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
-        return await mongoDbQueryRepository.FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
+        return await mongoDbQueryRepository.FindAllByIdsAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<PaginationResultDocument> FindAllAsync(int page, int pageSize,
+    public async Task<PaginationResultDocument> FindByPaginationAsync(int page, int pageSize,
         CancellationToken cancellationToken = default)
     {
-        return await mongoDbQueryRepository.FindAllAsync(page, pageSize, cancellationToken);
+        return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize, cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjection>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         return await mongoDbQueryRepository.SearchByGenerationAsync(generation, cancellationToken);

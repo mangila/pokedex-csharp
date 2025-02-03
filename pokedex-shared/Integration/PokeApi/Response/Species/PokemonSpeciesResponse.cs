@@ -3,21 +3,28 @@
 namespace pokedex_shared.Integration.PokeApi.Response.Species;
 
 public readonly record struct PokemonSpeciesResponse(
-    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("id")] int Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("names")] Names[] Names,
-    [property: JsonPropertyName("is_baby")]
-    bool Baby,
-    [property: JsonPropertyName("is_legendary")]
-    bool Legendary,
-    [property: JsonPropertyName("is_mythical")]
-    bool Mythical,
+    [property: JsonPropertyName("genera")] Genera[] Genera,
     [property: JsonPropertyName("evolution_chain")]
     EvolutionChain EvolutionChain,
     [property: JsonPropertyName("flavor_text_entries")]
     FlavorTextEntries[] FlavorTextEntries,
     [property: JsonPropertyName("varieties")]
-    Varieties[] Varieties
+    Varieties[] Varieties,
+    [property: JsonPropertyName("is_baby")]
+    bool Baby,
+    [property: JsonPropertyName("is_legendary")]
+    bool Legendary,
+    [property: JsonPropertyName("is_mythical")]
+    bool Mythical
+);
+
+public readonly record struct Genera(
+    [property: JsonPropertyName("language")]
+    Language Language,
+    [property: JsonPropertyName("genus")] string Genus
 );
 
 public readonly record struct Names(

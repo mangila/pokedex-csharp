@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using pokedex_shared.Common.Option;
 using pokedex_shared.Integration.PokeApi;
+using pokedex_shared.Integration.PokeApi.Response.EvolutionChain;
 using pokedex_shared.Integration.PokeApi.Response.Generation;
 using pokedex_shared.Integration.PokeApi.Response.Pokemon;
 using pokedex_shared.Integration.PokeApi.Response.Species;
 using pokedex_shared.Model.Domain;
+using EvolutionChain = pokedex_shared.Integration.PokeApi.Response.Species.EvolutionChain;
 
 namespace pokedex_poller;
 
@@ -34,10 +36,11 @@ public class PokemonHandler(
             cancellationToken: cancellationToken);
     }
 
-    public async Task<EvolutionChainApiResponse> GetEvolutionChainAsync(EvolutionChain evolutionChain,
+    public async Task<EvolutionChainResponse> GetEvolutionChainAsync(
+        EvolutionChain evolutionChain,
         CancellationToken cancellationToken)
     {
-        return await pokeApiClient.GetAsync<EvolutionChainApiResponse>(
+        return await pokeApiClient.GetAsync<EvolutionChainResponse>(
             uri: new Uri(evolutionChain.Url),
             cancellationToken: cancellationToken);
     }

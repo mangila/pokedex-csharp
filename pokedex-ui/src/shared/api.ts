@@ -56,7 +56,7 @@ export const findAllPokemonsByGeneration =
                 message: response.statusText,
                 data: generation
             })
-            return undefined;
+            throw new Error(response.statusText);
         }
         const json = await response.json();
         return json.pokemons as PokemonMediaProjectionDto[];
@@ -80,7 +80,7 @@ export const getPokemonByName =
                 message: response.statusText,
                 data: pokemonName
             })
-            return undefined;
+            throw new Error(response.statusText);
         }
         return await response.json() as PokemonDto;
     }

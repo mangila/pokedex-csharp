@@ -1,9 +1,11 @@
-﻿using System.Net.Mime;
+﻿using System.Collections.Immutable;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
 using pokedex_shared.Model.Domain;
+using pokedex_shared.Model.Dto;
 using pokedex_shared.Service;
 
 namespace pokedex_api.Controller;
@@ -19,7 +21,7 @@ public class PokemonV1SearchController(
     : ControllerBase
 {
     [HttpGet("id")]
-    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ImmutableList<PokemonSpeciesDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
@@ -28,14 +30,14 @@ public class PokemonV1SearchController(
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.FindAllByPokemonIdAsync(
+        var collection = await pokemonService.FindAllByIdsAsync(
             new PokemonIdCollection(ids),
             cancellationToken);
         return Results.Ok(collection);
     }
 
     [HttpGet("name")]
-    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ImmutableList<PokemonSpeciesDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
@@ -49,7 +51,7 @@ public class PokemonV1SearchController(
     }
 
     [HttpGet("generation")]
-    [ProducesResponseType<PokemonMediaProjectionDtoCollection>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ImmutableList<PokemonSpeciesDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]

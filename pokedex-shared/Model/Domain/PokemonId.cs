@@ -21,4 +21,9 @@ public readonly record struct PokemonId
         Value = value.ToString();
         this.ValidateValueType();
     }
+
+    public int ToInt()
+    {
+        return Convert.ToInt32(Value);
+    }
 }

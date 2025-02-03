@@ -4,9 +4,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using pokedex_shared.Common.Option;
 using pokedex_shared.Model.Document;
-using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
-using static MongoDB.Driver.Builders<pokedex_shared.Model.Document.Embedded.PokemonDocument>;
+using static MongoDB.Driver.Builders<pokedex_shared.Model.Document.PokemonSpeciesDocument>;
 
 namespace pokedex_shared.Database.Query;
 
@@ -14,7 +13,7 @@ public class MongoDbQueryRepository
 {
     private const string CaseInsensitiveMatching = "i";
     private readonly ILogger<MongoDbQueryRepository> _logger;
-    private readonly IMongoCollection<PokemonDocument> _collection;
+    private readonly IMongoCollection<PokemonSpeciesDocument> _collection;
 
     public MongoDbQueryRepository(
         ILogger<MongoDbQueryRepository> logger,
@@ -24,58 +23,68 @@ public class MongoDbQueryRepository
         var mongoDb = mongoDbOption.Value;
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
-            .GetCollection<PokemonDocument>(mongoDb.Collection);
-        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "generation"]));
+            .GetCollection<PokemonSpeciesDocument>(mongoDb.Collection);
+        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "pedigree"]));
     }
 
-    private static List<CreateIndexModel<PokemonDocument>> CreateIndexes(string[] fieldNames)
+    private static List<CreateIndexModel<PokemonSpeciesDocument>> CreateIndexes(string[] fieldNames)
     {
         return fieldNames
             .Select(fieldName => IndexKeys.Ascending(fieldName))
-            .Select(definition => new CreateIndexModel<PokemonDocument>(definition))
+            .Select(definition => new CreateIndexModel<PokemonSpeciesDocument>(definition))
             .ToList();
     }
 
-    public async Task<PokemonDocument> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         return await _collection
-            .Find(doc => doc.PokemonId.ToString() == pokemonId.Value)
+            .Find(doc => doc.Id == pokemonId.ToInt())
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<PokemonDocument> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDocument> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         return await _collection
             .Find(doc => doc.Name == pokemonName.Value)
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjection>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         var filter = Filter.Regex(
             doc => doc.Name,
             new BsonRegularExpression(search.Value, CaseInsensitiveMatching)
         );
-        var projection = Projection
-            .Include(doc => doc.Name)
-            .Include(doc => doc.Images);
         return await _collection
             .Find(filter)
-            .Project<PokemonMediaProjection>(projection)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<PokemonSpeciesDocument>> FindAllByIdsAsync(
+        PokemonIdCollection pokemonIdCollection,
+        CancellationToken cancellationToken = default)
+    {
+        var ids = pokemonIdCollection.Ids
+            .Select(id => id.ToInt())
+            .ToList();
+        var filter = Filter
+            .In(doc => doc.Id, ids);
+        return await _collection
+            .Find(filter)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<List<PokemonMediaProjection>> FindAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(PokemonGeneration generation,
+        CancellationToken cancellationToken)
     {
-        var projection = Projection
-            .Include(doc => doc.Name)
-            .Include(doc => doc.Images);
+        var filter = Filter
+            .Where(doc => doc.Pedigree.Generation == generation.Value);
         return await _collection
-            .Find(FilterDefinition<PokemonDocument>.Empty)
-            .Project<PokemonMediaProjection>(projection)
+            .Find(filter)
+            .Sort(Sort.Ascending(p => p.Id))
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
@@ -90,21 +99,21 @@ public class MongoDbQueryRepository
      *  Might be more performance with range query, but then we need the boundary value.
      * </summary>
      */
-    public async Task<PaginationResultDocument> FindAllAsync(int page, int pageSize,
+    public async Task<PaginationResultDocument> FindByPaginationAsync(int page, int pageSize,
         CancellationToken cancellationToken = default)
     {
         var count = await _collection.CountDocumentsAsync(
-            FilterDefinition<PokemonDocument>.Empty,
+            FilterDefinition<PokemonSpeciesDocument>.Empty,
             null,
             cancellationToken);
 
         var totalPages = (int)Math.Ceiling((double)count / pageSize);
 
         var documents = await _collection
-            .Find(FilterDefinition<PokemonDocument>.Empty)
+            .Find(FilterDefinition<PokemonSpeciesDocument>.Empty)
             .Skip((page - 1) * pageSize)
             .Limit(pageSize)
-            .Sort(Sort.Ascending(p => p.PokemonId))
+            .Sort(Sort.Ascending(document => document.Name))
             .ToListAsync(cancellationToken);
 
         return new PaginationResultDocument
@@ -115,39 +124,5 @@ public class MongoDbQueryRepository
             PageSize = pageSize,
             Documents = documents
         };
-    }
-
-
-    public async Task<List<PokemonMediaProjection>> FindAllByPokemonIdAsync(
-        PokemonIdCollection pokemonIdCollection,
-        CancellationToken cancellationToken = default)
-    {
-        var ids = pokemonIdCollection.Ids
-            .Select(id => id.Value)
-            .ToList();
-        var filter = Filter
-            .In(doc => doc.PokemonId.ToString(), ids);
-        var projection = Projection
-            .Include(doc => doc.Name)
-            .Include(doc => doc.Images);
-        return await _collection
-            .Find(filter)
-            .Project<PokemonMediaProjection>(projection)
-            .ToListAsync(cancellationToken: cancellationToken);
-    }
-
-    public async Task<List<PokemonMediaProjection>> SearchByGenerationAsync(PokemonGeneration generation,
-        CancellationToken cancellationToken)
-    {
-        var projection = Projection
-            .Include(doc => doc.Name)
-            .Include(doc => doc.Images);
-        var filter = Filter
-            .Where(doc => doc.Generation == generation.Value);
-        return await _collection
-            .Find(filter)
-            .Sort(Sort.Ascending(p => p.PokemonId))
-            .Project<PokemonMediaProjection>(projection)
-            .ToListAsync(cancellationToken: cancellationToken);
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using pokedex_shared.Common.Option;
 using pokedex_shared.Database.Command;
 using pokedex_shared.Integration.PokeApi;
+using pokedex_shared.Integration.PokeApi.Response.Generation;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
@@ -80,18 +81,25 @@ public class Worker(
                         cries: pokemon.Cries,
                         cancellationToken: cancellationToken);
                     pokemonDocuments.Add(PokeApiMapper.ToPokemonDocument(
-                            name: new PokemonName(pokemon.Name), 
-                            isDefault: pokemon.Default,
-                            weight: pokemon.Weight,
-                            height: pokemon.Height,
-                            types: pokemon.Types,
-                            stats: pokemon.Stats,
-                            images: images,
-                            audios: audios
-                        ));
+                        name: new PokemonName(pokemon.Name),
+                        isDefault: pokemon.Default,
+                        weight: pokemon.Weight,
+                        height: pokemon.Height,
+                        types: pokemon.Types,
+                        stats: pokemon.Stats,
+                        images: images,
+                        audios: audios
+                    ));
                 }
 
-                var d = new PokemonSpeciesDocument();
+                var document = PokeApiMapper.ToSpeciesDocument(
+                    id: pokemonId,
+                    name: pokemonName,
+                    generation: pokemonGeneration,
+                    region: generation.Region.Name,
+                    evolutionChain: evolutionChain,
+                    species: species,
+                    pokemons: pokemonDocuments);
 
                 await mongoDbCommandRepository.ReplaceOneAsync(
                     document: document,

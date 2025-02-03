@@ -1,17 +1,17 @@
 ﻿### Get all Pokemons
-GET {{pokemonV1}}
+GET {{pokemonV1}}?pageSize=2&page=1
 Content-Type: application/json
 
 ###
 
 ### GET pokemon by id
-GET {{pokemonV1}}/2
+GET {{pokemonV1}}/920
 Content-Type: application/json
 
 ###
 
 ### GET pokemon by name
-GET {{pokemonV1}}/bulbasaur
+GET {{pokemonV1}}/lokix
 Content-Type: application/json
 
 ###
@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 
 ### GET pokemon by name
-GET {{pokemonV1}}/search/name?search=b2
+GET {{pokemonV1}}/search/name?search=r
 Content-Type: application/json
 
 ###
@@ -34,8 +34,7 @@ Content-Type: application/json
 
 ###
 
-### GET pokemon by generation
+### GET file by id
 GET {{pokemonV1}}/file/6796637dc816b9abf6e87d84
-Content-Type: application/json
 
 ###

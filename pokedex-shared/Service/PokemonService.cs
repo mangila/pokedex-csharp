@@ -1,60 +1,60 @@
-﻿using MongoDB.Bson;
+﻿using System.Collections.Immutable;
+using MongoDB.Bson;
 using pokedex_shared.Model.Document;
-using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
-using pokedex_shared.Model.Dto.Embedded;
 
 namespace pokedex_shared.Service;
 
 public class PokemonService(DatasourceQueryService datasourceQuery)
 {
-    public async Task<PokemonMediaProjectionDtoCollection> FindAllByPokemonIdAsync(
+    public async Task<ImmutableList<PokemonSpeciesDto>> FindAllByIdsAsync(
         PokemonIdCollection pokemonIdCollection,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var collection = await datasourceQuery
-            .FindAllByPokemonIdAsync(pokemonIdCollection, cancellationToken);
-        return collection.ToDtoCollection();
+            .FindAllByIdsAsync(pokemonIdCollection, cancellationToken);
+        return collection.ToDtos();
     }
 
     public async Task<PaginationResultDto> FindByPaginationAsync(int page, int pageSize,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var paginationResult = await datasourceQuery.FindAllAsync(page, pageSize, cancellationToken);
+        var paginationResult = await datasourceQuery.FindByPaginationAsync(page, pageSize, cancellationToken);
         return paginationResult.ToDto();
     }
 
-    public async Task<PokemonMediaProjectionDtoCollection> SearchByNameAsync(PokemonName search,
+    public async Task<ImmutableList<PokemonSpeciesDto>> SearchByNameAsync(
+        PokemonName search,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var collection = await datasourceQuery
             .SearchByNameAsync(search, cancellationToken);
-        return collection.ToDtoCollection();
+        return collection.ToDtos();
     }
 
-    public async Task<PokemonMediaProjectionDtoCollection> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<ImmutableList<PokemonSpeciesDto>> SearchByGenerationAsync(PokemonGeneration generation,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var collection = await datasourceQuery
             .SearchByGenerationAsync(generation, cancellationToken);
-        return collection.ToDtoCollection();
+        return collection.ToDtos();
     }
 
-    public async Task<PokemonDto> FindOneByPokemonIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDto> FindOneByIdAsync(PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var document = await datasourceQuery
-            .FindByPokemonIdAsync(pokemonId, cancellationToken);
+            .FindOneByIdAsync(pokemonId, cancellationToken);
         return document.Equals(default) ? default : document.ToDto();
     }
 
-    public async Task<PokemonDto> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDto> FindOneByNameAsync(PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
