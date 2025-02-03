@@ -7,8 +7,8 @@ namespace pokedex_shared.Model.Document.Embedded;
 
 public readonly record struct PokemonEvolutionDocument(
     [Required]
-    [property: BsonElement("value")]
-    int Value,
+    [property: BsonElement("order")]
+    int Order,
     [Required]
     [property: BsonElement("name")]
     string Name);
@@ -25,7 +25,7 @@ public static partial class Extensions
     public static PokemonEvolutionDto ToDto(this PokemonEvolutionDocument document)
     {
         return new PokemonEvolutionDto(
-            Value: document.Value,
+            Value: document.Order,
             Name: document.Name
         );
     }

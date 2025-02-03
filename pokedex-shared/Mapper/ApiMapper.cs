@@ -41,7 +41,7 @@ public static partial class ApiMapper
             Description = ToPokemonDescription(pokemonSpeciesApiResponse.FlavorTextEntries),
             Stats = ToPokemonStats(pokemonApiResponse.Stats),
             Types = ToPokemonTypes(pokemonApiResponse.Types),
-            Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
+            Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.Chain),
             Legendary = pokemonSpeciesApiResponse.Legendary,
             Mythical = pokemonSpeciesApiResponse.Mythical,
             Baby = pokemonSpeciesApiResponse.Baby,
@@ -78,13 +78,13 @@ public static partial class ApiMapper
 
     private static List<PokemonEvolutionDocument> ToPokemonEvolutions(Chain chain)
     {
-        if (chain.chain.Length == 0)
+        if (chain.FirstChain.Length == 0)
         {
             return [];
         }
 
-        var list = new List<PokemonEvolutionDocument> { new(0, chain.species.name) };
-        return GetEvolution(chain.chain, list);
+        var list = new List<PokemonEvolutionDocument> { new(0, chain.Species.Name) };
+        return GetEvolution(chain.FirstChain, list);
     }
 
     private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo,
@@ -94,8 +94,8 @@ public static partial class ApiMapper
 
         foreach (var evolutionChain in chainEvolvesTo)
         {
-            list.Add(new PokemonEvolutionDocument(list.Count, evolutionChain.species.name));
-            GetEvolution(evolutionChain.next, list);
+            list.Add(new PokemonEvolutionDocument(list.Count, evolutionChain.Species.Name));
+            GetEvolution(evolutionChain.NextChain, list);
         }
 
         return list;
