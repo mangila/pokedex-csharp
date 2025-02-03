@@ -1,7 +1,6 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using pokedex_shared.Config;
+using pokedex_shared.Extension;
 using pokedex_shared.Service.Query;
 
 namespace pokedex_shared.Service;
@@ -21,7 +20,8 @@ public class RedisService(
         }
 
         logger.LogInformation("Cache hit - {key}", key);
-        return JsonSerializer.Deserialize<T>(cacheValue, JsonConfig.JsonOptions);
+
+        return await cacheValue.DeserializeJsonAsync<T>(cancellationToken);
     }
 
     public async Task SetAsync(

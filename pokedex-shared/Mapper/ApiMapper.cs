@@ -5,6 +5,7 @@ using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Document.Embedded;
+using EvolutionChain = pokedex_shared.Http.EvolutionChain.EvolutionChain;
 
 namespace pokedex_shared.Mapper;
 
@@ -15,29 +16,42 @@ namespace pokedex_shared.Mapper;
  */
 public static partial class ApiMapper
 {
-    public static PokemonDocument ToDocument(string region, PokemonApiResponse pokemonApiResponse,
+    public static PokemonDocument ToDocument(
+        string generation,
+        string region,
+        List<PokemonMediaDocument> images,
+        List<PokemonMediaDocument> audios,
+        PokemonApiResponse pokemonApiResponse,
         PokemonSpeciesApiResponse pokemonSpeciesApiResponse,
-        EvolutionChainApiResponse evolutionChainApiResponse,
-        List<PokemonMediaDocument> mediaCollection)
+        EvolutionChainApiResponse evolutionChainApiResponse)
     {
         return new PokemonDocument
         {
-            PokemonId = pokemonApiResponse.id,
-            Name = pokemonApiResponse.name,
+            PokemonId = pokemonApiResponse.Id,
+            EnglishName = pokemonApiResponse.Name,
+            JapaneseSignName = ToJapaneseSignName(pokemonSpeciesApiResponse.Names),
             Region = region,
-            Height = ToMeterHeight(pokemonApiResponse.height),
-            Weight = ToKilogramWeight(pokemonApiResponse.weight),
-            Generation = pokemonSpeciesApiResponse.generation.name,
-            Description = ToPokemonDescription(pokemonSpeciesApiResponse.flavor_text_entries),
-            Stats = ToPokemonStats(pokemonApiResponse.stats),
-            Images = ToPokemonImages(mediaCollection),
-            Audios = ToPokemonAudios(mediaCollection),
-            Types = ToPokemonTypes(pokemonApiResponse.types),
+            Height = ToMeterHeight(pokemonApiResponse.Height),
+            Weight = ToKilogramWeight(pokemonApiResponse.Weight),
+            Generation = generation,
+            Description = ToPokemonDescription(pokemonSpeciesApiResponse.FlavorTextEntries),
+            Stats = ToPokemonStats(pokemonApiResponse.Stats),
+            Types = ToPokemonTypes(pokemonApiResponse.Types),
             Evolutions = ToPokemonEvolutions(evolutionChainApiResponse.chain),
-            Legendary = pokemonSpeciesApiResponse.is_legendary,
-            Mythical = pokemonSpeciesApiResponse.is_mythical,
-            Baby = pokemonSpeciesApiResponse.is_baby
+            Legendary = pokemonSpeciesApiResponse.Legendary,
+            Mythical = pokemonSpeciesApiResponse.Mythical,
+            Baby = pokemonSpeciesApiResponse.Baby,
+            Images = images,
+            Audios = audios,
+            Varieties = []
         };
+    }
+
+    private static string ToJapaneseSignName(Names[] names)
+    {
+        return names
+            .First(name => name.Language.Name == "ja-Hrkt")
+            .Name;
     }
 
     private static string ToMeterHeight(int height)
@@ -76,28 +90,36 @@ public static partial class ApiMapper
     }
 
 
-    private static string ToPokemonDescription(Flavor_text_entries[] flavorTextEntries)
+    private static string ToPokemonDescription(FlavorTextEntries[] flavorTextEntries)
     {
-        var flavorText = flavorTextEntries.First(entries => entries.language.name == "en").flavor_text;
-        return ReplaceLineBreaks().Replace(flavorText, " ").Trim();
+        var flavorText = flavorTextEntries
+            .First(entries => entries.Language.Name == "en")
+            .FlavorText;
+        return ReplaceLineBreaks()
+            .Replace(flavorText, " ")
+            .Trim();
     }
 
     private static List<PokemonStatDocument> ToPokemonStats(Stats[] stats)
     {
         var total = 0;
-        var l = stats.Select(s =>
-            {
-                total = total + s.base_stat ?? 0;
-                return new PokemonStatDocument(s.stat.name, s.base_stat ?? 0);
-            }
-        ).ToList();
+        var l = stats
+            .Select(s =>
+                {
+                    total += s.BaseStat;
+                    return new PokemonStatDocument(s.Stat.Name, s.BaseStat);
+                }
+            )
+            .ToList();
         l.Add(new PokemonStatDocument("total", total));
         return l;
     }
 
     private static List<PokemonTypeDocument> ToPokemonTypes(Types[] types)
     {
-        return types.Select(t => new PokemonTypeDocument(t.type.name)).ToList();
+        return types
+            .Select(t => new PokemonTypeDocument(t.Type.Name))
+            .ToList();
     }
 
     private static List<PokemonMediaDocument> ToPokemonAudios(List<PokemonMediaDocument> medias)

@@ -32,7 +32,8 @@ public class MongoDbQueryService
     {
         return fieldNames
             .Select(fieldName => IndexKeys.Ascending(fieldName))
-            .Select(definition => new CreateIndexModel<PokemonDocument>(definition)).ToList();
+            .Select(definition => new CreateIndexModel<PokemonDocument>(definition))
+            .ToList();
     }
 
     public async Task<PokemonDocument> FindOneByPokemonIdAsync(PokemonId pokemonId,
@@ -47,7 +48,7 @@ public class MongoDbQueryService
         CancellationToken cancellationToken = default)
     {
         return await _collection
-            .Find(doc => doc.Name == pokemonName.Value)
+            .Find(doc => doc.EnglishName == pokemonName.Value)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
@@ -55,11 +56,11 @@ public class MongoDbQueryService
         CancellationToken cancellationToken = default)
     {
         var filter = Filter.Regex(
-            doc => doc.Name,
+            doc => doc.EnglishName,
             new BsonRegularExpression(search.Value, CaseInsensitiveMatching)
         );
         var projection = Projection
-            .Include(doc => doc.Name)
+            .Include(doc => doc.EnglishName)
             .Include(doc => doc.Images);
         return await _collection
             .Find(filter)
@@ -70,7 +71,7 @@ public class MongoDbQueryService
     public async Task<List<PokemonMediaProjection>> FindAllAsync(CancellationToken cancellationToken = default)
     {
         var projection = Projection
-            .Include(doc => doc.Name)
+            .Include(doc => doc.EnglishName)
             .Include(doc => doc.Images);
         return await _collection
             .Find(FilterDefinition<PokemonDocument>.Empty)
@@ -127,7 +128,7 @@ public class MongoDbQueryService
         var filter = Filter
             .In(doc => doc.PokemonId.ToString(), ids);
         var projection = Projection
-            .Include(doc => doc.Name)
+            .Include(doc => doc.EnglishName)
             .Include(doc => doc.Images);
         return await _collection
             .Find(filter)
@@ -139,7 +140,7 @@ public class MongoDbQueryService
         CancellationToken cancellationToken)
     {
         var projection = Projection
-            .Include(doc => doc.Name)
+            .Include(doc => doc.EnglishName)
             .Include(doc => doc.Images);
         var filter = Filter
             .Where(doc => doc.Generation == generation.Value);

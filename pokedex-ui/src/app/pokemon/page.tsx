@@ -1,9 +1,10 @@
 ﻿"use client"
-import {Grid2} from "@mui/material";
+import PokemonCard from "@components/PokemonCard";
+import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll} from "@shared/hooks";
 
 export default function Page() {
-    const {data, loader, isFetchingNextPage, isLoading, error} = useInfiniteScroll(["pokemons"], 15);
+    const {data, loader, isFetchingNextPage, hasNextPage, isLoading, error} = useInfiniteScroll(["pokemons"], 15);
 
     if (isLoading) {
         return <>Loading...</>
@@ -13,19 +14,18 @@ export default function Page() {
     }
 
     return <>
-        <Grid2 container direction="row" spacing={1}>
-            <div>
-                {data?.pages.map((page) => (
-                    <div key={page.current_page}>
-                        {page.pokemons.map((pokemon) => (
-                            <div key={pokemon.pokemon_id}>{pokemon.pokemon_id} . {pokemon.name}</div>
-                        ))}
-                    </div>
-                ))}
-                <div ref={loader}>
-                    {isFetchingNextPage ? 'Loading more...' : 'No more items to load'}
-                </div>
-            </div>
+        <Grid2 container spacing={1}>
+            {data?.pages.map((page) => (
+                page.pokemons.map((pokemon) => (
+                    <Grid2 key={pokemon.pokemon_id} container>
+                        <PokemonCard pokemon={pokemon}/>
+                    </Grid2>
+                ))
+            ))}
+            <Box ref={loader}>
+                {isFetchingNextPage ? 'Loading more...' : null}
+                {hasNextPage ? 'Loading more...' : "No more pokemons to load"}
+            </Box>
         </Grid2>
     </>;
 }

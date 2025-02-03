@@ -1,13 +1,14 @@
 ﻿"use client"
-import {DashboardLayout, PageContainer} from "@toolpad/core";
+import PokemonDashboardLayout from "@components/PokemonDashboardLayout";
+import {PageContainer} from "@toolpad/core";
 import React from "react";
 
 export default function Loading() {
     return <>
-        <DashboardLayout>
+        <PokemonDashboardLayout>
             <PageContainer>
                 Loading...
             </PageContainer>
-        </DashboardLayout>
+        </PokemonDashboardLayout>
     </>
 }

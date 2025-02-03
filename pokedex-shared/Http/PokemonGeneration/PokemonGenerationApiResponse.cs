@@ -10,7 +10,8 @@ public readonly record struct PokemonGenerationApiResponse(
 );
 
 public readonly record struct PokemonSpecies(
-    [property: JsonPropertyName("name")] string Name
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("url")] string Url
 );
 
 public readonly record struct Region(

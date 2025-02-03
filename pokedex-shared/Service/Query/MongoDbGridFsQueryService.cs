@@ -35,7 +35,6 @@ public class MongoDbGridFsQueryService
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (fileInfo is null)
         {
-            _logger.LogInformation("{objectId} not found", objectId.ToString());
             return null;
         }
 

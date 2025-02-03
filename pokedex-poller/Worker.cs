@@ -5,7 +5,6 @@ using pokedex_shared.Http.Pokemon;
 using pokedex_shared.Http.PokemonGeneration;
 using pokedex_shared.Http.Species;
 using pokedex_shared.Mapper;
-using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using pokedex_shared.Service.Command;
@@ -20,46 +19,34 @@ public class Worker(
     PokemonHttpClient pokemonHttpClient,
     MongoDbCommandService mongoDbCommandService,
     MongoDbGridFsCommandService mongoDbGridFsCommandService,
+    MediaHandler mediaHandler,
     Random random,
     Action<string, bool> onWorkerStarted,
     Action<string, bool> onWorkerCompleted)
     : BackgroundService
 {
-    private const string ImageContentType = "image/png";
-    private const string AudioContentType = "audio/ogg";
-    private const string Description = "Media from PokeAPI";
-
     private readonly string _pokemonGeneration = pokemonGeneration.Value;
     private readonly PokeApiOption _pokeApiOption = pokeApiOption.Value;
     private readonly WorkerOption _workerOption = workerOption.Value;
     private bool _isDone;
 
-
     public override Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("worker started: {time} - {pokemonGeneration}",
-            DateTime.Now,
+            DateTimeOffset.Now,
             _pokemonGeneration);
         onWorkerStarted.Invoke(_pokemonGeneration, _isDone);
         return base.StartAsync(cancellationToken);
     }
 
-    public override Task StopAsync(CancellationToken cancellationToken)
-    {
-        logger.LogInformation("worker stopped: {time} - {pokemonGeneration}",
-            DateTimeOffset.Now,
-            _pokemonGeneration);
-        return base.StopAsync(cancellationToken);
-    }
-
-    private Task CompleteAsync(CancellationToken cancellationToken)
+    private Task CompleteAsync()
     {
         logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
             DateTimeOffset.Now,
             _pokemonGeneration);
         _isDone = true;
         onWorkerCompleted.Invoke(_pokemonGeneration, _isDone);
-        return base.StopAsync(cancellationToken);
+        return Task.CompletedTask;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -67,55 +54,63 @@ public class Worker(
         try
         {
             var generation =
-                await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(GetPokemonGenerationRelativeUri(),
-                    cancellationToken);
+                await pokemonHttpClient.GetAsync<PokemonGenerationApiResponse>(
+                    uri: GetPokemonGenerationRelativeUri(),
+                    cancellationToken: cancellationToken);
             var count = 1;
             foreach (var generationPokemon in generation.PokemonSpecies)
             {
-                var jitter = random.Next(
-                    _workerOption.Interval.Min,
-                    _workerOption.Interval.Max);
-                await Task.Delay(TimeSpan.FromSeconds(jitter), cancellationToken);
+                // Wait
+                await Task.Delay(TimeSpan.FromSeconds(GetJitter()), cancellationToken);
                 logger.LogInformation("{name} - ({count}/{length}) - {generation}",
                     generationPokemon.Name,
                     count,
                     generation.PokemonSpecies.Length,
                     _pokemonGeneration);
 
+                // Fetch
                 var pokemonName = new PokemonName(generationPokemon.Name);
-                // Fetch 
-                var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
-                    uri: GetPokemonRelativeUri(pokemonName),
-                    cancellationToken: cancellationToken);
-                var images = await FetchImagesAsync(
-                    name: pokemonName,
-                    sprites: pokemon.sprites,
-                    cancellationToken: cancellationToken
-                );
-                var cries = await FetchCriesAsync(
-                    name: pokemonName,
-                    cries: pokemon.cries,
-                    cancellationToken: cancellationToken
-                );
-                var species = await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
-                    uri: new Uri(pokemon.species.url),
-                    cancellationToken: cancellationToken);
+                var species =
+                    await pokemonHttpClient.GetAsync<PokemonSpeciesApiResponse>(
+                        uri: new Uri(generationPokemon.Url),
+                        cancellationToken: cancellationToken);
                 var evolutionChain = await pokemonHttpClient.GetAsync<EvolutionChainApiResponse>(
-                    uri: new Uri(species.evolution_chain.url),
+                    uri: new Uri(species.EvolutionChain.Url),
                     cancellationToken: cancellationToken);
+                foreach (var variety in species.Varieties)
+                {
+                    var pokemon = await pokemonHttpClient.GetAsync<PokemonApiResponse>(
+                        uri: new Uri(variety.Pokemon.Url),
+                        cancellationToken: cancellationToken);
+                    var pokemonId = new PokemonId(pokemon.Id);
+                    var images = await mediaHandler.FetchImagesAsync(
+                        name: pokemonName,
+                        sprites: pokemon.Sprites,
+                        cancellationToken: cancellationToken);
+                    var audios = await mediaHandler.FetchAudiosAsync(
+                        name: pokemonName,
+                        cries: pokemon.Cries,
+                        cancellationToken: cancellationToken);
+                    var document = ApiMapper.ToDocument(
+                        generation: _pokemonGeneration,
+                        region: generation.Region.Name,
+                        images: images,
+                        audios: audios,
+                        pokemonApiResponse: pokemon,
+                        pokemonSpeciesApiResponse: species,
+                        evolutionChainApiResponse: evolutionChain
+                    );
+                    await mongoDbCommandService.ReplaceOneAsync(
+                        document: document,
+                        cancellationToken: cancellationToken
+                    );
+                }
+
                 // Map
-                var document = ApiMapper.ToDocument(
-                    region: generation.Region.Name,
-                    pokemonApiResponse: pokemon,
-                    pokemonSpeciesApiResponse: species,
-                    evolutionChainApiResponse: evolutionChain,
-                    mediaCollection: [..images, ..cries]
-                );
-                await mongoDbCommandService.ReplaceOneAsync(document, cancellationToken);
                 count++;
             }
 
-            await CompleteAsync(cancellationToken);
+            await CompleteAsync();
         }
         catch (OperationCanceledException)
         {
@@ -128,84 +123,18 @@ public class Worker(
         }
     }
 
+    private int GetJitter()
+    {
+        return random.Next(
+            _workerOption.Interval.Min,
+            _workerOption.Interval.Max);
+    }
+
     private Uri GetPokemonGenerationRelativeUri()
     {
         return new Uri(
             $"{_pokeApiOption.GetPokemonGenerationUri}"
                 .Replace("{id}", _pokemonGeneration)
             , UriKind.Relative);
-    }
-
-    private Uri GetPokemonRelativeUri(PokemonName name)
-    {
-        return new Uri(
-            $"{_pokeApiOption.GetPokemonUri}".Replace("{id}", name.Value)
-            , UriKind.Relative);
-    }
-
-    private async Task<List<PokemonMediaDocument>> FetchCriesAsync(PokemonName name, Cries cries,
-        CancellationToken cancellationToken)
-    {
-        var tasks = new List<Task<PokemonMediaDocument>>();
-
-        if (cries.legacy is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(cries.legacy),
-                fileName: GetAudioFileName(name, "legacy"),
-                contentType: AudioContentType,
-                description: Description,
-                cancellationToken: cancellationToken));
-        }
-
-        if (cries.latest is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(cries.latest),
-                fileName: GetAudioFileName(name, "latest"),
-                contentType: AudioContentType,
-                description: Description,
-                cancellationToken: cancellationToken));
-        }
-
-        return (await Task.WhenAll(tasks)).ToList();
-    }
-
-    private async Task<List<PokemonMediaDocument>> FetchImagesAsync(PokemonName name, Sprites sprites,
-        CancellationToken cancellationToken)
-    {
-        var tasks = new List<Task<PokemonMediaDocument>>();
-
-        if (sprites.front_default is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(sprites.front_default),
-                fileName: GetImageFileName(name, "front-default"),
-                contentType: ImageContentType,
-                description: Description,
-                cancellationToken: cancellationToken));
-        }
-
-        if (sprites.other.official_artwork.front_default is not null)
-        {
-            tasks.Add(mongoDbGridFsCommandService.InsertAsync(
-                uri: new Uri(sprites.other.official_artwork.front_default),
-                fileName: GetImageFileName(name, "official-artwork-front-default"),
-                contentType: ImageContentType,
-                description: Description,
-                cancellationToken: cancellationToken));
-        }
-
-        return (await Task.WhenAll(tasks)).ToList();
-    }
-
-    private static string GetImageFileName(PokemonName name, string type)
-    {
-        return $"{name.Value}-{type}.png";
-    }
-
-    private static string GetAudioFileName(PokemonName name, string type)
-    {
-        return $"{name.Value}-{type}.ogg";
     }
 }

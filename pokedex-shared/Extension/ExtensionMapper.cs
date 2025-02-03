@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Text.Json;
 using pokedex_shared.Config;
 
@@ -16,6 +17,14 @@ public static class ExtensionMapper
         {
             throw new ValidationException(string.Join(", ", results));
         }
+    }
+
+    public static async Task<T> DeserializeJsonAsync<T>(this string json,
+        CancellationToken cancellationToken = default) where T : struct
+    {
+        var bytes = Encoding.UTF8.GetBytes(json);
+        await using var memoryStream = new MemoryStream(bytes);
+        return await JsonSerializer.DeserializeAsync<T>(memoryStream, JsonConfig.JsonOptions, cancellationToken);
     }
 
     public static async Task<string> ToJsonValueTypeAsync<T>(this T type,

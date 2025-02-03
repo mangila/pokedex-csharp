@@ -25,6 +25,7 @@ export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number
     });
 
     useEffect(() => {
+        const currentLoader = loader.current;
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasNextPage) {
@@ -34,16 +35,16 @@ export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number
             {threshold: 1.0}
         );
 
-        if (loader.current) {
-            observer.observe(loader.current);
+        if (currentLoader) {
+            observer.observe(currentLoader);
         }
 
         return () => {
-            if (loader.current) {
-                observer.unobserve(loader.current);
+            if (currentLoader) {
+                observer.unobserve(currentLoader);
             }
         };
     }, [hasNextPage, fetchNextPage]);
 
-    return {data , loader, isFetchingNextPage, isLoading, error};
+    return {data, loader, isFetchingNextPage, hasNextPage, isLoading, error};
 };

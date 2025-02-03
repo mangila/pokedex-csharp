@@ -1,7 +1,6 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using pokedex_shared.Config;
+using pokedex_shared.Extension;
 using pokedex_shared.Service;
 
 namespace pokedex_shared.Http;
@@ -29,6 +28,6 @@ public class PokemonHttpClient(
 
         var json = await httpClient.GetStringAsync(uri, cancellationToken);
         await redis.SetAsync(cacheKey, json, _options, cancellationToken);
-        return JsonSerializer.Deserialize<T>(json, JsonConfig.JsonOptions);
+        return await json.DeserializeJsonAsync<T>(cancellationToken);
     }
 }

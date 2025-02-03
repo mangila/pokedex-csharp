@@ -1,4 +1,4 @@
-﻿import PokemonGenerationDisplay from "@components/PokemonGenerationDisplay";
+﻿import PokemonGenerationCard from "@components/PokemonGenerationCard";
 import {Grid2} from "@mui/material";
 import {findAllPokemonsByGeneration} from "@shared/api";
 import {PokemonGeneration} from "@shared/types";
@@ -15,7 +15,7 @@ export default async function Page({params}: {
     return <>
         <Grid2 container>
             {pokemons.map(pokemon => (
-                <PokemonGenerationDisplay
+                <PokemonGenerationCard
                     key={pokemon.pokemon_id}
                     pokemon={pokemon}
                     height={96}

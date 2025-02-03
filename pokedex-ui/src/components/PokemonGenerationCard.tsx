@@ -4,13 +4,13 @@ import {PokemonMediaProjectionDto} from "@shared/types";
 import {BLUR_IMAGE, capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
 import Link from "next/link";
 
-interface PokemonImageProps {
+interface PokemonGenerationCardProps {
     pokemon: PokemonMediaProjectionDto
     width: number;
     height: number;
 }
 
-export default function PokemonGenerationDisplay(props: PokemonImageProps) {
+export default function PokemonGenerationCard(props: PokemonGenerationCardProps) {
     const {pokemon, width, height} = props;
     const name = capitalizeFirstLetter(pokemon.name);
     return <Link

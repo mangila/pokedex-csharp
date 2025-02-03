@@ -23,16 +23,22 @@ public class MongoDbCommandService
     }
 
 
-    public async Task ReplaceOneAsync(PokemonDocument pokemon, CancellationToken cancellationToken = default)
+    public async Task ReplaceOneAsync(PokemonDocument document, CancellationToken cancellationToken = default)
     {
         await _collection.ReplaceOneAsync(
-            doc => doc.PokemonId == pokemon.PokemonId,
-            pokemon,
+            doc => doc.PokemonId == document.PokemonId,
+            document,
             new ReplaceOptions
             {
                 IsUpsert = true,
                 Comment = "Insert from ReplaceOneAsync() - replace or insert a new Pokemon"
             },
             cancellationToken: cancellationToken);
+    }
+
+    public async Task<PokemonDocument> GetByIdAsync(PokemonDocument pokemon,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

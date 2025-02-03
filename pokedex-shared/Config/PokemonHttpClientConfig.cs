@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Net;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using pokedex_shared.Http;
 using pokedex_shared.Option;
 using Polly;
@@ -23,17 +25,25 @@ public static class PokemonHttpClientConfig
                 client.BaseAddress = new Uri(option!.Url);
                 client.Timeout = TimeSpan.FromMinutes(1);
             })
-            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetRetryPolicy(services))
             .SetHandlerLifetime(TimeSpan.FromMinutes(5));
         return services;
     }
 
-    private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy()
+    private static AsyncRetryPolicy<HttpResponseMessage> GetRetryPolicy(IServiceCollection services)
     {
+        var logger = services.BuildServiceProvider()
+            .GetService<ILogger<PokemonHttpClient>>();
         return HttpPolicyExtensions
             .HandleTransientHttpError()
-            .OrResult(msg => !msg.IsSuccessStatusCode)
-            .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                retryAttempt)));
+            .OrResult(msg => msg.StatusCode == HttpStatusCode.InternalServerError)
+            .OrResult(msg => msg.StatusCode == HttpStatusCode.TooManyRequests)
+            .WaitAndRetryAsync(6, retryAttempt =>
+            {
+                var delay = TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) +
+                            TimeSpan.FromMilliseconds(new Random().Next(100, 500));
+                logger?.LogWarning($"Retrying in {delay.TotalSeconds} seconds...");
+                return delay;
+            });
     }
 }

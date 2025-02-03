@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
-using pokedex_shared.Http.Species;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Dto;
 
@@ -10,8 +9,11 @@ namespace pokedex_shared.Model.Document;
 public readonly record struct PokemonDocument(
     [Required] [property: BsonId] int PokemonId,
     [Required]
-    [property: BsonElement("name")]
-    string Name,
+    [property: BsonElement("en-name")]
+    string EnglishName,
+    [Required]
+    [property: BsonElement("jp-hrkt-name")]
+    string JapaneseSignName,
     [Required]
     [property: BsonElement("region")]
     string Region,
@@ -37,12 +39,6 @@ public readonly record struct PokemonDocument(
     [property: BsonElement("stats")]
     List<PokemonStatDocument> Stats,
     [Required]
-    [property: BsonElement("images")]
-    List<PokemonMediaDocument> Images,
-    [Required]
-    [property: BsonElement("audios")]
-    List<PokemonMediaDocument> Audios,
-    [Required]
     [property: BsonElement("legendary")]
     bool Legendary,
     [Required]
@@ -50,7 +46,14 @@ public readonly record struct PokemonDocument(
     bool Mythical,
     [Required]
     [property: BsonElement("baby")]
-    bool Baby
+    bool Baby,
+    [Required]
+    [property: BsonElement("images")]
+    List<PokemonMediaDocument> Images,
+    [Required]
+    [property: BsonElement("audios")]
+    List<PokemonMediaDocument> Audios,
+    [property: BsonElement("varieties")] List<PokemonVarietyDocument> Varieties
 );
 
 public static partial class Extensions
@@ -66,7 +69,7 @@ public static partial class Extensions
     {
         return new PokemonDto(
             PokemonId: document.PokemonId.ToString(),
-            Name: document.Name,
+            Name: document.EnglishName,
             Region: document.Region,
             Height: document.Height,
             Weight: document.Weight,

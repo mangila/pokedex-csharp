@@ -5,6 +5,12 @@ namespace pokedex_shared.Option;
 public class WorkerOption
 {
     [Required] public required Interval Interval { get; set; }
+    [Required] public required MediaHandler MediaHandler { get; set; }
+}
+
+public class MediaHandler
+{
+    [Required] public required Interval Interval { get; set; }
 }
 
 public class Interval

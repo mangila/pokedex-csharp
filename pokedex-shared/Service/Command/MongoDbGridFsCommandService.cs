@@ -4,6 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using pokedex_shared.Model.Document.Embedded;
+using pokedex_shared.Model.Domain;
 using pokedex_shared.Option;
 using static MongoDB.Driver.Builders<MongoDB.Driver.GridFS.GridFSFileInfo>;
 
@@ -35,12 +36,10 @@ public class MongoDbGridFsCommandService
     }
 
     public async Task<PokemonMediaDocument> InsertAsync(
-        Uri uri,
-        string fileName,
-        string contentType,
-        string description,
+        PokemonMediaEntry entry,
         CancellationToken cancellationToken = default)
     {
+        var fileName = entry.GetFileName();
         var filter = Filter
             .Eq(file => file.Filename, fileName);
         var fileInfo = await _bucket
@@ -63,7 +62,7 @@ public class MongoDbGridFsCommandService
 
         _logger.LogInformation("GridFs miss - {fileName}", fileName);
         var httpClient = _httpClientFactory.CreateClient();
-        using var response = await httpClient.GetAsync(uri, cancellationToken);
+        using var response = await httpClient.GetAsync(entry.Uri, cancellationToken);
         response.EnsureSuccessStatusCode();
         await using var fileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
         var mediaId = await _bucket.UploadFromStreamAsync(fileName, fileStream,
@@ -71,9 +70,8 @@ public class MongoDbGridFsCommandService
             {
                 Metadata = new BsonDocument
                 {
-                    { "content_type", contentType },
-                    { "description", description },
-                    { "upload_date", BsonDateTime.Create(DateTime.UtcNow) }
+                    { "content_type", entry.GetContentType() },
+                    { "description", entry.Description },
                 }
             }, cancellationToken);
         getFileUri = _pokedexApiOption.GetFileUri.Replace("{id}", mediaId.ToString());
@@ -81,7 +79,7 @@ public class MongoDbGridFsCommandService
         return new PokemonMediaDocument(
             MediaId: mediaId.ToString(),
             FileName: fileName,
-            ContentType: contentType,
+            ContentType: entry.GetContentType(),
             Src: src
         );
     }

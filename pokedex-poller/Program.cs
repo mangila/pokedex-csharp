@@ -7,6 +7,7 @@ using pokedex_shared.Option;
 using pokedex_shared.Service;
 using pokedex_shared.Service.Command;
 using Serilog;
+using MediaHandler = pokedex_poller.MediaHandler;
 
 var builder = Host.CreateApplicationBuilder(args);
 // Load Serilog from configuration
@@ -33,6 +34,7 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
 builder.Services.AddPokemonApi(builder.Configuration.GetRequiredSection(nameof(PokeApiOption)));
 builder.Services.AddMongoDbCommandService(builder.Configuration.GetRequiredSection(nameof(MongoDbOption)));
 builder.Services.AddSingleton<RedisService>();
+builder.Services.AddSingleton<MediaHandler>();
 
 var cts = new CancellationTokenSource();
 var workers = new Dictionary<string, bool>();
@@ -58,6 +60,7 @@ foreach (var pokemonGeneration in PokemonGeneration.ToArray())
         pokemonHttpClient: provider.GetRequiredService<PokemonHttpClient>(),
         mongoDbCommandService: provider.GetRequiredService<MongoDbCommandService>(),
         mongoDbGridFsCommandService: provider.GetRequiredService<MongoDbGridFsCommandService>(),
+        mediaHandler: provider.GetRequiredService<MediaHandler>(),
         random: new Random(),
         onWorkerStarted: onWorkerStarted,
         onWorkerCompleted: onWorkerCompleted));
