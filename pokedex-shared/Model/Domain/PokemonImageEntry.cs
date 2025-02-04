@@ -3,7 +3,8 @@
 public readonly record struct PokemonMediaEntry(
     PokemonName Name,
     Uri Uri,
-    string Description
+    string Description,
+    byte[] File
 );
 
 public static class Extensions

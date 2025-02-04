@@ -3,8 +3,7 @@ import {Autocomplete, Box, Grid2, TextField, Typography} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import {PokemonSpeciesDto} from "@shared/types";
-import {BLUR_IMAGE, capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
-import Image from "next/image";
+import {capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
 import {searchByName} from "@shared/api";
 
 export default function SearchBar() {
@@ -37,7 +36,7 @@ export default function SearchBar() {
                direction="column"
                alignItems="center"
                mb={2}>
-            <Grid2 size={8}>
+            <Grid2 size={6}>
                 <Autocomplete
                     onChange={(_event, newValue: PokemonSpeciesDto | null) => {
                         if (newValue) {
@@ -58,41 +57,26 @@ export default function SearchBar() {
                     getOptionLabel={(option) => option.name}
                     renderOption={(props, option) => {
                         const {key, ...optionProps} = props;
-                        const frontDefault = option.varieties
-                            .filter(vareity => vareity.default)
-                            .flatMap(vareity => vareity.images)
-                            .find(media => media.file_name.includes("FrontDefault.png"))
-
-                        if (!frontDefault) {
-                            throw new Error("FrontDefault.png");
-                        }
-
                         return (
                             <Box
                                 key={key}
                                 component="li"
                                 {...optionProps}
                             >
-                                <Box>
-                                    <Typography color={"textSecondary"}>
-                                        #{padWithLeadingZeros(option.id, 4)}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography>
-                                        {capitalizeFirstLetter(option.name)}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Image
-                                        src={frontDefault.src}
-                                        alt={option.name}
-                                        width={120}
-                                        height={120}
-                                        placeholder="blur"
-                                        blurDataURL={BLUR_IMAGE}
-                                    />
-                                </Box>
+                                <Grid2 container
+                                       textAlign={"center"}
+                                       spacing={2}>
+                                    <Grid2>
+                                        <Typography color={"textSecondary"}>
+                                            #{padWithLeadingZeros(option.id, 4)}
+                                        </Typography>
+                                    </Grid2>
+                                    <Grid2>
+                                        <Typography>
+                                            {capitalizeFirstLetter(option.name)}
+                                        </Typography>
+                                    </Grid2>
+                                </Grid2>
                             </Box>
                         )
                     }}
@@ -100,7 +84,7 @@ export default function SearchBar() {
                         <TextField
                             inputRef={inputRef}
                             {...params}
-                            label="Choose a country"
+                            label="Search for Pokemons"
                             slotProps={{
                                 htmlInput: {
                                     ...params.inputProps,

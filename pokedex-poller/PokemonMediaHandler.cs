@@ -37,245 +37,253 @@ public class PokemonMediaHandler(
         Sprites sprites,
         CancellationToken cancellationToken = default)
     {
-        List<PokemonMediaEntry> entries =
+        List<Task<PokemonMediaEntry>> entries =
         [
-            GetMedia(name, sprites.FrontDefault!, "FrontDefault"),
-            GetMedia(name, sprites.BackDefault!, "BackDefault"),
-            GetMedia(name, sprites.FrontFemale!, "FrontFemale"),
-            GetMedia(name, sprites.BackFemale!, "BackFemale"),
-            GetMedia(name, sprites.FrontShiny!, "FrontShiny"),
-            GetMedia(name, sprites.BackShiny!, "BackShiny"),
-            GetMedia(name, sprites.FrontShinyFemale!, "FrontShinyFemale"),
-            GetMedia(name, sprites.BackShinyFemale!, "BackShinyFemale"),
-
-            // Home name,sprites
-            GetMedia(name, sprites.Other.Home.FrontDefault!, "HomeFrontDefault"),
-            GetMedia(name, sprites.Other.Home.FrontFemale!, "HomeFrontFemale"),
-            GetMedia(name, sprites.Other.Home.FrontShiny!, "HomeFrontShiny"),
-            GetMedia(name, sprites.Other.Home.FrontShinyFemale!, "HomeFrontShinyFemale"),
-
-            // Official Artwork name,sprites
-            GetMedia(name, sprites.Other.OfficialArtwork.FrontDefault!, "OfficialArtworkFrontDefault"),
-
-            GetMedia(name, sprites.Other.OfficialArtwork.FrontShiny!, "OfficialArtworkFrontShiny"),
-
-            // DreamWorld name,sprites
-            GetMedia(name, sprites.Other.DreamWorld.FrontDefault!, "DreamWorldFrontDefault"),
-            GetMedia(name, sprites.Other.DreamWorld.FrontFemale!, "DreamWorldFrontFemale"),
-
-            // Showdown name,sprites
-            GetMedia(name, sprites.Other.Showdown.FrontDefault!, "ShowdownFrontDefault"),
-            GetMedia(name, sprites.Other.Showdown.BackDefault!, "ShowdownBackDefault"),
-            GetMedia(name, sprites.Other.Showdown.FrontShiny!, "ShowdownFrontShiny"),
-            GetMedia(name, sprites.Other.Showdown.BackShiny!, "ShowdownBackShiny"),
-            GetMedia(name, sprites.Other.Showdown.FrontFemale!, "ShowdownFrontFemale"),
-            GetMedia(name, sprites.Other.Showdown.BackFemale!, "ShowdownBackFemale"),
-            GetMedia(name, sprites.Other.Showdown.FrontShinyFemale!, "ShowdownFrontShinyFemale"),
-            GetMedia(name, sprites.Other.Showdown.BackShinyFemale!, "ShowdownBackShinyFemale"),
-
+            FetchMediaAsync(name, sprites.FrontDefault!, "front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.BackDefault!, "back-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.FrontFemale!, "front-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.BackFemale!, "back-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.FrontShiny!, "front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.BackShiny!, "back-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.FrontShinyFemale!, "front-shiny-female", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.BackShinyFemale!, "back-shiny-female", CacheKeySpritesPrefix,
+                cancellationToken),
+            // Home name, sprites
+            FetchMediaAsync(name, sprites.Other.Home.FrontDefault!, "home-front-default", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Home.FrontFemale!, "home-front-female", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Home.FrontShiny!, "home-front-shiny", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Home.FrontShinyFemale!, "home-front-shiny-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            // Official Artwork name, sprites
+            FetchMediaAsync(name, sprites.Other.OfficialArtwork.FrontDefault!, "official-artwork-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Other.OfficialArtwork.FrontShiny!, "official-artwork-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            // DreamWorld name, sprites
+            FetchMediaAsync(name, sprites.Other.DreamWorld.FrontDefault!, "dreamworld-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Other.DreamWorld.FrontFemale!, "dreamworld-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            // Showdown name, sprites
+            FetchMediaAsync(name, sprites.Other.Showdown.FrontDefault!, "showdown-front-default", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.BackDefault!, "showdown-back-default", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.FrontShiny!, "showdown-front-shiny", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.BackShiny!, "showdown-back-shiny", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.FrontFemale!, "showdown-front-female", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.BackFemale!, "showdown-back-female", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.FrontShinyFemale!, "showdown-front-shiny-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Other.Showdown.BackShinyFemale!, "showdown-back-shiny-female",
+                CacheKeySpritesPrefix, cancellationToken),
             // Generation I
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.BackDefault!, "RedBlueBackDefault"),
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.BackGray!, "RedBlueBackGray"),
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.BackTransparent!, "RedBlueBackTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.FrontDefault!, "RedBlueFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.FrontGray!, "RedBlueFrontGray"),
-            GetMedia(name, sprites.Versions.GenerationI.RedBlue.FrontTransparent!, "RedBlueFrontTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationI.Yellow.BackDefault!, "YellowBackDefault"),
-            GetMedia(name, sprites.Versions.GenerationI.Yellow.BackGray!, "YellowBackGray"),
-            GetMedia(name, sprites.Versions.GenerationI.Yellow.BackTransparent!, "YellowBackTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationI.Yellow.FrontDefault!, "YellowFrontDefault"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.BackDefault!, "redblue-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.BackGray!, "redblue-back-gray",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.BackTransparent!, "redblue-back-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.FrontDefault!, "redblue-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.FrontGray!, "redblue-front-gray",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.RedBlue.FrontTransparent!, "redblue-front-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.Yellow.BackDefault!, "yellow-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.Yellow.BackGray!, "yellow-back-gray",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.Yellow.BackTransparent!, "yellow-back-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationI.Yellow.FrontDefault!, "yellow-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
             // Generation II
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.BackDefault!, "CrystalBackDefault"),
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.BackShiny!, "CrystalBackShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.BackShinyTransparent!, "CrystalBackShinyTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.BackTransparent!, "CrystalBackTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.FrontDefault!, "CrystalFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.FrontShiny!, "CrystalFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.FrontShinyTransparent!,
-                "CrystalFrontShinyTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Crystal.FrontTransparent!, "CrystalFrontTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Gold.BackDefault!, "GoldBackDefault"),
-            GetMedia(name, sprites.Versions.GenerationII.Gold.BackShiny!, "GoldBackShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Gold.FrontDefault!, "GoldFrontDefault"),
-            GetMedia(name, sprites.Versions.GenerationII.Gold.FrontShiny!, "GoldFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Gold.FrontTransparent!, "GoldFrontTransparent"),
-
-            GetMedia(name, sprites.Versions.GenerationII.Silver.BackDefault!, "SilverBackDefault"),
-            GetMedia(name, sprites.Versions.GenerationII.Silver.BackShiny!, "SilverBackShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Silver.FrontDefault!, "SilverFrontDefault"),
-            GetMedia(name, sprites.Versions.GenerationII.Silver.FrontShiny!, "SilverFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationII.Silver.FrontTransparent!, "SilverFrontTransparent"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.BackDefault!, "crystal-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.BackShiny!, "crystal-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.BackShinyTransparent!,
+                "crystal-back-shiny-transparent", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.BackTransparent!, "crystal-back-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.FrontDefault!, "crystal-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.FrontShiny!, "crystal-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.FrontShinyTransparent!,
+                "crystal-front-shiny-transparent", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Crystal.FrontTransparent!, "crystal-front-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Gold.BackDefault!, "gold-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Gold.BackShiny!, "gold-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Gold.FrontDefault!, "gold-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Gold.FrontShiny!, "gold-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Gold.FrontTransparent!, "gold-front-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Silver.BackDefault!, "silver-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Silver.BackShiny!, "silver-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Silver.FrontDefault!, "silver-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Silver.FrontShiny!, "silver-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationII.Silver.FrontTransparent!, "silver-front-transparent",
+                CacheKeySpritesPrefix, cancellationToken),
             // Generation III
-
-            GetMedia(name, sprites.Versions.GenerationIII.Emerald.FrontDefault!, "EmeraldFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.Emerald.FrontShiny!, "EmeraldFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationIII.FireredLeafgreen.BackDefault!, "FireredLeafgreenBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.FireredLeafgreen.BackShiny!, "FireredLeafgreenBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.FireredLeafgreen.FrontDefault!,
-                "FireredLeafgreenFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.FireredLeafgreen.FrontShiny!, "FireredLeafgreenFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.RubySapphire.BackDefault!, "RubySapphireBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.RubySapphire.BackShiny!, "RubySapphireBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.RubySapphire.FrontDefault!, "RubySapphireFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIII.RubySapphire.FrontShiny!, "RubySapphireFrontShiny"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.Emerald.FrontDefault!, "emerald-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.Emerald.FrontShiny!, "emerald-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.FireredLeafgreen.BackDefault!,
+                "firered-leafgreen-back-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.FireredLeafgreen.BackShiny!,
+                "firered-leafgreen-back-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.FireredLeafgreen.FrontDefault!,
+                "firered-leafgreen-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.FireredLeafgreen.FrontShiny!,
+                "firered-leafgreen-front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.RubySapphire.BackDefault!,
+                "ruby-sapphire-back-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.RubySapphire.BackShiny!, "ruby-sapphire-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.RubySapphire.FrontDefault!,
+                "ruby-sapphire-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIII.RubySapphire.FrontShiny!, "ruby-sapphire-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
             // Generation IV
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.BackDefault!, "DiamondPearlBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.BackFemale!, "DiamondPearlBackFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.BackShiny!, "DiamondPearlBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.BackShinyFemale!, "DiamondPearlBackShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.FrontDefault!, "DiamondPearlFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.FrontFemale!, "DiamondPearlFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.FrontShiny!, "DiamondPearlFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.DiamondPearl.FrontShinyFemale!,
-                "DiamondPearlFrontShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackDefault!,
-                "HeartgoldSoulsilverBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackFemale!,
-                "HeartgoldSoulsilverBackFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackShiny!,
-                "HeartgoldSoulsilverBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackShinyFemale!,
-                "HeartgoldSoulsilverBackShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontDefault!,
-                "HeartgoldSoulsilverFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontFemale!,
-                "HeartgoldSoulsilverFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontShiny!,
-                "HeartgoldSoulsilverFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontShinyFemale!,
-                "HeartgoldSoulsilverFrontShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.BackDefault!, "PlatinumBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.BackFemale!, "PlatinumBackFemale"),
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.BackShiny!, "PlatinumBackShiny"),
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.BackShinyFemale!, "PlatinumBackShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.FrontDefault!, "PlatinumFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.FrontFemale!, "PlatinumFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.FrontShiny!, "PlatinumFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationIV.Platinum.FrontShinyFemale!, "PlatinumFrontShinyFemale"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.BackDefault!, "diamond-pearl-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.BackFemale!, "diamond-pearl-back-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.BackShiny!, "diamond-pearl-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.BackShinyFemale!,
+                "diamond-pearl-back-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.FrontDefault!,
+                "diamond-pearl-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.FrontFemale!, "diamond-pearl-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.FrontShiny!, "diamond-pearl-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.DiamondPearl.FrontShinyFemale!,
+                "diamond-pearl-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackDefault!,
+                "heartgold-soulsilver-back-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackFemale!,
+                "heartgold-soulsilver-back-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackShiny!,
+                "heartgold-soulsilver-back-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.BackShinyFemale!,
+                "heartgold-soulsilver-back-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontDefault!,
+                "heartgold-soulsilver-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontFemale!,
+                "heartgold-soulsilver-front-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontShiny!,
+                "heartgold-soulsilver-front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.HeartgoldSoulsilver.FrontShinyFemale!,
+                "heartgold-soulsilver-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.BackDefault!, "platinum-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.BackFemale!, "platinum-back-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.BackShiny!, "platinum-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.BackShinyFemale!, "platinum-back-shiny-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.FrontDefault!, "platinum-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.FrontFemale!, "platinum-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.FrontShiny!, "platinum-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationIV.Platinum.FrontShinyFemale!,
+                "platinum-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
             // Generation V
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackDefault!,
-                "BlackWhiteAnimatedBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackFemale!,
-                "BlackWhiteAnimatedBackFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackShiny!, "BlackWhiteAnimatedBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackShinyFemale!,
-                "BlackWhiteAnimatedBackShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontDefault!,
-                "BlackWhiteAnimatedFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontFemale!,
-                "BlackWhiteAnimatedFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontShiny!,
-                "BlackWhiteAnimatedFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontShinyFemale!,
-                "BlackWhiteAnimatedFrontShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.BackDefault!, "BlackWhiteBackDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.BackFemale!, "BlackWhiteBackFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.BackShiny!, "BlackWhiteBackShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.BackShinyFemale!, "BlackWhiteBackShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.FrontDefault!, "BlackWhiteFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.FrontFemale!, "BlackWhiteFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.FrontShiny!, "BlackWhiteFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationV.BlackWhite.FrontShinyFemale!, "BlackWhiteFrontShinyFemale"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackDefault!,
+                "blackwhite-animated-back-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackFemale!,
+                "blackwhite-animated-back-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackShiny!,
+                "blackwhite-animated-back-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.BackShinyFemale!,
+                "blackwhite-animated-back-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontDefault!,
+                "blackwhite-animated-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontFemale!,
+                "blackwhite-animated-front-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontShiny!,
+                "blackwhite-animated-front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.Animated.FrontShinyFemale!,
+                "blackwhite-animated-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.BackDefault!, "blackwhite-back-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.BackFemale!, "blackwhite-back-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.BackShiny!, "blackwhite-back-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.BackShinyFemale!,
+                "blackwhite-back-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.FrontDefault!, "blackwhite-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.FrontFemale!, "blackwhite-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.FrontShiny!, "blackwhite-front-shiny",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationV.BlackWhite.FrontShinyFemale!,
+                "blackwhite-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
             // Generation VI
-
-            GetMedia(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontDefault!,
-                "OmegarubyAlphasapphireFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontFemale!,
-                "OmegarubyAlphasapphireFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontShiny!,
-                "OmegarubyAlphasapphireFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontShinyFemale!,
-                "OmegarubyAlphasapphireFrontShinyFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationVI.XY.FrontDefault!, "XYFrontDefault"),
-            GetMedia(name, sprites.Versions.GenerationVI.XY.FrontFemale!, "XYFrontFemale"),
-            GetMedia(name, sprites.Versions.GenerationVI.XY.FrontShiny!, "XYFrontShiny"),
-            GetMedia(name, sprites.Versions.GenerationVI.XY.FrontShinyFemale!, "XYFrontShinyFemale"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontDefault!,
+                "omegaruby-alphasapphire-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontFemale!,
+                "omegaruby-alphasapphire-front-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontShiny!,
+                "omegaruby-alphasapphire-front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.OmegarubyAlphasapphire.FrontShinyFemale!,
+                "omegaruby-alphasapphire-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.XY.FrontDefault!, "xy-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.XY.FrontFemale!, "xy-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.XY.FrontShiny!, "xy-front-shiny", CacheKeySpritesPrefix,
+                cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVI.XY.FrontShinyFemale!, "xy-front-shiny-female",
+                CacheKeySpritesPrefix, cancellationToken),
             // Generation VII
-            GetMedia(name, sprites.Versions.GenerationVII.Icons.FrontDefault!, "IconsFrontDefault"),
-            GetMedia(name, sprites.Versions.GenerationVII.Icons.FrontFemale!, "IconsFrontFemale"),
-            GetMedia(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontDefault!,
-                "UltraSunUltraMoonFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontFemale!,
-                "UltraSunUltraMoonFrontFemale"),
-
-            GetMedia(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontShiny!, "UltraSunUltraMoonFrontShiny"),
-
-            GetMedia(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontShinyFemale!,
-                "UltraSunUltraMoonFrontShinyFemale"),
-
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.Icons.FrontDefault!, "icons-front-default",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.Icons.FrontFemale!, "icons-front-female",
+                CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontDefault!,
+                "ultrasun-ultramoon-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontFemale!,
+                "ultrasun-ultramoon-front-female", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontShiny!,
+                "ultrasun-ultramoon-front-shiny", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVII.UltraSunUltraMoon.FrontShinyFemale!,
+                "ultrasun-ultramoon-front-shiny-female", CacheKeySpritesPrefix, cancellationToken),
             // Generation VIII
-
-            GetMedia(name, sprites.Versions.GenerationVIII.Icons.FrontDefault!, "GenerationVIIIIconsFrontDefault"),
-
-            GetMedia(name, sprites.Versions.GenerationVIII.Icons.FrontFemale!, "GenerationVIIIIconsFrontFemale")
+            FetchMediaAsync(name, sprites.Versions.GenerationVIII.Icons.FrontDefault!,
+                "generationviii-icons-front-default", CacheKeySpritesPrefix, cancellationToken),
+            FetchMediaAsync(name, sprites.Versions.GenerationVIII.Icons.FrontFemale!,
+                "generationviii-icons-front-female", CacheKeySpritesPrefix, cancellationToken),
         ];
-
-        return await GetFileData(entries, cancellationToken);
+        var fetchedEntries = await Task.WhenAll(entries);
+        return await InsertEntriesAsync(fetchedEntries, cancellationToken);
     }
 
 
@@ -284,78 +292,78 @@ public class PokemonMediaHandler(
         Cries cries,
         CancellationToken cancellationToken = default)
     {
-        List<PokemonMediaEntry> entries =
+        List<Task<PokemonMediaEntry>> entries =
         [
-            GetMedia(name, cries.Legacy!, "Legacy"),
-            GetMedia(name, cries.Latest!, "Latest"),
+            FetchMediaAsync(name, cries.Legacy!, "legacy", CacheKeyAudioPrefix, cancellationToken),
+            FetchMediaAsync(name, cries.Latest!, "latest", CacheKeyAudioPrefix, cancellationToken),
         ];
-
-        return await GetFileData(entries, cancellationToken);
+        var fetchedEntries = await Task.WhenAll(entries);
+        return await InsertEntriesAsync(fetchedEntries, cancellationToken);
     }
 
-    private static PokemonMediaEntry GetMedia(
-        PokemonName pokemonName,
+    private async Task<List<PokemonMediaDocument>> InsertEntriesAsync(
+        PokemonMediaEntry[] entries,
+        CancellationToken cancellationToken = default)
+    {
+        var documents = new List<PokemonMediaDocument>();
+        foreach (var entry in entries)
+        {
+            if (entry != default)
+            {
+                var document = await mongoDbGridFsCommandRepository.InsertAsync(
+                    entry: entry,
+                    cancellationToken: cancellationToken);
+                documents.Add(document);
+            }
+        }
+
+        return documents;
+    }
+
+    private async Task<PokemonMediaEntry> FetchMediaAsync(
+        PokemonName name,
         string uri,
-        string description)
+        string description,
+        string cacheKeyPrefix,
+        CancellationToken cancellationToken = default
+    )
     {
         if (string.IsNullOrEmpty(uri))
         {
             return default;
         }
 
-        return new PokemonMediaEntry(
-            Name: pokemonName,
-            Uri: new Uri(uri),
-            Description: description);
-    }
+        var cacheKey = string.Concat(cacheKeyPrefix, uri);
+        var cacheValue = await redisService.GetAsync(
+            cacheKey,
+            cancellationToken);
 
-    private async Task<List<PokemonMediaDocument>> GetFileData(
-        List<PokemonMediaEntry> entries,
-        CancellationToken cancellationToken)
-    {
-        var mediaDocuments = new List<PokemonMediaDocument>();
-        foreach (var entry in entries)
+        if (cacheValue is null)
         {
-            if (entry == default)
-            {
-                continue;
-            }
-
-            var cacheKey = string.Concat(CacheKeySpritesPrefix, entry.Uri.AbsolutePath);
-            var cacheValue = await redisService.GetAsync(
-                cacheKey,
-                cancellationToken);
-            if (cacheValue is null)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
-                var httpClient = httpClientFactory.CreateClient();
-                using var response = await httpClient.GetAsync(entry.Uri, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                var file = await response.Content.ReadAsByteArrayAsync(cancellationToken);
-                mediaDocuments.Add(
-                    await mongoDbGridFsCommandRepository.InsertAsync(
-                        entry: entry,
-                        file: file,
-                        cancellationToken: cancellationToken)
-                );
-                await redisService.SetAsync(
-                    key: cacheKey,
-                    data: file,
-                    options: _options,
-                    cancellationToken: cancellationToken);
-            }
-            else
-            {
-                mediaDocuments.Add(
-                    await mongoDbGridFsCommandRepository.InsertAsync(
-                        entry: entry,
-                        file: cacheValue,
-                        cancellationToken: cancellationToken)
-                );
-            }
+            await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+            var httpClient = httpClientFactory.CreateClient();
+            using var response = await httpClient.GetAsync(uri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var file = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+            await redisService.SetAsync(
+                key: cacheKey,
+                data: file,
+                options: _options,
+                cancellationToken: cancellationToken);
+            return new PokemonMediaEntry(
+                name,
+                new Uri(uri),
+                description,
+                file
+            );
         }
 
-        return mediaDocuments;
+        return new PokemonMediaEntry(
+            name,
+            new Uri(uri),
+            description,
+            cacheValue
+        );
     }
 
     private int GetJitter()

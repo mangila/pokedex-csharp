@@ -13,14 +13,15 @@ public class ExtensionsTest
         var entry = new PokemonMediaEntry(
             new PokemonName("abra"),
             new Uri("https://pokedex.io/abc.png"),
-            "FrontDefault"
+            "front-default",
+            []
         );
         entry
             .Should()
             .NotBeNull();
         entry.GetFileName()
             .Should()
-            .Be("abra-FrontDefault.png");
+            .Be("abra-front-default.png");
         entry.GetFileExtension()
             .Should()
             .Be("png");
@@ -37,7 +38,8 @@ public class ExtensionsTest
             var entry = new PokemonMediaEntry(
                 new PokemonName("hejsan"),
                 new Uri("https://pokedex.io/abc.xyz"),
-                "Description"
+                "description",
+                []
             );
             entry.GetContentType();
         };

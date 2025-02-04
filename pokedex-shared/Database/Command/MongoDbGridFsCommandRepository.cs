@@ -34,7 +34,6 @@ public class MongoDbGridFsCommandRepository
 
     public async Task<PokemonMediaDocument> InsertAsync(
         PokemonMediaEntry entry,
-        byte[] file,
         CancellationToken cancellationToken = default)
     {
         var fileName = entry.GetFileName();
@@ -54,7 +53,7 @@ public class MongoDbGridFsCommandRepository
             );
         }
 
-        var mediaId = await _bucket.UploadFromBytesAsync(fileName, file,
+        var mediaId = await _bucket.UploadFromBytesAsync(fileName, entry.File,
             new GridFSUploadOptions
             {
                 Metadata = new BsonDocument
