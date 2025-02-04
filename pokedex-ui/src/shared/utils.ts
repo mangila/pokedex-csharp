@@ -1,5 +1,5 @@
 ﻿export const padWithLeadingZeros = (id: number, totalLength: number): string => {
-    const pokemonId = id.toString()
+    let pokemonId = id.toString()
     while (pokemonId.length < totalLength) {
         pokemonId = '0' + pokemonId;
     }
