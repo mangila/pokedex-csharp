@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using pokedex_shared.Common;
 using pokedex_shared.Common.Option;
 using pokedex_shared.Database.Command;
-using pokedex_shared.Integration.PokeApi.Response;
 using pokedex_shared.Integration.PokeApi.Response.Pokemon;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
@@ -20,7 +18,8 @@ public class PokemonMediaHandler(
     ILogger<PokemonMediaHandler> logger,
     IOptions<WorkerOption> workerOption,
     RedisService redisService,
-    MongoDbGridFsCommandRepository mongoDbGridFsCommandRepository)
+    MongoDbGridFsCommandRepository mongoDbGridFsCommandRepository,
+    IHttpClientFactory httpClientFactory)
 {
     private const string CacheKeySpritesPrefix = "pokeapi.co:sprites:";
     private const string CacheKeyAudioPrefix = "pokeapi.co:audio:";
@@ -276,34 +275,7 @@ public class PokemonMediaHandler(
             GetMedia(name, sprites.Versions.GenerationVIII.Icons.FrontFemale!, "GenerationVIIIIconsFrontFemale")
         ];
 
-
-        var mediaDocuments = new List<PokemonMediaDocument>();
-        foreach (var entry in entries)
-        {
-            if (entry != default)
-            {
-                var cacheKey = string.Concat(CacheKeySpritesPrefix, entry.Uri.AbsolutePath);
-                var cacheValue = await redisService.GetValueTypeAsync<PokemonMediaEntry>(
-                    cacheKey,
-                    cancellationToken);
-                if (cacheValue == default)
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
-                    mediaDocuments.Add(
-                        await mongoDbGridFsCommandRepository.InsertAsync(
-                            entry,
-                            cancellationToken)
-                    );
-                    await redisService.SetAsync(
-                        cacheKey,
-                        await entry.ToJsonValueTypeAsync(cancellationToken: cancellationToken),
-                        _options,
-                        cancellationToken);
-                }
-            }
-        }
-
-        return mediaDocuments;
+        return await GetFileData(entries, cancellationToken);
     }
 
 
@@ -318,33 +290,7 @@ public class PokemonMediaHandler(
             GetMedia(name, cries.Latest!, "Latest"),
         ];
 
-        var mediaDocuments = new List<PokemonMediaDocument>();
-        foreach (var entry in entries)
-        {
-            if (entry != default)
-            {
-                var cacheKey = string.Concat(CacheKeyAudioPrefix, entry.Uri.AbsolutePath);
-                var cacheValue = await redisService.GetValueTypeAsync<PokemonMediaEntry>(
-                    cacheKey,
-                    cancellationToken);
-                if (cacheValue == default)
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
-                    mediaDocuments.Add(
-                        await mongoDbGridFsCommandRepository.InsertAsync(
-                            entry,
-                            cancellationToken)
-                    );
-                    await redisService.SetAsync(
-                        cacheKey,
-                        await entry.ToJsonValueTypeAsync(cancellationToken: cancellationToken),
-                        _options,
-                        cancellationToken);
-                }
-            }
-        }
-
-        return mediaDocuments;
+        return await GetFileData(entries, cancellationToken);
     }
 
     private static PokemonMediaEntry GetMedia(
@@ -361,6 +307,55 @@ public class PokemonMediaHandler(
             Name: pokemonName,
             Uri: new Uri(uri),
             Description: description);
+    }
+
+    private async Task<List<PokemonMediaDocument>> GetFileData(
+        List<PokemonMediaEntry> entries,
+        CancellationToken cancellationToken)
+    {
+        var mediaDocuments = new List<PokemonMediaDocument>();
+        foreach (var entry in entries)
+        {
+            if (entry == default)
+            {
+                continue;
+            }
+
+            var cacheKey = string.Concat(CacheKeySpritesPrefix, entry.Uri.AbsolutePath);
+            var cacheValue = await redisService.GetAsync(
+                cacheKey,
+                cancellationToken);
+            if (cacheValue is null)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+                var httpClient = httpClientFactory.CreateClient();
+                using var response = await httpClient.GetAsync(entry.Uri, cancellationToken);
+                response.EnsureSuccessStatusCode();
+                var file = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+                mediaDocuments.Add(
+                    await mongoDbGridFsCommandRepository.InsertAsync(
+                        entry: entry,
+                        file: file,
+                        cancellationToken: cancellationToken)
+                );
+                await redisService.SetAsync(
+                    key: cacheKey,
+                    data: file,
+                    options: _options,
+                    cancellationToken: cancellationToken);
+            }
+            else
+            {
+                mediaDocuments.Add(
+                    await mongoDbGridFsCommandRepository.InsertAsync(
+                        entry: entry,
+                        file: cacheValue,
+                        cancellationToken: cancellationToken)
+                );
+            }
+        }
+
+        return mediaDocuments;
     }
 
     private int GetJitter()

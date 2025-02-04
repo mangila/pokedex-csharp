@@ -27,7 +27,8 @@ public class MongoDbGridFsQueryRepository
         });
     }
 
-    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId objectId,
+    public async Task<PokemonFileResult?> FindFileByIdAsync(
+        ObjectId objectId,
         CancellationToken cancellationToken)
     {
         var fileInfo = await (await _bucket
@@ -38,11 +39,16 @@ public class MongoDbGridFsQueryRepository
             return null;
         }
 
-        var memoryStream = new MemoryStream();
-        await _bucket.DownloadToStreamAsync(objectId, memoryStream, cancellationToken: cancellationToken);
-        memoryStream.Position = 0;
-        return new PokemonFileResult(fileInfo.Filename,
-            fileInfo.Metadata["content_type"].AsString,
-            memoryStream);
+        var bytes = await _bucket.DownloadAsBytesAsync(objectId, null, cancellationToken);
+        if (bytes is null)
+        {
+            return null;
+        }
+
+        return new PokemonFileResult(
+            FileName: fileInfo.Filename,
+            ContentType: fileInfo.Metadata["content_type"].AsString,
+            LastModified: fileInfo.UploadDateTime,
+            File: bytes);
     }
 }

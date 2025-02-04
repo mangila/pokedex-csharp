@@ -1,7 +1,7 @@
 ﻿import {useInfiniteQuery} from '@tanstack/react-query';
 import {useEffect, useRef} from 'react';
 import {PaginationResultDto} from './types';
-import {getAllPokemons} from './api';
+import {findByPagination} from './api';
 
 export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number) => {
     const loader = useRef(null);
@@ -16,9 +16,8 @@ export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number
         queryKey: queryKey,
         initialPageParam: 1,
         refetchOnMount: true,
-        retry: 3,
         queryFn: ({pageParam}) =>
-            getAllPokemons(pageParam as number, pageSize),
+            findByPagination(pageParam as number, pageSize),
         getNextPageParam: (lastPage: PaginationResultDto) => {
             return lastPage.current_page + 1;
         }

@@ -1,4 +1,4 @@
-﻿import {LokiLogRequest, PaginationResultDto, PokemonDto, PokemonGeneration, PokemonMediaProjectionDto} from "./types";
+﻿import {LokiLogRequest, PaginationResultDto, PokemonGeneration, PokemonSpeciesDto} from "./types";
 import {APP_NAME, ENV, LOKI_PUSH_URL, POKEDEX_API_V1_URL} from "./utils";
 
 export const pushToLoki =
@@ -21,7 +21,7 @@ export const pushToLoki =
         });
         return response.ok;
     };
-export const getAllPokemons =
+export const findByPagination =
     async (page: number, pageSize: number): Promise<PaginationResultDto> => {
         const uri = `${POKEDEX_API_V1_URL}/pokemon?page=${page}&pageSize=${pageSize}`;
         const response = await fetch(uri, {
@@ -41,8 +41,8 @@ export const getAllPokemons =
         return await response.json() as PaginationResultDto;
     };
 
-export const findAllPokemonsByGeneration =
-    async (generation: PokemonGeneration): Promise<PokemonMediaProjectionDto[] | undefined> => {
+export const findByGeneration =
+    async (generation: PokemonGeneration): Promise<PokemonSpeciesDto[] | undefined> => {
         const uri = `${POKEDEX_API_V1_URL}/pokemon/search/generation?generation=${generation}`
         const response = await fetch(uri, {
             method: 'GET',
@@ -58,12 +58,11 @@ export const findAllPokemonsByGeneration =
             })
             throw new Error(response.statusText);
         }
-        const json = await response.json();
-        return json.pokemons as PokemonMediaProjectionDto[];
+        return await response.json() as PokemonSpeciesDto[];
     }
 
-export const getPokemonByName =
-    async (pokemonName: string): Promise<PokemonDto | undefined> => {
+export const findByName =
+    async (pokemonName: string): Promise<PokemonSpeciesDto | undefined> => {
         const uri = `${POKEDEX_API_V1_URL}/pokemon/${pokemonName}`;
         const response = await fetch(uri, {
             method: 'GET',
@@ -82,5 +81,5 @@ export const getPokemonByName =
             })
             throw new Error(response.statusText);
         }
-        return await response.json() as PokemonDto;
+        return await response.json() as PokemonSpeciesDto;
     }

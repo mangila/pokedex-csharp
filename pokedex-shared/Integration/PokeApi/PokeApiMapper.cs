@@ -89,7 +89,7 @@ public static partial class PokeApiMapper
         List<PokemonDocument> pokemons)
     {
         return new PokemonSpeciesDocument(
-            Id: Convert.ToInt32(id.Value),
+            Id: id.ToInt(),
             Name: name.Value,
             Names: ToNames(species.Names),
             Descriptions: ToDescriptions(species.FlavorTextEntries),
@@ -117,7 +117,8 @@ public static partial class PokeApiMapper
      *  Running Regex since flavor text returns with line breaks in the string
      * </summary>
      */
-    private static List<PokemonDescriptionDocument> ToDescriptions(FlavorTextEntries[] flavorTextEntries)
+    private static List<PokemonDescriptionDocument> ToDescriptions(
+        FlavorTextEntries[] flavorTextEntries)
     {
         return flavorTextEntries
             .Select(entries => new PokemonDescriptionDocument(
@@ -153,7 +154,8 @@ public static partial class PokeApiMapper
         return GetEvolution(chain.FirstChain, list);
     }
 
-    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo,
+    private static List<PokemonEvolutionDocument> GetEvolution(
+        EvolutionChain[] chainEvolvesTo,
         List<PokemonEvolutionDocument> list)
     {
         if (chainEvolvesTo.Length == 0) return list;

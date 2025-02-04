@@ -19,7 +19,6 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         return true;
     }
     
-
     private static ProblemDetails GetProblemDetails(Exception exception)
     {
         return exception switch

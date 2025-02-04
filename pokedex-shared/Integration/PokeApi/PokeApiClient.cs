@@ -29,7 +29,7 @@ public class PokeApiClient(
         }
 
         var json = await httpClient.GetStringAsync(uri, cancellationToken);
-        await redis.SetAsync(cacheKey, json, _options, cancellationToken);
+        await redis.SetStringAsync(cacheKey, json, _options, cancellationToken);
         return await json.DeserializeValueTypeToJsonAsync<T>(cancellationToken);
     }
 }

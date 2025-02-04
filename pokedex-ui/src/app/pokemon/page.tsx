@@ -4,27 +4,39 @@ import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll} from "@shared/hooks";
 
 export default function Page() {
-    const {data, loader, isFetchingNextPage, hasNextPage, isLoading, error} = useInfiniteScroll(["pokemons"], 15);
+    const {data, loader, isFetchingNextPage, hasNextPage, isLoading, error} = useInfiniteScroll(["pokemons"], 16);
 
-    if (isLoading) {
-        return <>Loading...</>
-    }
     if (error) {
         throw error;
     }
 
+    const cards = data?.pages.map((page) => {
+        return page.documents
+            .map((species) => {
+                return species
+                    .varieties
+                    .filter((pokemon) => pokemon.default)
+                    .map((pokemon) => {
+                        return <Grid2 key={species.id}>
+                            <PokemonCard id={species.id}
+                                         speciesName={species.name}
+                                         pokemon={pokemon}/>
+                        </Grid2>
+                    });
+            })
+    })
+
     return <>
-        <Grid2 container spacing={1}>
-            {data?.pages.map((page) => (
-                page.pokemons.map((pokemon) => (
-                    <Grid2 key={pokemon.pokemon_id} container>
-                        <PokemonCard pokemon={pokemon}/>
-                    </Grid2>
-                ))
-            ))}
+        <Grid2 container spacing={1} sx={{
+            flexDirection: {
+                xs: 'column',
+                sm: 'row',
+            },
+        }}>
+            {cards}
             <Box ref={loader}>
                 {isFetchingNextPage ? 'Loading more...' : null}
-                {hasNextPage ? 'Loading more...' : "No more pokemons to load"}
+                {hasNextPage && isLoading ? 'Loading more...' : null}
             </Box>
         </Grid2>
     </>;

@@ -18,7 +18,9 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         return collection.ToDtos();
     }
 
-    public async Task<PaginationResultDto> FindByPaginationAsync(int page, int pageSize,
+    public async Task<PaginationResultDto> FindByPaginationAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -36,7 +38,8 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         return collection.ToDtos();
     }
 
-    public async Task<ImmutableList<PokemonSpeciesDto>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<ImmutableList<PokemonSpeciesDto>> SearchByGenerationAsync(
+        PokemonGeneration generation,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -45,7 +48,8 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         return collection.ToDtos();
     }
 
-    public async Task<PokemonSpeciesDto> FindOneByIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDto> FindOneByIdAsync(
+        PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -54,7 +58,8 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         return document.Equals(default) ? default : document.ToDto();
     }
 
-    public async Task<PokemonSpeciesDto> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDto> FindOneByNameAsync(
+        PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -63,7 +68,8 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         return document.Equals(default) ? default : document.ToDto();
     }
 
-    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id,
+    public async Task<PokemonFileResult?> FindFileByIdAsync(
+        ObjectId id,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();

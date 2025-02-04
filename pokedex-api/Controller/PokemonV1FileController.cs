@@ -31,7 +31,12 @@ public class PokemonV1FileController(
         {
             var file = result.Value;
             Response.Headers.CacheControl = $"public, max-age=${TimeSpan.FromMinutes(10).Seconds}";
-            return Results.File(file.File, file.ContentType, file.FileName);
+            return Results.File(
+                fileContents: file.File,
+                contentType: file.ContentType,
+                fileDownloadName: file.FileName,
+                lastModified: file.LastModified
+            );
         }
 
         return Results.NotFound();

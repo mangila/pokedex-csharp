@@ -13,18 +13,15 @@ namespace pokedex_shared.Database.Command;
 public class MongoDbGridFsCommandRepository
 {
     private readonly ILogger<MongoDbGridFsCommandRepository> _logger;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly GridFSBucket _bucket;
     private readonly PokedexApiOption _pokedexApiOption;
 
     public MongoDbGridFsCommandRepository(
         ILogger<MongoDbGridFsCommandRepository> logger,
         IOptions<MongoDbOption> mongoDbOption,
-        IOptions<PokedexApiOption> pokedexApiOption,
-        IHttpClientFactory httpClientFactory)
+        IOptions<PokedexApiOption> pokedexApiOption)
     {
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
         _pokedexApiOption = pokedexApiOption.Value;
         var mongoDb = mongoDbOption.Value;
         var db = new MongoClient(mongoDb.ConnectionString)
@@ -37,30 +34,27 @@ public class MongoDbGridFsCommandRepository
 
     public async Task<PokemonMediaDocument> InsertAsync(
         PokemonMediaEntry entry,
+        byte[] file,
         CancellationToken cancellationToken = default)
     {
         var fileName = entry.GetFileName();
         var filter = Filter
-            .Eq(file => file.Filename, fileName);
-        var fileInfo = await _bucket
+            .Eq(gridFsFileInfo => gridFsFileInfo.Filename, fileName);
+        var gridFsFileInfo = await _bucket
             .Find(filter, cancellationToken: cancellationToken)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
-        if (fileInfo is not null)
+        if (gridFsFileInfo is not null)
         {
             return new PokemonMediaDocument(
-                MediaId: fileInfo.Id.ToString(),
-                FileName: fileInfo.Filename,
-                ContentType: fileInfo.Metadata["content_type"].AsString,
-                Src: GetSrc(fileInfo.Id.ToString())
+                MediaId: gridFsFileInfo.Id.ToString(),
+                FileName: gridFsFileInfo.Filename,
+                ContentType: gridFsFileInfo.Metadata["content_type"].AsString,
+                Src: GetSrc(gridFsFileInfo.Id.ToString())
             );
         }
 
-        var httpClient = _httpClientFactory.CreateClient();
-        using var response = await httpClient.GetAsync(entry.Uri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        await using var fileStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var mediaId = await _bucket.UploadFromStreamAsync(fileName, fileStream,
+        var mediaId = await _bucket.UploadFromBytesAsync(fileName, file,
             new GridFSUploadOptions
             {
                 Metadata = new BsonDocument

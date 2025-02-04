@@ -8,7 +8,8 @@ public readonly record struct PokemonIdCollection
 
     public PokemonIdCollection(List<int> ids)
     {
-        Ids = ids.Select(id => new PokemonId(id.ToString()))
+        Ids = ids
+            .Select(id => new PokemonId(id))
             .ToImmutableList();
     }
 }

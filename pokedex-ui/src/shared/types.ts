@@ -6,35 +6,31 @@ export interface LokiLogRequest {
     data: unknown
 }
 
-export interface PaginationResultDto {
-    total_count: number;
-    total_pages: number;
-    current_page: number;
-    page_size: number;
-    pokemons: PokemonDto[];
+export interface PokemonNameDto {
+    language: string;
+    name: string;
 }
 
-export interface PokemonDto {
-    pokemon_id: string;
-    name: string;
-    region: string;
-    height: string;
-    weight: string;
+export interface PokemonDescriptionDto {
+    language: string;
     description: string;
-    generation: string;
-    types: PokemonTypeDto[];
-    evolutions: PokemonEvolutionDto[];
-    stats: PokemonStatDto[];
-    images: PokemonMediaDto[];
-    audios: PokemonMediaDto[];
-    legendary: boolean;
-    mythical: boolean;
-    baby: boolean;
 }
 
-export interface PokemonEvolutionDto {
-    value: number;
-    name: string;
+export interface PokemonGeneraDto {
+    language: string;
+    genera: string;
+}
+
+export interface PokemonMediaDto {
+    media_id: string;
+    src: string;
+    file_name: string;
+    content_type: string;
+}
+
+export interface PokemonPedigreeDto {
+    generation: string;
+    region: string;
 }
 
 export interface PokemonStatDto {
@@ -46,18 +42,44 @@ export interface PokemonTypeDto {
     type: string;
 }
 
-export interface PokemonMediaDto {
-    media_id: string;
-    src: string;
-    file_name: string;
-    content_type: string;
+export interface PokemonEvolutionDto {
+    value: number;
+    name: string;
 }
 
-export interface PokemonMediaProjectionDto {
-    pokemon_id: string;
+export interface PokemonDto {
     name: string;
+    default: boolean;
+    height: string;
+    weight: string;
+    types: PokemonTypeDto[];
+    stats: PokemonStatDto[];
     images: PokemonMediaDto[];
+    audios: PokemonMediaDto[];
 }
+
+export interface PokemonSpeciesDto {
+    id: number;
+    name: string;
+    names: PokemonNameDto[];
+    descriptions: PokemonDescriptionDto[];
+    genera: PokemonGeneraDto[];
+    pedigree: PokemonPedigreeDto;
+    evolutions: PokemonEvolutionDto[];
+    varieties: PokemonDto[];
+    legendary: boolean;
+    mythical: boolean;
+    baby: boolean;
+}
+
+export interface PaginationResultDto {
+    total_count: number;
+    total_pages: number;
+    current_page: number;
+    page_size: number;
+    documents: PokemonSpeciesDto[];
+}
+
 
 export enum PokemonGeneration {
     GenerationI = "generation-i",
@@ -69,16 +91,4 @@ export enum PokemonGeneration {
     GenerationVII = "generation-vii",
     GenerationVIII = "generation-viii",
     GenerationIX = "generation-ix"
-}
-
-export enum PokemonRegion {
-    Kanto = "Kanto",
-    Johto = "Johto",
-    Hoenn = "Hoenn",
-    Sinnoh = "Sinnoh",
-    Unova = "Unova",
-    Kalos = "Kalos",
-    Alola = "Alola",
-    Galar = "Galar",
-    Paldea = "Paldea",
 }

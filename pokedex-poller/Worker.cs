@@ -1,9 +1,8 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using pokedex_shared.Common.Option;
 using pokedex_shared.Database.Command;
 using pokedex_shared.Integration.PokeApi;
-using pokedex_shared.Integration.PokeApi.Response.Generation;
-using pokedex_shared.Model.Document;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 
@@ -31,11 +30,14 @@ public class Worker(
         return base.StartAsync(cancellationToken);
     }
 
-    private Task CompleteAsync()
+    private Task CompleteAsync(TimeSpan stopWatchElapsed)
     {
-        logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration}",
+        string elapsedTime =
+            $"{stopWatchElapsed.Hours:00}:{stopWatchElapsed.Minutes:00}:{stopWatchElapsed.Seconds:00}.{stopWatchElapsed.Milliseconds / 10:00}";
+        logger.LogInformation("worker ran to completion: {time} - {pokemonGeneration} - it took {elapsedTime}",
             DateTimeOffset.Now,
-            _pokemonGeneration);
+            _pokemonGeneration,
+            elapsedTime);
         onWorkerCompleted.Invoke(_pokemonGeneration, true);
         return Task.CompletedTask;
     }
@@ -44,8 +46,12 @@ public class Worker(
     {
         try
         {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
             var counter = new Counter(1);
-            var generation = await pokemonHandler.GetGenerationAsync(pokemonGeneration, cancellationToken);
+            var generation = await pokemonHandler.GetGenerationAsync(
+                pokemonGeneration,
+                cancellationToken);
             foreach (var generationPokemon in generation.PokemonSpecies)
             {
                 // Wait
@@ -60,8 +66,6 @@ public class Worker(
                 var species = await pokemonHandler.GetSpeciesAsync(
                     generationPokemon,
                     cancellationToken);
-                var pokemonId = new PokemonId(species.Id);
-                var pokemonName = new PokemonName(species.Name);
                 var evolutionChain =
                     await pokemonHandler.GetEvolutionChainAsync(
                         species.EvolutionChain,
@@ -70,18 +74,25 @@ public class Worker(
                     species,
                     cancellationToken);
                 var pokemonDocuments = new List<PokemonDocument>();
+                var varietyCounter = new Counter(1);
                 foreach (var pokemon in pokemonVarieties)
                 {
+                    logger.LogInformation("{name} - ({count}/{length}) - {variety}",
+                        pokemon.Name,
+                        varietyCounter.ToString(),
+                        pokemonVarieties.Count,
+                        $"{species.Name} - {pokemon.Name}");
+                    var name = new PokemonName(pokemon.Name);
                     var images = await pokemonMediaHandler.FetchImagesAsync(
-                        name: pokemonName,
+                        name: name,
                         sprites: pokemon.Sprites,
                         cancellationToken: cancellationToken);
                     var audios = await pokemonMediaHandler.FetchAudiosAsync(
-                        name: pokemonName,
+                        name: name,
                         cries: pokemon.Cries,
                         cancellationToken: cancellationToken);
                     pokemonDocuments.Add(PokeApiMapper.ToPokemonDocument(
-                        name: new PokemonName(pokemon.Name),
+                        name: name,
                         isDefault: pokemon.Default,
                         weight: pokemon.Weight,
                         height: pokemon.Height,
@@ -90,11 +101,12 @@ public class Worker(
                         images: images,
                         audios: audios
                     ));
+                    varietyCounter.Increment();
                 }
 
                 var document = PokeApiMapper.ToSpeciesDocument(
-                    id: pokemonId,
-                    name: pokemonName,
+                    id: new PokemonId(species.Id),
+                    name: new PokemonName(species.Name),
                     generation: pokemonGeneration,
                     region: generation.Region.Name,
                     evolutionChain: evolutionChain,
@@ -109,7 +121,8 @@ public class Worker(
                 counter.Increment();
             }
 
-            await CompleteAsync();
+            stopWatch.Stop();
+            await CompleteAsync(stopWatch.Elapsed);
         }
         catch (OperationCanceledException)
         {

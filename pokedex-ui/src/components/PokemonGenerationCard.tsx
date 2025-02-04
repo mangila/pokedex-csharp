@@ -1,21 +1,29 @@
 ﻿import Image from "next/image";
 import {Grid2, Tooltip, Typography} from "@mui/material";
-import {PokemonMediaProjectionDto} from "@shared/types";
+import {PokemonDto} from "@shared/types";
 import {BLUR_IMAGE, capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
 import Link from "next/link";
 
 interface PokemonGenerationCardProps {
-    pokemon: PokemonMediaProjectionDto
+    id: number
+    speciesName: string
+    pokemon: PokemonDto
     width: number;
     height: number;
 }
 
 export default function PokemonGenerationCard(props: PokemonGenerationCardProps) {
-    const {pokemon, width, height} = props;
-    const name = capitalizeFirstLetter(pokemon.name);
+    const {id, speciesName, pokemon, width, height} = props;
+    const frontDefault = pokemon.images
+        .find(media => media.file_name === `${pokemon.name}-FrontDefault.png`)
+
+    if (!frontDefault) {
+        throw new Error(`${pokemon.name}-FrontDefault.png`);
+    }
+
     return <Link
-        href={`/pokemon/${pokemon.name}`}>
-        <Tooltip title={name} placement="bottom" arrow>
+        href={`/pokemon/${speciesName}`}>
+        <Tooltip title={capitalizeFirstLetter(speciesName)} placement="bottom" arrow>
             <Grid2
                 container
                 alignItems="center"
@@ -32,8 +40,8 @@ export default function PokemonGenerationCard(props: PokemonGenerationCardProps)
                 }}
             >
                 <Image
-                    src={pokemon.images[0].src}
-                    alt={pokemon.name}
+                    src={frontDefault.src}
+                    alt={speciesName}
                     width={width}
                     height={height}
                     placeholder="blur"
@@ -42,7 +50,7 @@ export default function PokemonGenerationCard(props: PokemonGenerationCardProps)
                 <Typography
                     color={"textSecondary"}
                     fontSize={12}>
-                    #{padWithLeadingZeros(pokemon.pokemon_id, 4)}
+                    #{padWithLeadingZeros(id, 4)}
                 </Typography>
             </Grid2>
         </Tooltip>

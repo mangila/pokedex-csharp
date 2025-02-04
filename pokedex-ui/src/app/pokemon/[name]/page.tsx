@@ -1,6 +1,6 @@
 ﻿import Image from 'next/image';
 import {Box} from "@mui/material";
-import {getPokemonByName} from '@shared/api';
+import {findByName} from '@shared/api';
 import {notFound} from "next/navigation";
 
 
@@ -8,13 +8,22 @@ export default async function Page({params}: {
     params: Promise<{ name: string; }>
 }) {
     const {name} = await params;
-    const pokemon = await getPokemonByName(name)
+    const pokemon = await findByName(name)
     if (!pokemon) {
         notFound();
     }
+    const officialArtworkFrontDefault = pokemon.varieties
+        .filter(vareity => vareity.default)
+        .flatMap(vareity => vareity.images)
+        .find(media => media.file_name.includes("OfficialArtworkFrontDefault.png"))
+
+    if (!officialArtworkFrontDefault) {
+        throw new Error("OfficialArtworkFrontDefault.png");
+    }
+    
     return <Box>
-        {pokemon.description}
-        <Image src={pokemon.images[1].src}
+        {pokemon.descriptions[0].description}
+        <Image src={officialArtworkFrontDefault.src}
                width={200}
                height={200}
                priority

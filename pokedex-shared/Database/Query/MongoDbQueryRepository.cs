@@ -24,7 +24,7 @@ public class MongoDbQueryRepository
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
             .GetCollection<PokemonSpeciesDocument>(mongoDb.Collection);
-        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "pedigree"]));
+        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "pedigree.generation"]));
     }
 
     private static List<CreateIndexModel<PokemonSpeciesDocument>> CreateIndexes(string[] fieldNames)
@@ -35,15 +35,17 @@ public class MongoDbQueryRepository
             .ToList();
     }
 
-    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(
+        PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         return await _collection
             .Find(doc => doc.Id == pokemonId.ToInt())
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PokemonSpeciesDocument> FindOneByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDocument> FindOneByNameAsync(
+        PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         return await _collection
@@ -51,7 +53,8 @@ public class MongoDbQueryRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(
+        PokemonName search,
         CancellationToken cancellationToken = default)
     {
         var filter = Filter.Regex(
@@ -74,10 +77,11 @@ public class MongoDbQueryRepository
             .In(doc => doc.Id, ids);
         return await _collection
             .Find(filter)
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(
+        PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         var filter = Filter
@@ -85,7 +89,7 @@ public class MongoDbQueryRepository
         return await _collection
             .Find(filter)
             .Sort(Sort.Ascending(p => p.Id))
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 
     /**
@@ -99,7 +103,9 @@ public class MongoDbQueryRepository
      *  Might be more performance with range query, but then we need the boundary value.
      * </summary>
      */
-    public async Task<PaginationResultDocument> FindByPaginationAsync(int page, int pageSize,
+    public async Task<PaginationResultDocument> FindByPaginationAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
         var count = await _collection.CountDocumentsAsync(
@@ -113,7 +119,7 @@ public class MongoDbQueryRepository
             .Find(FilterDefinition<PokemonSpeciesDocument>.Empty)
             .Skip((page - 1) * pageSize)
             .Limit(pageSize)
-            .Sort(Sort.Ascending(document => document.Name))
+            .Sort(Sort.Ascending(p => p.Id))
             .ToListAsync(cancellationToken);
 
         return new PaginationResultDocument

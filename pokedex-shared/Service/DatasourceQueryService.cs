@@ -28,7 +28,8 @@ public class DatasourceQueryService(
         SlidingExpiration = TimeSpan.FromMinutes(10),
     };
 
-    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(PokemonId pokemonId,
+    public async Task<PokemonSpeciesDocument> FindOneByIdAsync(
+        PokemonId pokemonId,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = string.Concat(CacheKeyPrefixPokemonId, pokemonId.Value);
@@ -45,11 +46,12 @@ public class DatasourceQueryService(
         }
 
         var json = await db.ToJsonValueTypeAsync(cancellationToken);
-        await redis.SetAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
+        await redis.SetStringAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
         return db;
     }
 
-    public async Task<PokemonSpeciesDocument> FindByNameAsync(PokemonName pokemonName,
+    public async Task<PokemonSpeciesDocument> FindByNameAsync(
+        PokemonName pokemonName,
         CancellationToken cancellationToken = default)
     {
         var cacheKey = string.Concat(CacheKeyPrefixName, pokemonName.Value);
@@ -66,11 +68,12 @@ public class DatasourceQueryService(
         }
 
         var json = await db.ToJsonValueTypeAsync(cancellationToken);
-        await redis.SetAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
+        await redis.SetStringAsync(cacheKey, json, _distributedCacheEntryOptions, cancellationToken);
         return db;
     }
 
-    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(PokemonName search,
+    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(
+        PokemonName search,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryRepository.SearchByNameAsync(search, cancellationToken);
@@ -83,19 +86,24 @@ public class DatasourceQueryService(
         return await mongoDbQueryRepository.FindAllByIdsAsync(pokemonIdCollection, cancellationToken);
     }
 
-    public async Task<PaginationResultDocument> FindByPaginationAsync(int page, int pageSize,
+    public async Task<PaginationResultDocument> FindByPaginationAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
         return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize, cancellationToken);
     }
 
-    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(PokemonGeneration generation,
+    public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(
+        PokemonGeneration generation,
         CancellationToken cancellationToken)
     {
         return await mongoDbQueryRepository.SearchByGenerationAsync(generation, cancellationToken);
     }
 
-    public async Task<PokemonFileResult?> FindFileByIdAsync(ObjectId id, CancellationToken cancellationToken = default)
+    public async Task<PokemonFileResult?> FindFileByIdAsync(
+        ObjectId id,
+        CancellationToken cancellationToken = default)
     {
         return await mongoDbGridFsQueryRepository.FindFileByIdAsync(id, cancellationToken);
     }

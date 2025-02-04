@@ -3,5 +3,5 @@
 public readonly record struct PokemonFileResult(
     string FileName,
     string ContentType,
-    MemoryStream File
-);
+    DateTime LastModified,
+    byte[] File);
