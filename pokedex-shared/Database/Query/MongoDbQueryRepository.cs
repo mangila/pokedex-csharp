@@ -53,8 +53,7 @@ public class MongoDbQueryRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(
-        PokemonName search,
+    public async Task<List<PokemonSpeciesDocument>> SearchByNameAsync(PokemonName search,
         CancellationToken cancellationToken = default)
     {
         var filter = Filter.Regex(

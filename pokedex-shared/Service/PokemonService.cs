@@ -33,8 +33,8 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var collection = await datasourceQuery
-            .SearchByNameAsync(search, cancellationToken);
+        var collection = await datasourceQuery.SearchByNameAsync(search,
+            cancellationToken);
         return collection.ToDtos();
     }
 

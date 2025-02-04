@@ -83,3 +83,25 @@ export const findByName =
         }
         return await response.json() as PokemonSpeciesDto;
     }
+
+export const searchByName =
+    async (name: string): Promise<PokemonSpeciesDto[] | undefined> => {
+        const uri = `${POKEDEX_API_V1_URL}/pokemon/search/name?search=${name}`
+        const response = await fetch(uri, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (!response.ok) {
+            pushToLoki({
+                level: "error",
+                message: response.statusText,
+                data: name
+            })
+            throw new Error(response.statusText);
+        }
+        return await response.json() as PokemonSpeciesDto[];
+    }
+    
+

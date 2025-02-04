@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ public class PokemonV1SearchController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryById(
-        [FromQuery] List<int> ids,
+        [Required] [FromQuery] List<int> ids,
         CancellationToken cancellationToken = default
     )
     {
@@ -42,11 +43,13 @@ public class PokemonV1SearchController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryByName(
-        [FromQuery] string search,
+        [Required] [FromQuery] string search,
         CancellationToken cancellationToken = default
     )
     {
-        var collection = await pokemonService.SearchByNameAsync(new PokemonName(search), cancellationToken);
+        var collection = await pokemonService.SearchByNameAsync(
+            new PokemonName(search),
+            cancellationToken);
         return Results.Ok(collection);
     }
 
@@ -56,7 +59,7 @@ public class PokemonV1SearchController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> QueryByGeneration(
-        [FromQuery] string generation,
+        [Required] [FromQuery] string generation,
         CancellationToken cancellationToken = default
     )
     {
