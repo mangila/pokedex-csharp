@@ -108,15 +108,16 @@ public class MongoDbQueryRepository
         int pageSize,
         CancellationToken cancellationToken = default)
     {
+        var filter = Filter.Empty;
+        // var filter = Filter.ElemMatch(p => p.Varieties, variety =>
+        //     variety.Types.Any(document => document.Type == "fire"));
         var count = await _collection.CountDocumentsAsync(
-            FilterDefinition<PokemonSpeciesDocument>.Empty,
+            filter,
             null,
             cancellationToken);
-
         var totalPages = (int)Math.Ceiling((double)count / pageSize);
-
         var documents = await _collection
-            .Find(FilterDefinition<PokemonSpeciesDocument>.Empty)
+            .Find(filter)
             .Skip((page - 1) * pageSize)
             .Limit(pageSize)
             .Sort(Sort.Ascending(p => p.Id))

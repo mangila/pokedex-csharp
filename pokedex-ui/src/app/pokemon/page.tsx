@@ -1,10 +1,27 @@
 ﻿"use client"
+
+import FilterChipBar from "@components/FilterChipBar";
 import PokemonCard from "@components/PokemonCard";
 import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll} from "@shared/hooks";
+import {useState} from "react";
+
+const specialChips = [
+    "Baby", "Legendary", "Mythical"
+];
+
+const typesChips = [
+    "Normal", "Fighting", "Flying", "Poison", "Ground",
+    "Rock", "Bug", "Ghost", "Steel", "Fire",
+    "Water", "Grass", "Electric", "Psychic", "Ice",
+    "Dragon", "Dark", "Unknown", "Shadow", "Fairy",
+    "Stellar"
+];
 
 export default function Page() {
-    const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12);
+    const [typesFilter, setTypesFilter] = useState<string[]>([]);
+    const [specialFilter, setSpecialFilter] = useState<string[]>([]);
+    const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12, typesFilter, specialFilter);
 
     if (error) {
         throw error;
@@ -30,6 +47,24 @@ export default function Page() {
     })
 
     return <>
+        <Grid2 container
+               spacing={1}
+               textAlign={"center"}
+               justifyContent={"center"}
+               alignItems={"center"}
+               mb={2}
+        >
+            <FilterChipBar
+                chips={typesChips}
+                filter={typesFilter}
+                setFilterAction={setTypesFilter}
+            />
+            <FilterChipBar
+                chips={specialChips}
+                filter={specialFilter}
+                setFilterAction={setSpecialFilter}
+            />
+        </Grid2>
         <Grid2 container
                spacing={1}
                textAlign={"center"}

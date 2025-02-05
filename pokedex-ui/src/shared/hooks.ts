@@ -3,7 +3,13 @@ import {useEffect, useRef} from 'react';
 import {PaginationResultDto} from './types';
 import {findByPagination} from './api';
 
-export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number) => {
+export const useInfiniteScroll = (
+    queryKey: readonly unknown[],
+    pageSize: number,
+    typesFilter: string[],
+    specialFilter: string[]) => {
+    console.log("Types: " + typesFilter);
+    console.log("Special: " + specialFilter);
     const loader = useRef(null);
     const {
         data,
