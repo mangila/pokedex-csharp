@@ -4,7 +4,6 @@ import {Card, CardActionArea, CardContent, Chip, Grid2, Typography} from "@mui/m
 import {PokemonDto} from "@shared/types";
 import {capitalizeFirstLetter, LAST_VISITED_FRAGMENT, padWithLeadingZeros} from "@shared/utils";
 import {useRouter} from "next/navigation";
-import {useLastVisitedFragment} from "@shared/hooks";
 
 interface PokemonCardProps {
     id: number
@@ -18,7 +17,6 @@ interface PokemonCardProps {
 export default function PokemonCard(props: PokemonCardProps) {
     const {id, speciesName, baby, legendary, mythical, pokemon} = props;
     const router = useRouter();
-    useLastVisitedFragment()
     const officialArtworkFrontDefault = pokemon
         .images
         .find(media => media.file_name === `${pokemon.name}-official-artwork-front-default.png`)
@@ -43,7 +41,7 @@ export default function PokemonCard(props: PokemonCardProps) {
         }}>
             <CardActionArea
                 onClick={() => {
-                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}`)
+                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}-pokemon`)
                     router.push(`/pokemon/${speciesName}`)
                 }}
             >

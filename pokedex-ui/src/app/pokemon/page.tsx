@@ -3,7 +3,7 @@
 import FilterChipBar from "@components/FilterChipBar";
 import PokemonCard from "@components/PokemonCard";
 import {Box, Grid2} from "@mui/material";
-import {useInfiniteScroll} from "@shared/hooks";
+import {useInfiniteScroll, useScrollIntoLastVisitedFragment} from "@shared/hooks";
 import {useState} from "react";
 
 const specialChips = [
@@ -19,6 +19,7 @@ const typesChips = [
 ];
 
 export default function Page() {
+    useScrollIntoLastVisitedFragment()
     const [typesFilter, setTypesFilter] = useState<string[]>([]);
     const [specialFilter, setSpecialFilter] = useState<string[]>([]);
     const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12, typesFilter, specialFilter);
@@ -35,7 +36,7 @@ export default function Page() {
                     .filter((pokemon) => pokemon.default)
                     .map((pokemon) => {
                         return <Box
-                            id={`${species.name}`}
+                            id={`${species.name}-pokemon`}
                             key={species.id}
                         >
                             <PokemonCard

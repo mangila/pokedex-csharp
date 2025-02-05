@@ -55,13 +55,13 @@ export const useInfiniteScroll = (
 };
 
 
-export const useLastVisitedFragment = () => {
+export const useScrollIntoLastVisitedFragment = () => {
     useEffect(() => {
         const lastFragment = sessionStorage.getItem(LAST_VISITED_FRAGMENT);
         if (lastFragment) {
             const element = document.getElementById(lastFragment);
             if (element) {
-                element.scrollIntoView();
+                element.scrollIntoView({behavior: 'instant', block: 'center'});
             }
         }
     }, []);

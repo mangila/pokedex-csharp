@@ -19,7 +19,7 @@ export default async function Page({params}: {
                 .filter(pokemon => pokemon.default)
                 .map(pokemon => {
                     return <Box
-                        id={`${speciesDto.name}`}
+                        id={`${speciesDto.name}-generation`}
                         key={speciesDto.id}
                     >
                         <PokemonGenerationCard

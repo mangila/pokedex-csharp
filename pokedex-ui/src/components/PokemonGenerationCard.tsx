@@ -4,7 +4,7 @@ import {Box, ButtonBase, Tooltip, Typography} from "@mui/material";
 import {PokemonDto} from "@shared/types";
 import {BLUR_IMAGE, capitalizeFirstLetter, LAST_VISITED_FRAGMENT, padWithLeadingZeros} from "@shared/utils";
 import {useRouter} from "next/navigation";
-import {useLastVisitedFragment} from "@shared/hooks";
+import {useScrollIntoLastVisitedFragment} from "@shared/hooks";
 
 interface Props {
     id: number
@@ -15,8 +15,8 @@ interface Props {
 }
 
 export default function PokemonGenerationCard(props: Props) {
+    useScrollIntoLastVisitedFragment()
     const router = useRouter();
-    useLastVisitedFragment()
     const {id, speciesName, pokemon, width, height} = props;
     const frontDefault = pokemon.images
         .find(media => media.file_name === `${pokemon.name}-front-default.png`)
@@ -29,7 +29,7 @@ export default function PokemonGenerationCard(props: Props) {
         <Tooltip title={capitalizeFirstLetter(speciesName)} placement="bottom" arrow>
             <ButtonBase
                 onClick={() => {
-                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}`)
+                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}-generation`)
                     router.push(`/pokemon/${speciesName}`)
                 }}
             >
