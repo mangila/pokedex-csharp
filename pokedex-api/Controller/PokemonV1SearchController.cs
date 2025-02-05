@@ -16,10 +16,7 @@ namespace pokedex_api.Controller;
 [Produces(MediaTypeNames.Application.Json)]
 [EnableRateLimiting(HttpRateLimiterConfig.Policies.FixedWindow)]
 [RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
-public class PokemonV1SearchController(
-    ILogger<PokemonV1SearchController> logger,
-    PokemonService pokemonService)
-    : ControllerBase
+public class PokemonV1SearchController(PokemonService pokemonService) : ControllerBase
 {
     [HttpGet("id")]
     [ProducesResponseType<ImmutableList<PokemonSpeciesDto>>(StatusCodes.Status200OK)]
