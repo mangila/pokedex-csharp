@@ -1,5 +1,5 @@
 ﻿"use client"
-import {Autocomplete, Box, Grid2, TextField, Typography} from "@mui/material";
+import {Autocomplete, Box, CircularProgress, Grid2, TextField, Typography} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import {PokemonSpeciesDto} from "@shared/types";
@@ -8,9 +8,9 @@ import {searchByName} from "@shared/api";
 
 export default function SearchBar() {
     const router = useRouter();
+    const inputRef = useRef<HTMLInputElement>(null);
     const [options, setOptions] = useState<PokemonSpeciesDto[]>([]);
     const [inputValue, setInputValue] = useState('');
-    const inputRef = useRef<HTMLInputElement>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,7 +36,10 @@ export default function SearchBar() {
                direction="column"
                alignItems="center"
                mb={2}>
-            <Grid2 size={6}>
+            <Grid2 size={{
+                xs: 12,
+                sm: 8
+            }}>
                 <Autocomplete
                     onChange={(_event, newValue: PokemonSpeciesDto | null) => {
                         if (newValue) {
@@ -51,9 +54,10 @@ export default function SearchBar() {
                     }}
                     noOptionsText="No Pokemons found"
                     loading={loading}
+                    loadingText={<CircularProgress/>}
                     options={options}
                     filterOptions={(x) => x}
-                    disableCloseOnSelect
+                    clearOnEscape
                     getOptionLabel={(option) => option.name}
                     renderOption={(props, option) => {
                         const {key, ...optionProps} = props;

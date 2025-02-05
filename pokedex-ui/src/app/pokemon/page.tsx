@@ -17,7 +17,13 @@ export default function Page() {
                     .varieties
                     .filter((pokemon) => pokemon.default)
                     .map((pokemon) => {
-                        return <Grid2 key={species.id}>
+                        return <Grid2 key={species.id}
+                                      container
+                                      textAlign={"center"}
+                                      justifyContent={"center"}
+                                      alignItems={"center"}
+                                      size={{xs: 12, sm: 4, lg: 3}}
+                        >
                             <PokemonCard id={species.id}
                                          speciesName={species.name}
                                          pokemon={pokemon}/>
