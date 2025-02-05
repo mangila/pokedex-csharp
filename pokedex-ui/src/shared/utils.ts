@@ -11,6 +11,7 @@ export const capitalizeFirstLetter = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+export const LAST_VISITED_FRAGMENT = "last-visited-fragment"
 export const POKEDEX_API_V1_URL: string = process.env.NEXT_PUBLIC_POKEDEX_API_V1_URL;
 export const LOKI_PUSH_URL: string = process.env.LOKI_PUSH_URL;
 export const ENV = process.env.NODE_ENV;

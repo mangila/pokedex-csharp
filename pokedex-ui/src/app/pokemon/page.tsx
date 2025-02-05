@@ -34,14 +34,18 @@ export default function Page() {
                     .varieties
                     .filter((pokemon) => pokemon.default)
                     .map((pokemon) => {
-                        return <PokemonCard
+                        return <Box
+                            id={`${species.name}`}
                             key={species.id}
-                            id={species.id}
-                            baby={species.baby}
-                            legendary={species.legendary}
-                            mythical={species.mythical}
-                            speciesName={species.name}
-                            pokemon={pokemon}/>
+                        >
+                            <PokemonCard
+                                id={species.id}
+                                baby={species.baby}
+                                legendary={species.legendary}
+                                mythical={species.mythical}
+                                speciesName={species.name}
+                                pokemon={pokemon}/>
+                        </Box>
                     });
             })
     })

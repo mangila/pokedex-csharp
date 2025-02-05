@@ -4,10 +4,10 @@ import {Grid2, Skeleton} from "@mui/material";
 
 const skeletons = () => {
     const s = []
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 25; i++) {
         s.push(
             <Grid2 key={i}>
-                <Skeleton width={96} height={96}/>
+                <Skeleton width={140} height={140}/>
             </Grid2>
         )
     }
@@ -16,7 +16,12 @@ const skeletons = () => {
 
 export default function Loading() {
     return <>
-        <Grid2 container spacing={2}>
+        <Grid2 container
+               spacing={1}
+               textAlign="center"
+               alignItems="center"
+               justifyContent="space-between"
+        >
             {skeletons()}
         </Grid2>
     </>

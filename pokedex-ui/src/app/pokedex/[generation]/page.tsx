@@ -1,5 +1,5 @@
 ﻿import PokemonGenerationCard from "@components/PokemonGenerationCard";
-import {Grid2} from "@mui/material";
+import {Box, Grid2} from "@mui/material";
 import {findByGeneration} from "@shared/api";
 import {PokemonGeneration} from "@shared/types";
 import {notFound} from "next/navigation";
@@ -18,23 +18,29 @@ export default async function Page({params}: {
             return speciesDto.varieties
                 .filter(pokemon => pokemon.default)
                 .map(pokemon => {
-                    return <PokemonGenerationCard
+                    return <Box
+                        id={`${speciesDto.name}`}
                         key={speciesDto.id}
-                        id={speciesDto.id}
-                        speciesName={speciesDto.name}
-                        pokemon={pokemon}
-                        height={96}
-                        width={96}/>
+                    >
+                        <PokemonGenerationCard
+                            key={speciesDto.id}
+                            id={speciesDto.id}
+                            speciesName={speciesDto.name}
+                            pokemon={pokemon}
+                            height={140}
+                            width={140}/>
+                    </Box>
                 })
         })
 
     return <>
         <Grid2 container
+               spacing={1}
                textAlign="center"
                alignItems="center"
-               justifyContent="center"
+               justifyContent="space-between"
         >
             {cards}
         </Grid2>
-    </>;
+    </>
 }
