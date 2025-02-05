@@ -7,7 +7,6 @@ export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number
     const loader = useRef(null);
     const {
         data,
-        isFetchingNextPage,
         hasNextPage,
         fetchNextPage,
         isLoading,
@@ -45,5 +44,5 @@ export const useInfiniteScroll = (queryKey: readonly unknown[], pageSize: number
         };
     }, [hasNextPage, fetchNextPage]);
 
-    return {data, loader, isFetchingNextPage, hasNextPage, isLoading, error};
+    return {data, loader, isLoading, error};
 };

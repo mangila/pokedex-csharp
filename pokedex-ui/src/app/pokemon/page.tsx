@@ -4,7 +4,7 @@ import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll} from "@shared/hooks";
 
 export default function Page() {
-    const {data, loader, isFetchingNextPage, hasNextPage, isLoading, error} = useInfiniteScroll(["pokemons"], 12);
+    const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12);
 
     if (error) {
         throw error;
@@ -20,6 +20,9 @@ export default function Page() {
                         return <PokemonCard
                             key={species.id}
                             id={species.id}
+                            baby={species.baby}
+                            legendary={species.legendary}
+                            mythical={species.mythical}
                             speciesName={species.name}
                             pokemon={pokemon}/>
                     });
@@ -35,8 +38,7 @@ export default function Page() {
         >
             {cards}
             <Box ref={loader}>
-                {isFetchingNextPage ? 'Loading more...' : null}
-                {hasNextPage && isLoading ? 'Loading more...' : null}
+                {isLoading ? 'Loading more...' : null}
             </Box>
         </Grid2>
     </>;

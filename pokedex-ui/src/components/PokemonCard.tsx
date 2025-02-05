@@ -8,10 +8,14 @@ import {useRouter} from "next/navigation";
 interface PokemonCardProps {
     id: number
     speciesName: string
+    baby: boolean
+    legendary: boolean
+    mythical: boolean
     pokemon: PokemonDto
 }
 
-export default function PokemonCard({id, speciesName, pokemon}: PokemonCardProps) {
+export default function PokemonCard(props: PokemonCardProps) {
+    const {id, speciesName, baby, legendary, mythical, pokemon} = props;
     const router = useRouter();
     const officialArtworkFrontDefault = pokemon
         .images
@@ -26,6 +30,10 @@ export default function PokemonCard({id, speciesName, pokemon}: PokemonCardProps
             <Chip label={capitalizeFirstLetter(type.type)} variant={type.type as "outlined"}/>
         </Grid2>
     ));
+
+    const isBaby = baby ? <Chip label={"Baby"} variant={"outlined"}/> : null
+    const isLegendary = legendary ? <Chip label={"Legendary"} variant={"outlined"}/> : null
+    const isMythical = mythical ? <Chip label={"Mythical"} variant={"outlined"}/> : null
 
     return <>
         <Card sx={{
@@ -51,6 +59,9 @@ export default function PokemonCard({id, speciesName, pokemon}: PokemonCardProps
                             </Typography>
                         </Grid2>
                         {types}
+                        {isBaby}
+                        {isLegendary}
+                        {isMythical}
                         <Grid2 size={12}>
                             <Typography fontSize={12} color="text.secondary">
                                 #{padWithLeadingZeros(id, 4)}
