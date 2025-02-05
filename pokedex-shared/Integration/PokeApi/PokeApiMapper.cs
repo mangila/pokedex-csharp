@@ -154,18 +154,15 @@ public static partial class PokeApiMapper
         return GetEvolution(chain.FirstChain, list);
     }
 
-    private static List<PokemonEvolutionDocument> GetEvolution(
-        EvolutionChain[] chainEvolvesTo,
-        List<PokemonEvolutionDocument> list)
+    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo, List<PokemonEvolutionDocument> list)
     {
-        if (chainEvolvesTo.Length == 0) return list;
-
-        foreach (var evolutionChain in chainEvolvesTo)
+        while (true)
         {
-            list.Add(new PokemonEvolutionDocument(list.Count, evolutionChain.Species.Name));
-            GetEvolution(evolutionChain.NextChain, list);
-        }
+            if (chainEvolvesTo.Length == 0) return list;
 
-        return list;
+            var chain = chainEvolvesTo[0];
+            list.Add(new PokemonEvolutionDocument(list.Count, chain.Species.Name));
+            chainEvolvesTo = chain.NextChain;
+        }
     }
 }

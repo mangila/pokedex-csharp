@@ -333,7 +333,8 @@ public class PokemonMediaHandler(
             return default;
         }
 
-        var cacheKey = string.Concat(cacheKeyPrefix, uri);
+        var mediaUri = new Uri(uri);
+        var cacheKey = string.Concat(cacheKeyPrefix, mediaUri.AbsolutePath);
         var cacheValue = await redisService.GetAsync(
             cacheKey,
             cancellationToken);
@@ -342,7 +343,7 @@ public class PokemonMediaHandler(
         {
             await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
             var httpClient = httpClientFactory.CreateClient();
-            using var response = await httpClient.GetAsync(uri, cancellationToken);
+            using var response = await httpClient.GetAsync(mediaUri, cancellationToken);
             response.EnsureSuccessStatusCode();
             var file = await response.Content.ReadAsByteArrayAsync(cancellationToken);
             await redisService.SetAsync(
@@ -352,7 +353,7 @@ public class PokemonMediaHandler(
                 cancellationToken: cancellationToken);
             return new PokemonMediaEntry(
                 name,
-                new Uri(uri),
+                mediaUri,
                 description,
                 file
             );

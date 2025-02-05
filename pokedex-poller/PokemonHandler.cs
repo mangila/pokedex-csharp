@@ -48,17 +48,19 @@ public class PokemonHandler(
     public async Task<List<PokemonResponse>> GetVarietiesAsync(PokemonSpeciesResponse species,
         CancellationToken cancellationToken)
     {
-        var l = new List<PokemonResponse>();
+        var l = new List<Task<PokemonResponse>>();
         foreach (var variety in species.Varieties)
         {
-            l.Add(await pokeApiClient.GetAsync<PokemonResponse>(
-                uri: new Uri(variety.Pokemon.Url),
-                cancellationToken: cancellationToken));
+            l.Add(
+                pokeApiClient.GetAsync<PokemonResponse>(
+                    uri: new Uri(variety.Pokemon.Url),
+                    cancellationToken: cancellationToken)
+            );
         }
 
-        return l;
+        var varieties = await Task.WhenAll(l);
+        return varieties.ToList();
     }
-
 
     private Uri GetPokemonGenerationRelativeUri(PokemonGeneration generation)
     {

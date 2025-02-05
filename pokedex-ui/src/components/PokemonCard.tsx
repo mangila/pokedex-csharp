@@ -13,10 +13,10 @@ interface PokemonCardProps {
 export default function PokemonCard({id, speciesName, pokemon}: PokemonCardProps) {
     const officialArtworkFrontDefault = pokemon
         .images
-        .find(media => media.file_name === `${pokemon.name}-OfficialArtworkFrontDefault.png`)
+        .find(media => media.file_name === `${pokemon.name}-official-artwork-front-default.png`)
 
     if (!officialArtworkFrontDefault) {
-        throw new Error(`${pokemon.name}-OfficialArtworkFrontDefault.png`);
+        throw new Error(`${pokemon.name}-official-artwork-front-default.png`);
     }
 
     return <>

@@ -15,10 +15,10 @@ interface PokemonGenerationCardProps {
 export default function PokemonGenerationCard(props: PokemonGenerationCardProps) {
     const {id, speciesName, pokemon, width, height} = props;
     const frontDefault = pokemon.images
-        .find(media => media.file_name === `${pokemon.name}-FrontDefault.png`)
+        .find(media => media.file_name === `${pokemon.name}-front-default.png`)
 
     if (!frontDefault) {
-        throw new Error(`${pokemon.name}-FrontDefault.png`);
+        throw new Error(`${pokemon.name}-front-default.png`);
     }
 
     return <Link

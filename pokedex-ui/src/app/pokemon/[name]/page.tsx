@@ -15,10 +15,10 @@ export default async function Page({params}: {
     const officialArtworkFrontDefault = pokemon.varieties
         .filter(vareity => vareity.default)
         .flatMap(vareity => vareity.images)
-        .find(media => media.file_name.includes("OfficialArtworkFrontDefault.png"))
+        .find(media => media.file_name.includes("official-artwork-front-default.png"))
 
     if (!officialArtworkFrontDefault) {
-        throw new Error("OfficialArtworkFrontDefault.png");
+        throw new Error("official-artwork-front-default.png");
     }
 
     return <Box>
