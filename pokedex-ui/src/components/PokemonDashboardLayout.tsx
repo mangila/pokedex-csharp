@@ -21,8 +21,8 @@ export default function PokemonDashboardLayout({children}: LayoutProps) {
             branding={{
                 logo: <Image
                     priority
-                    width={100}
-                    height={100}
+                    width={80}
+                    height={50}
                     src={"/logo-pokemon.png"}
                     alt="pokemon logo"/>,
                 title: '',

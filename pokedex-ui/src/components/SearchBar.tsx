@@ -41,6 +41,11 @@ export default function SearchBar() {
                 sm: 8
             }}>
                 <Autocomplete
+                    sx={{
+                        '& .MuiButtonBase-root': {
+                            color: 'black',
+                        },
+                    }}
                     onChange={(_event, newValue: PokemonSpeciesDto | null) => {
                         if (newValue) {
                             if (inputRef.current) {
@@ -49,16 +54,17 @@ export default function SearchBar() {
                             router.push(`/pokemon/${newValue.name}`);
                         }
                     }}
-                    onInputChange={(event, newInputValue) => {
+                    onInputChange={(_event, newInputValue) => {
                         setInputValue(newInputValue);
                     }}
+                    groupBy={(option) => option.pedigree.generation}
                     noOptionsText="No Pokemons found"
-                    loading={loading}
-                    loadingText={<CircularProgress/>}
                     options={options}
-                    filterOptions={(x) => x}
-                    clearOnEscape
-                    getOptionLabel={(option) => option.name}
+                    loading={loading}
+                    getOptionLabel={(option) => {
+                        const name = capitalizeFirstLetter(option.name)
+                        return name;
+                    }}
                     renderOption={(props, option) => {
                         const {key, ...optionProps} = props;
                         return (
@@ -68,7 +74,6 @@ export default function SearchBar() {
                                 {...optionProps}
                             >
                                 <Grid2 container
-                                       textAlign={"center"}
                                        spacing={2}>
                                     <Grid2>
                                         <Typography color={"textSecondary"}>
@@ -90,9 +95,14 @@ export default function SearchBar() {
                             {...params}
                             label="Search for Pokemons"
                             slotProps={{
-                                htmlInput: {
-                                    ...params.inputProps,
-                                    autoComplete: 'new-password', // disable autocomplete and autofill
+                                input: {
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            {loading ? <CircularProgress color="inherit" size={20}/> : null}
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                    ),
                                 },
                             }}
                         />

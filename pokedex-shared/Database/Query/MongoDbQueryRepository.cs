@@ -62,6 +62,7 @@ public class MongoDbQueryRepository
         );
         return await _collection
             .Find(filter)
+            .Sort(Sort.Ascending(p => p.Id))
             .ToListAsync(cancellationToken);
     }
 
