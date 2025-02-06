@@ -20,10 +20,7 @@
  *  - Ice <br></br>
  *  - Dragon <br></br>
  *  - Dark <br></br>
- *  - Unknown <br></br>
- *  - Shadow <br></br>
  *  - Fairy <br></br>
- *  - Stellar <br></br>
  * </summary>
  */
 public readonly record struct PokemonType
@@ -45,10 +42,7 @@ public readonly record struct PokemonType
     private static readonly PokemonType Ice = new("ice");
     private static readonly PokemonType Dragon = new("dragon");
     private static readonly PokemonType Dark = new("dark");
-    private static readonly PokemonType Unknown = new("unknown");
-    private static readonly PokemonType Shadow = new("shadow");
     private static readonly PokemonType Fairy = new("fairy");
-    private static readonly PokemonType Stellar = new("stellar");
 
     public string Value { get; }
     private PokemonType(string value) => Value = value;
@@ -74,10 +68,7 @@ public readonly record struct PokemonType
             "ice" => Ice,
             "dragon" => Dragon,
             "dark" => Dark,
-            "unknown" => Unknown,
-            "shadow" => Shadow,
             "fairy" => Fairy,
-            "stellar" => Stellar,
             _ => throw new NotSupportedException("Unknown Pokémon type: " + value)
         };
     }
@@ -103,10 +94,7 @@ public readonly record struct PokemonType
             Ice,
             Dragon,
             Dark,
-            Unknown,
-            Shadow,
-            Fairy,
-            Stellar
+            Fairy
         ];
     }
 }

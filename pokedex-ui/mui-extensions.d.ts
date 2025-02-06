@@ -19,9 +19,6 @@ declare module '@mui/material/Chip' {
         ice: true;
         dragon: true;
         dark: true;
-        unknown: true;
-        shadow: true;
         fairy: true;
-        stellar: true
     }
 }

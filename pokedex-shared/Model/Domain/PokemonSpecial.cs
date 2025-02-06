@@ -10,9 +10,9 @@
  */
 public record struct PokemonSpecial
 {
-    private static readonly PokemonSpecial Legendary = new("legendary");
-    private static readonly PokemonSpecial Baby = new("baby");
-    private static readonly PokemonSpecial Mythical = new("mythical");
+    public static readonly PokemonSpecial Legendary = new("legendary");
+    public static readonly PokemonSpecial Baby = new("baby");
+    public static readonly PokemonSpecial Mythical = new("mythical");
 
     public string Name { get; }
     private PokemonSpecial(string name) => Name = name;

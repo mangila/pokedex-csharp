@@ -138,33 +138,12 @@ const theme = createTheme({
                             },
                         },
                         {
-                            props: {variant: 'unknown'},
-                            style: {
-                                backgroundColor: '#68A090',
-                                color: '#FFFFFF',
-                            },
-                        },
-                        {
-                            props: {variant: 'shadow'},
-                            style: {
-                                backgroundColor: '#6A5ACD',
-                                color: '#FFFFFF',
-                            },
-                        },
-                        {
                             props: {variant: 'fairy'},
                             style: {
                                 backgroundColor: '#EE99AC',
                                 color: '#FFFFFF',
                             },
-                        },
-                        {
-                            props: {variant: 'stellar'},
-                            style: {
-                                backgroundColor: '#FFD700',
-                                color: '#FFFFFF',
-                            },
-                        },
+                        }
                     ],
                 },
             },

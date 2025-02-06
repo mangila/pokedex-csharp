@@ -113,12 +113,14 @@ public class MongoDbQueryRepository
     public async Task<PaginationResultDocument> FindByPaginationAsync(
         int page,
         int pageSize,
+        List<PokemonType> types,
+        List<PokemonSpecial> specials,
         CancellationToken cancellationToken = default)
     {
-        //var filter = Filter.Empty;
-        var filter = Filter.Eq(p => p.Mythical, true);
-        // var filter = Filter.ElemMatch(p => p.Varieties, variety =>
-        //     variety.Types.Any(document => document.Type == "fire"));
+        var builder = Filter;
+        var filter = builder.Empty;
+        filter &= builder.And(GetTypeFilters(types));
+        filter &= builder.And(GetSpecialFilters(specials));
         var count = await _collection.CountDocumentsAsync(
             filter,
             null,
@@ -139,5 +141,34 @@ public class MongoDbQueryRepository
             PageSize = pageSize,
             Documents = documents
         };
+    }
+
+    private static List<FilterDefinition<PokemonSpeciesDocument>> GetSpecialFilters(List<PokemonSpecial> specials)
+    {
+        return specials.Select(special =>
+        {
+            if (special == PokemonSpecial.Legendary)
+            {
+                return Filter.Eq(p => p.Legendary, true);
+            }
+            else if (special == PokemonSpecial.Baby)
+            {
+                return Filter.Eq(p => p.Baby, true);
+            }
+            else
+            {
+                return Filter.Eq(p => p.Mythical, true);
+            }
+        }).ToList();
+    }
+
+    private static List<FilterDefinition<PokemonSpeciesDocument>> GetTypeFilters(List<PokemonType> types)
+    {
+        return types.Select(type =>
+        {
+            return Filter.ElemMatch(
+                doc => doc.Varieties,
+                variety => variety.Types.Any(document => document.Type == type.Value));
+        }).ToList();
     }
 }

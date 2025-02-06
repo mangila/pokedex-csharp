@@ -9,8 +9,6 @@ export const useInfiniteScroll = (
     pageSize: number,
     typesFilter: string[],
     specialFilter: string[]) => {
-    console.log("Types: " + typesFilter);
-    console.log("Special: " + specialFilter);
     const loader = useRef(null);
     const {
         data,
@@ -23,7 +21,7 @@ export const useInfiniteScroll = (
         initialPageParam: 1,
         refetchOnMount: true,
         queryFn: ({pageParam}) =>
-            findByPagination(pageParam as number, pageSize),
+            findByPagination(pageParam as number, pageSize, typesFilter, specialFilter),
         getNextPageParam: (lastPage: PaginationResultDto) => {
             return lastPage.current_page + 1;
         }

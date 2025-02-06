@@ -89,9 +89,11 @@ public class DatasourceQueryService(
     public async Task<PaginationResultDocument> FindByPaginationAsync(
         int page,
         int pageSize,
+        List<PokemonType> types,
+        List<PokemonSpecial> specials,
         CancellationToken cancellationToken = default)
     {
-        return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize, cancellationToken);
+        return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize,types,specials, cancellationToken);
     }
 
     public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(

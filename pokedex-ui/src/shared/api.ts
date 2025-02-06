@@ -21,25 +21,30 @@ export const pushToLoki =
         });
         return response.ok;
     };
-export const findByPagination =
-    async (page: number, pageSize: number): Promise<PaginationResultDto> => {
-        const uri = `${Environment.POKEDEX_API_V1_URL}/pokemon?page=${page}&pageSize=${pageSize}`;
-        const response = await fetch(uri, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        if (!response.ok) {
-            pushToLoki({
-                level: "error",
-                message: response.statusText,
-                data: response
-            })
-            throw new Error(response.statusText);
+export const findByPagination = async (page: number, pageSize: number, typesFilter: string[], specialFilter: string[]): Promise<PaginationResultDto> => {
+    const host = Environment.POKEDEX_API_V1_URL;
+    const path = "/pokemon";
+    const pageQueryParam = `page=${page}`;
+    const pageSizeQueryParam = `pageSize=${pageSize}`;
+    const typesQueryParams = typesFilter.map(value => `&types=${value}`).join('');
+    const specialQueryParams = specialFilter.map(value => `&special=${value}`).join('');
+    const uri = `${host}${path}?${pageQueryParam}&${pageSizeQueryParam}${typesQueryParams}${specialQueryParams}`;
+    const response = await fetch(uri, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
         }
-        return await response.json() as PaginationResultDto;
-    };
+    })
+    if (!response.ok) {
+        pushToLoki({
+            level: "error",
+            message: response.statusText,
+            data: response
+        })
+        throw new Error(response.statusText);
+    }
+    return await response.json() as PaginationResultDto;
+};
 
 export const findByGeneration =
     async (generation: PokemonGeneration): Promise<PokemonSpeciesDto[] | undefined> => {

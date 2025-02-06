@@ -18,7 +18,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         await httpContext.Response.WriteAsJsonAsync(details, cancellationToken);
         return true;
     }
-    
+
     private static ProblemDetails GetProblemDetails(Exception exception)
     {
         return exception switch
@@ -26,6 +26,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             ValidationException validationException => new ProblemDetails
             {
                 Title = validationException.GetType().Name,
+                Detail = exception.Message,
+                Status = StatusCodes.Status400BadRequest,
+            },
+            NotSupportedException notSupportedException => new ProblemDetails
+            {
+                Title = notSupportedException.GetType().Name,
                 Detail = exception.Message,
                 Status = StatusCodes.Status400BadRequest,
             },
@@ -38,7 +44,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             _ => new ProblemDetails
             {
                 Title = exception.GetType().Name,
-                Detail = exception.Message,
+                Detail = "Mangila messed up...",
                 Status = StatusCodes.Status500InternalServerError
             }
         };

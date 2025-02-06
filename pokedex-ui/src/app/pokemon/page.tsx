@@ -5,7 +5,8 @@ import PokemonCard from "@components/PokemonCard";
 import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll, useScrollIntoLastVisitedFragment} from "@shared/hooks";
 import {PokemonSpecial, PokemonType} from "@shared/types";
-import {useState} from "react";
+import React, {useState} from "react";
+import Image from "next/image";
 
 const specials: PokemonSpecial[] = [
     "baby", "legendary", "mythical"
@@ -15,7 +16,7 @@ const pokemonTypes: PokemonType[] = [
     "normal", "fighting", "flying", "poison", "ground",
     "rock", "bug", "ghost", "steel", "fire", "water",
     "grass", "electric", "psychic", "ice", "dragon",
-    "dark", "unknown", "shadow", "fairy", "stellar"
+    "dark", "fairy"
 ];
 
 
@@ -23,7 +24,12 @@ export default function Page() {
     useScrollIntoLastVisitedFragment()
     const [typesFilter, setTypesFilter] = useState<PokemonType[]>([]);
     const [specialFilter, setSpecialFilter] = useState<PokemonSpecial[]>([]);
-    const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12, typesFilter, specialFilter);
+    const {
+        data,
+        loader,
+        isLoading,
+        error
+    } = useInfiniteScroll(["pokemons", typesFilter, specialFilter], 12, typesFilter, specialFilter);
 
     if (error) {
         throw error;
@@ -88,9 +94,25 @@ export default function Page() {
                }}
         >
             {cards}
-            <Box ref={loader}>
-                {isLoading ? 'Loading more...' : null}
-            </Box>
+        </Grid2>
+        <Grid2 ref={loader}
+               mt={2}
+               container
+               justifyContent="center"
+               alignItems="center"
+               textAlign="center">
+            <Grid2>
+                {isLoading && 'Loading more...'}
+            </Grid2>
+            <Grid2>
+                {data?.pages[0].documents.length === 0 &&
+                    <Image src={"/missingno.png"}
+                           width={200}
+                           height={200}
+                           priority
+                           alt={"missingno"}/>
+                }
+            </Grid2>
         </Grid2>
     </>;
 }

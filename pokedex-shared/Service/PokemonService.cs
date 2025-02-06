@@ -17,14 +17,21 @@ public class PokemonService(DatasourceQueryService datasourceQuery)
             .FindAllByIdsAsync(pokemonIdCollection, cancellationToken);
         return collection.ToDtos();
     }
-
+    
     public async Task<PaginationResultDto> FindByPaginationAsync(
         int page,
         int pageSize,
+        List<PokemonType> types,
+        List<PokemonSpecial> specials,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var paginationResult = await datasourceQuery.FindByPaginationAsync(page, pageSize, cancellationToken);
+        var paginationResult = await datasourceQuery.FindByPaginationAsync(
+            page,
+            pageSize,
+            types,
+            specials,
+            cancellationToken);
         return paginationResult.ToDto();
     }
 
