@@ -1,5 +1,13 @@
 ﻿export type Loglevel = 'debug' | 'info' | 'warn' | 'error';
 
+export type PokemonType =
+    | "normal" | "fighting" | "flying" | "poison" | "ground" | "rock"
+    | "bug" | "ghost" | "steel" | "fire" | "water"
+    | "grass" | "electric" | "psychic" | "ice" | "dragon"
+    | "dark" | "unknown" | "shadow" | "fairy" | "stellar";
+
+export type PokemonSpecial = "baby" | "legendary" | "mythical"
+
 export interface LokiLogRequest {
     level: Loglevel;
     message: string;
@@ -39,7 +47,7 @@ export interface PokemonStatDto {
 }
 
 export interface PokemonTypeDto {
-    type: string;
+    type: PokemonType;
 }
 
 export interface PokemonEvolutionDto {

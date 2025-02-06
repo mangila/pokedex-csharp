@@ -2,7 +2,7 @@
 import {useEffect, useRef} from 'react';
 import {PaginationResultDto} from './types';
 import {findByPagination} from './api';
-import {LAST_VISITED_FRAGMENT} from './utils';
+import {SessionStorageKeys} from './utils';
 
 export const useInfiniteScroll = (
     queryKey: readonly unknown[],
@@ -57,7 +57,7 @@ export const useInfiniteScroll = (
 
 export const useScrollIntoLastVisitedFragment = () => {
     useEffect(() => {
-        const lastFragment = sessionStorage.getItem(LAST_VISITED_FRAGMENT);
+        const lastFragment = sessionStorage.getItem(SessionStorageKeys.LAST_VISITED_FRAGMENT);
         if (lastFragment) {
             const element = document.getElementById(lastFragment);
             if (element) {

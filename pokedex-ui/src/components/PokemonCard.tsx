@@ -1,8 +1,8 @@
 ﻿"use client"
 import Image from "next/image";
-import {Card, CardActionArea, CardContent, Chip, Grid2, Typography} from "@mui/material";
+import {capitalize, Card, CardActionArea, CardContent, Chip, Grid2, Typography} from "@mui/material";
 import {PokemonDto} from "@shared/types";
-import {capitalizeFirstLetter, LAST_VISITED_FRAGMENT, padWithLeadingZeros} from "@shared/utils";
+import {padWithLeadingZeros, SessionStorageKeys} from "@shared/utils";
 import {useRouter} from "next/navigation";
 
 interface PokemonCardProps {
@@ -27,7 +27,7 @@ export default function PokemonCard(props: PokemonCardProps) {
 
     const types = pokemon.types.map((type) => (
         <Grid2 key={type.type}>
-            <Chip label={capitalizeFirstLetter(type.type)} variant={type.type as "outlined"}/>
+            <Chip label={capitalize(type.type)} variant={type.type}/>
         </Grid2>
     ));
 
@@ -41,7 +41,9 @@ export default function PokemonCard(props: PokemonCardProps) {
         }}>
             <CardActionArea
                 onClick={() => {
-                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}-pokemon`)
+                    sessionStorage.setItem(
+                        SessionStorageKeys.LAST_VISITED_FRAGMENT,
+                        `${speciesName}-pokemon`)
                     router.push(`/pokemon/${speciesName}`)
                 }}
             >
@@ -56,7 +58,7 @@ export default function PokemonCard(props: PokemonCardProps) {
                            spacing={1}>
                         <Grid2 size={12}>
                             <Typography gutterBottom variant="h5" component="div">
-                                {capitalizeFirstLetter(speciesName)}
+                                {capitalize(speciesName)}
                             </Typography>
                         </Grid2>
                         {types}

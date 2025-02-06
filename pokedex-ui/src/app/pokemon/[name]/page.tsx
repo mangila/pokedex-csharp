@@ -3,7 +3,6 @@ import {Box} from "@mui/material";
 import {findByName} from '@shared/api';
 import {notFound} from "next/navigation";
 
-
 export default async function Page({params}: {
     params: Promise<{ name: string; }>
 }) {

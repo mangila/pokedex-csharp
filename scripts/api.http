@@ -1,5 +1,5 @@
 ﻿### Get all Pokemons
-GET {{pokemonV1}}?pageSize=2&page=1
+GET {{pokemonV1}}?page=1&pageSize=10&types=aaa&types=asdf&special=hej&special=hej&special=hej&special=hej
 Content-Type: application/json
 
 ###

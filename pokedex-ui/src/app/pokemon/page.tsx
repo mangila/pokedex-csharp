@@ -4,24 +4,25 @@ import FilterChipBar from "@components/FilterChipBar";
 import PokemonCard from "@components/PokemonCard";
 import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll, useScrollIntoLastVisitedFragment} from "@shared/hooks";
+import {PokemonSpecial, PokemonType} from "@shared/types";
 import {useState} from "react";
 
-const specialChips = [
-    "Baby", "Legendary", "Mythical"
+const specials: PokemonSpecial[] = [
+    "baby", "legendary", "mythical"
 ];
 
-const typesChips = [
-    "Normal", "Fighting", "Flying", "Poison", "Ground",
-    "Rock", "Bug", "Ghost", "Steel", "Fire",
-    "Water", "Grass", "Electric", "Psychic", "Ice",
-    "Dragon", "Dark", "Unknown", "Shadow", "Fairy",
-    "Stellar"
+const pokemonTypes: PokemonType[] = [
+    "normal", "fighting", "flying", "poison", "ground",
+    "rock", "bug", "ghost", "steel", "fire", "water",
+    "grass", "electric", "psychic", "ice", "dragon",
+    "dark", "unknown", "shadow", "fairy", "stellar"
 ];
+
 
 export default function Page() {
     useScrollIntoLastVisitedFragment()
-    const [typesFilter, setTypesFilter] = useState<string[]>([]);
-    const [specialFilter, setSpecialFilter] = useState<string[]>([]);
+    const [typesFilter, setTypesFilter] = useState<PokemonType[]>([]);
+    const [specialFilter, setSpecialFilter] = useState<PokemonSpecial[]>([]);
     const {data, loader, isLoading, error} = useInfiniteScroll(["pokemons"], 12, typesFilter, specialFilter);
 
     if (error) {
@@ -54,27 +55,37 @@ export default function Page() {
     return <>
         <Grid2 container
                spacing={1}
-               textAlign={"center"}
-               justifyContent={"center"}
-               alignItems={"center"}
+               textAlign="center"
+               alignItems="center"
+               justifyContent="center"
                mb={2}
         >
-            <FilterChipBar
-                chips={typesChips}
+            <FilterChipBar<PokemonType>
+                chips={pokemonTypes}
                 filter={typesFilter}
                 setFilterAction={setTypesFilter}
             />
-            <FilterChipBar
-                chips={specialChips}
+            <FilterChipBar<PokemonSpecial>
+                chips={specials}
                 filter={specialFilter}
                 setFilterAction={setSpecialFilter}
             />
         </Grid2>
         <Grid2 container
+               direction={{
+                   xs: "column",
+                   sm: "row"
+               }}
                spacing={1}
-               textAlign={"center"}
-               justifyContent={"center"}
-               alignItems={"center"}
+               textAlign="center"
+               alignItems={{
+                   xs: "center",
+                   sm: "flex-start",
+               }}
+               justifyContent={{
+                   xs: "center",
+                   sm: "flex-start"
+               }}
         >
             {cards}
             <Box ref={loader}>

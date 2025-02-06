@@ -9,16 +9,14 @@ public static class ApiBehaviourConfig
         apiBehaviorOptions.InvalidModelStateResponseFactory = actionContext =>
         {
             var modelStateValues = actionContext.ModelState.Values;
-            var errMsg = string.Empty;
-            foreach (var modelStateEntry in modelStateValues)
-            {
-                errMsg = modelStateEntry.Errors[0].ErrorMessage;
-            }
+            var errors = modelStateValues
+                .SelectMany(x => x.Errors)
+                .Select(x => x.ErrorMessage);
 
             var problemDetails = new ProblemDetails
             {
                 Title = "Validation Error",
-                Detail = errMsg,
+                Detail = string.Join(',', errors),
                 Status = StatusCodes.Status400BadRequest,
             };
             return new BadRequestObjectResult(problemDetails);

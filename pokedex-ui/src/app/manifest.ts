@@ -1,9 +1,9 @@
-﻿import type {MetadataRoute} from 'next'
-import {APP_NAME} from '@shared/utils'
+﻿import {Environment} from '@shared/utils'
+import type {MetadataRoute} from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: APP_NAME,
+        name: Environment.APP_NAME,
         description: 'Mangila@Github',
         start_url: '/',
         icons: [

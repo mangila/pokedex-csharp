@@ -40,7 +40,7 @@ public readonly record struct PokemonGeneration
             "generation-vii" => GenerationVII,
             "generation-viii" => GenerationVIII,
             "generation-ix" => GenerationIX,
-            _ => throw new NotSupportedException("Unknown pokemon generation")
+            _ => throw new NotSupportedException("Unknown pokemon generation: " + value)
         };
     }
 

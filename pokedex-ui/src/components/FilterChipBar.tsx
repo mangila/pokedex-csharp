@@ -1,15 +1,15 @@
 ﻿"use client"
-import {ButtonBase, Chip} from '@mui/material';
+import {ButtonBase, capitalize, Chip} from '@mui/material';
 import React from 'react';
 
-interface Props {
-    chips: string[]
-    filter: string[];
-    setFilterAction: React.Dispatch<React.SetStateAction<string[]>>;
+interface Props<T> {
+    chips: T[]
+    filter: T[];
+    setFilterAction: React.Dispatch<React.SetStateAction<T[]>>;
 }
 
-export default function FilterChipBar({chips, filter, setFilterAction}: Props) {
-    const handleChipClick = (type: string) => {
+export default function FilterChipBar<T>({chips, filter, setFilterAction}: Props<T>) {
+    const handleChipClick = (type: T) => {
         setFilterAction(prevActiveTypes => {
             const newActiveTypes = prevActiveTypes.includes(type)
                 ? prevActiveTypes.filter(t => t !== type)
@@ -18,16 +18,18 @@ export default function FilterChipBar({chips, filter, setFilterAction}: Props) {
         });
     };
 
+    const buttonBasedChips = chips.map((chip) => {
+        return <ButtonBase key={chip as string} onClick={() => handleChipClick(chip)}>
+            <Chip
+                label={capitalize(chip as string)}
+                color={filter.includes(chip) ? "primary" : "default"}
+            />
+        </ButtonBase>
+    })
+
     return (
         <>
-            {chips.map(type => (
-                <ButtonBase key={type} onClick={() => handleChipClick(type)}>
-                    <Chip
-                        label={type}
-                        color={filter.includes(type) ? "primary" : "default"}
-                    />
-                </ButtonBase>
-            ))}
+            {buttonBasedChips}
         </>
     );
 }

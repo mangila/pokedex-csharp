@@ -1,5 +1,5 @@
 ﻿import {LokiLogRequest, PaginationResultDto, PokemonGeneration, PokemonSpeciesDto} from "./types";
-import {APP_NAME, ENV, LOKI_PUSH_URL, POKEDEX_API_V1_URL} from "./utils";
+import {Environment} from "./utils";
 
 export const pushToLoki =
     async (request: LokiLogRequest): Promise<boolean> => {
@@ -7,12 +7,12 @@ export const pushToLoki =
         const payload = {
             streams: [
                 {
-                    stream: {app: APP_NAME, env: ENV},
+                    stream: {app: Environment.APP_NAME, env: Environment.ENV},
                     values: [[timestamp, JSON.stringify(request)]],
                 },
             ],
         };
-        const response = await fetch(LOKI_PUSH_URL, {
+        const response = await fetch(Environment.LOKI_PUSH_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export const pushToLoki =
     };
 export const findByPagination =
     async (page: number, pageSize: number): Promise<PaginationResultDto> => {
-        const uri = `${POKEDEX_API_V1_URL}/pokemon?page=${page}&pageSize=${pageSize}`;
+        const uri = `${Environment.POKEDEX_API_V1_URL}/pokemon?page=${page}&pageSize=${pageSize}`;
         const response = await fetch(uri, {
             method: 'GET',
             headers: {
@@ -43,7 +43,7 @@ export const findByPagination =
 
 export const findByGeneration =
     async (generation: PokemonGeneration): Promise<PokemonSpeciesDto[] | undefined> => {
-        const uri = `${POKEDEX_API_V1_URL}/pokemon/search/generation?generation=${generation}`
+        const uri = `${Environment.POKEDEX_API_V1_URL}/pokemon/search/generation?generation=${generation}`
         const response = await fetch(uri, {
             method: 'GET',
             headers: {
@@ -63,7 +63,7 @@ export const findByGeneration =
 
 export const findByName =
     async (pokemonName: string): Promise<PokemonSpeciesDto | undefined> => {
-        const uri = `${POKEDEX_API_V1_URL}/pokemon/${pokemonName}`;
+        const uri = `${Environment.POKEDEX_API_V1_URL}/pokemon/${pokemonName}`;
         const response = await fetch(uri, {
             method: 'GET',
             headers: {
@@ -86,7 +86,7 @@ export const findByName =
 
 export const searchByName =
     async (name: string): Promise<PokemonSpeciesDto[] | undefined> => {
-        const uri = `${POKEDEX_API_V1_URL}/pokemon/search/name?search=${name}`
+        const uri = `${Environment.POKEDEX_API_V1_URL}/pokemon/search/name?search=${name}`
         const response = await fetch(uri, {
             method: 'GET',
             headers: {

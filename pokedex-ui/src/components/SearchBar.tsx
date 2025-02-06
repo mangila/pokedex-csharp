@@ -1,9 +1,9 @@
 ﻿"use client"
-import {Autocomplete, Box, CircularProgress, Grid2, TextField, Typography} from "@mui/material";
+import {Autocomplete, Box, capitalize, CircularProgress, Grid2, TextField, Typography} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import {PokemonSpeciesDto} from "@shared/types";
-import {capitalizeFirstLetter, padWithLeadingZeros} from "@shared/utils";
+import {padWithLeadingZeros} from "@shared/utils";
 import {searchByName} from "@shared/api";
 
 export default function SearchBar() {
@@ -61,10 +61,7 @@ export default function SearchBar() {
                     noOptionsText="No Pokemons found"
                     options={options}
                     loading={loading}
-                    getOptionLabel={(option) => {
-                        const name = capitalizeFirstLetter(option.name)
-                        return name;
-                    }}
+                    getOptionLabel={option => capitalize(option.name)}
                     renderOption={(props, option) => {
                         const {key, ...optionProps} = props;
                         return (
@@ -82,7 +79,7 @@ export default function SearchBar() {
                                     </Grid2>
                                     <Grid2>
                                         <Typography>
-                                            {capitalizeFirstLetter(option.name)}
+                                            {capitalize(option.name)}
                                         </Typography>
                                     </Grid2>
                                 </Grid2>

@@ -60,24 +60,27 @@ public static partial class PokeApiMapper
     private static List<PokemonTypeDocument> ToTypes(Types[] types)
     {
         return types
-            .Select(t => new PokemonTypeDocument(t.Type.Name))
+            .Select(t => PokemonType.From(t.Type.Name))
+            .Select(t => new PokemonTypeDocument(t.Value))
             .ToList();
     }
 
     private static List<PokemonStatDocument> ToStats(Stats[] stats)
     {
         var total = 0;
-        var l = stats
-            .Select(s =>
-                {
-                    total += s.BaseStat;
-                    return new PokemonStatDocument(s.Stat.Name, s.BaseStat);
-                }
-            )
+        var statDocuments = stats.Select(stat =>
+            {
+                var pokemonStat = PokemonStat.From(stat.Stat.Name);
+                pokemonStat.Value = stat.BaseStat;
+                total += stat.BaseStat; // Accumulate the total
+                return pokemonStat;
+            })
+            .Select(result => new PokemonStatDocument(result.Name, result.Value))
             .ToList();
-        l.Add(new PokemonStatDocument("total", total));
-        return l;
+        statDocuments.Add(new PokemonStatDocument("total", total));
+        return statDocuments;
     }
+
 
     public static PokemonSpeciesDocument ToSpeciesDocument(
         PokemonId id,
@@ -154,7 +157,8 @@ public static partial class PokeApiMapper
         return GetEvolution(chain.FirstChain, list);
     }
 
-    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo, List<PokemonEvolutionDocument> list)
+    private static List<PokemonEvolutionDocument> GetEvolution(EvolutionChain[] chainEvolvesTo,
+        List<PokemonEvolutionDocument> list)
     {
         while (true)
         {

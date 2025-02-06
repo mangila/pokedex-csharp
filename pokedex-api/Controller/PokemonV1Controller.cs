@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using pokedex_api.Config;
+using pokedex_shared.Common.Attribute;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Model.Dto;
 using pokedex_shared.Service;
@@ -31,6 +32,8 @@ public class PokemonV1Controller(
         [FromQuery]
         [Range(0, 100, ErrorMessage = "The Page size must be a non-negative integer and in the range 1-100")]
         int pageSize,
+        [FromQuery] [ValidPokemonTypeList] List<string> types,
+        [FromQuery] [ValidPokemonSpecialList] List<string> special,
         CancellationToken cancellationToken = default)
     {
         var collection = await pokemonService.FindByPaginationAsync(

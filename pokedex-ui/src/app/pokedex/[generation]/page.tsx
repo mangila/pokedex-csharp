@@ -37,8 +37,14 @@ export default async function Page({params}: {
         <Grid2 container
                spacing={1}
                textAlign="center"
-               alignItems="center"
-               justifyContent="space-between"
+               alignItems={{
+                   xs: "center",
+                   sm: "flex-start",
+               }}
+               justifyContent={{
+                   xs: "center",
+                   sm: "flex-start"
+               }}
         >
             {cards}
         </Grid2>

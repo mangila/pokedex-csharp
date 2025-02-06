@@ -1,8 +1,8 @@
 ﻿"use client"
 import Image from "next/image";
-import {Box, ButtonBase, Tooltip, Typography} from "@mui/material";
+import {Box, ButtonBase, capitalize, Tooltip, Typography} from "@mui/material";
 import {PokemonDto} from "@shared/types";
-import {BLUR_IMAGE, capitalizeFirstLetter, LAST_VISITED_FRAGMENT, padWithLeadingZeros} from "@shared/utils";
+import {BLUR_IMAGE, padWithLeadingZeros, SessionStorageKeys} from "@shared/utils";
 import {useRouter} from "next/navigation";
 import {useScrollIntoLastVisitedFragment} from "@shared/hooks";
 
@@ -26,10 +26,12 @@ export default function PokemonGenerationCard(props: Props) {
     }
 
     return <>
-        <Tooltip title={capitalizeFirstLetter(speciesName)} placement="bottom" arrow>
+        <Tooltip title={capitalize(speciesName)} placement="bottom" arrow>
             <ButtonBase
                 onClick={() => {
-                    sessionStorage.setItem(LAST_VISITED_FRAGMENT, `${speciesName}-generation`)
+                    sessionStorage.setItem(
+                        SessionStorageKeys.LAST_VISITED_FRAGMENT,
+                        `${speciesName}-generation`)
                     router.push(`/pokemon/${speciesName}`)
                 }}
             >

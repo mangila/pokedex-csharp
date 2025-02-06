@@ -5,8 +5,8 @@ import {CssBaseline} from "@mui/material";
 import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material';
 import {NextAppProvider} from "@toolpad/core/nextjs";
 import theme from "@shared/theme";
-import {APP_NAME} from "@shared/utils";
 import {Suspense} from "react";
+import {Environment} from "@shared/utils";
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -16,7 +16,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-    title: APP_NAME,
+    title: Environment.APP_NAME,
     description: "Mangila@Github",
 };
 

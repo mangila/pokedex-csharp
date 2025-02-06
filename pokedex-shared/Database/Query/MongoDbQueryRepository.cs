@@ -24,7 +24,14 @@ public class MongoDbQueryRepository
         _collection = new MongoClient(mongoDb.ConnectionString)
             .GetDatabase(mongoDb.Database)
             .GetCollection<PokemonSpeciesDocument>(mongoDb.Collection);
-        _collection.Indexes.CreateManyAsync(CreateIndexes(["name", "pedigree.generation"]));
+        _collection.Indexes.CreateManyAsync(CreateIndexes([
+            "name",
+            "pedigree.generation",
+            "varieties.types.type",
+            "baby",
+            "legendary",
+            "mythical"
+        ]));
     }
 
     private static List<CreateIndexModel<PokemonSpeciesDocument>> CreateIndexes(string[] fieldNames)
@@ -100,7 +107,7 @@ public class MongoDbQueryRepository
      *  3. Skip documents with -1 (zero indexed)
      *  4. Limit with the page size
      *  5. Sort ascending on PokemonId
-     *  Might be more performance with range query, but then we need the boundary value.
+     *  Might be better performance with a range query, but then we need the boundary value.
      * </summary>
      */
     public async Task<PaginationResultDocument> FindByPaginationAsync(
@@ -108,7 +115,8 @@ public class MongoDbQueryRepository
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var filter = Filter.Empty;
+        //var filter = Filter.Empty;
+        var filter = Filter.Eq(p => p.Mythical, true);
         // var filter = Filter.ElemMatch(p => p.Varieties, variety =>
         //     variety.Types.Any(document => document.Type == "fire"));
         var count = await _collection.CountDocumentsAsync(
