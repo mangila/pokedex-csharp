@@ -2,18 +2,15 @@
 import {createTheme} from '@mui/material/styles';
 
 const theme = createTheme({
-
+    palette: {
+        background: {
+            default: '#FAF3E0', // Your custom background color
+        },
+    },
     typography: {
         fontFamily: 'var(--font-roboto)',
     },
     components: {
-        MuiAppBar: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: '#EF5350',
-                },
-            },
-        },
         MuiChip: {
             styleOverrides: {
                 root: {

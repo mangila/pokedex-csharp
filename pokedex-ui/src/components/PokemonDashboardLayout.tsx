@@ -15,7 +15,13 @@ export default function PokemonDashboardLayout({children}: LayoutProps) {
         <DashboardLayout
             sx={{
                 '& .MuiIconButton-root': {
-                    color: 'white',
+                    color: '#DCDCDC',
+                },
+                '& .MuiDrawer-paper': {
+                    backgroundColor: '#FAF3E0',
+                },
+                '& .MuiToolbar-root': {
+                    backgroundColor: '#EF5350',
                 },
             }}
             branding={{
@@ -44,7 +50,7 @@ function SidebarFooter({mini}: SidebarFooterProps) {
             sx={{m: 1, whiteSpace: 'nowrap', overflow: 'hidden'}}
         >
 
-            {mini ? '© Mangila' : `© ${new Date().getFullYear()} Made with by love Mangila`}
+            {mini ? '© Mangila' : `© ${new Date().getFullYear()} Made with love by Mangila`}
         </Typography>
     );
 }

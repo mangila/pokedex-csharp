@@ -42,6 +42,7 @@ export default function SearchBar() {
             }}>
                 <Autocomplete
                     sx={{
+                        backgroundColor: "white",
                         '& .MuiButtonBase-root': {
                             color: 'black',
                         },

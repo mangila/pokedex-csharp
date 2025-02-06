@@ -1,4 +1,4 @@
-﻿import PokemonGenerationCard from "@components/PokemonGenerationCard";
+﻿import PokemonGenerationCard from "@components/PokemonGenerationCard/PokemonGenerationCard";
 import {Box, Grid2} from "@mui/material";
 import {findByGeneration} from "@shared/api";
 import {PokemonGeneration} from "@shared/types";

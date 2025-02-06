@@ -1,11 +1,12 @@
 ﻿"use client"
 import Image from "next/image";
-import {capitalize, Card, CardActionArea, CardContent, Chip, Grid2, Typography} from "@mui/material";
+import {capitalize, Card, CardActionArea, CardContent, Chip, Grid2, IconButton, Typography} from "@mui/material";
 import {PokemonDto} from "@shared/types";
 import {padWithLeadingZeros, SessionStorageKeys} from "@shared/utils";
 import {useRouter} from "next/navigation";
+import {Favorite} from "@mui/icons-material";
 
-interface PokemonCardProps {
+interface Props {
     id: number
     speciesName: string
     baby: boolean
@@ -14,7 +15,7 @@ interface PokemonCardProps {
     pokemon: PokemonDto
 }
 
-export default function PokemonCard(props: PokemonCardProps) {
+export default function PokemonCard(props: Props) {
     const {id, speciesName, baby, legendary, mythical, pokemon} = props;
     const router = useRouter();
     const officialArtworkFrontDefault = pokemon
@@ -39,6 +40,11 @@ export default function PokemonCard(props: PokemonCardProps) {
         <Card sx={{
             width: "280px",
         }}>
+            <Grid2 container justifyContent="flex-end">
+                <IconButton>
+                    <Favorite/>
+                </IconButton>
+            </Grid2>
             <CardActionArea
                 onClick={() => {
                     sessionStorage.setItem(
@@ -47,24 +53,39 @@ export default function PokemonCard(props: PokemonCardProps) {
                     router.push(`/pokemon/${speciesName}`)
                 }}
             >
-                <Image
-                    src={officialArtworkFrontDefault.src}
-                    alt={pokemon.name}
-                    width={200}
-                    height={200}
-                />
+                <Grid2
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                >
+                    <Image
+                        src={officialArtworkFrontDefault.src}
+                        alt={pokemon.name}
+                        width={200}
+                        height={200}
+                    />
+                </Grid2>
                 <CardContent>
                     <Grid2 container
-                           spacing={1}>
+                           spacing={1}
+                           justifyContent="center"
+                           textAlign="center"
+                           alignItems="center">
                         <Grid2 size={12}>
                             <Typography gutterBottom variant="h5" component="div">
                                 {capitalize(speciesName)}
                             </Typography>
                         </Grid2>
-                        {types}
-                        {isBaby}
-                        {isLegendary}
-                        {isMythical}
+                        <Grid2 container
+                               justifyContent="center"
+                               textAlign="center"
+                               alignItems="center"
+                        >
+                            {types}
+                            <Grid2>{isBaby}</Grid2>
+                            <Grid2>{isLegendary}</Grid2>
+                            <Grid2>{isMythical}</Grid2>
+                        </Grid2>
                         <Grid2 size={12}>
                             <Typography fontSize={12} color="text.secondary">
                                 #{padWithLeadingZeros(id, 4)}

@@ -19,10 +19,14 @@ export default function FilterChipBar<T>({chips, filter, setFilterAction}: Props
     };
 
     const buttonBasedChips = chips.map((chip) => {
+        const isActive = filter.includes(chip);
         return <ButtonBase key={chip as string} onClick={() => handleChipClick(chip)}>
             <Chip
+                sx={{
+                    color: isActive ? 'white' : 'default',
+                    backgroundColor: isActive ? '#EF5350' : 'default',
+                }}
                 label={capitalize(chip as string)}
-                color={filter.includes(chip) ? "primary" : "default"}
             />
         </ButtonBase>
     })

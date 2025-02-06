@@ -1,14 +1,15 @@
 ﻿"use client"
 import React from "react";
-import {Grid2, Skeleton} from "@mui/material";
+import {Grid2} from "@mui/material";
+import PokemonGenerationCardSkeleton from "@components/PokemonGenerationCard/PokemonGenerationCardSkeleton";
 
 const skeletons = () => {
     const s = []
     for (let i = 0; i < 25; i++) {
         s.push(
-            <Grid2 key={i}>
-                <Skeleton width={140} height={140}/>
-            </Grid2>
+            <PokemonGenerationCardSkeleton
+                key={i}
+            />
         )
     }
     return s;
@@ -19,8 +20,14 @@ export default function Loading() {
         <Grid2 container
                spacing={1}
                textAlign="center"
-               alignItems="center"
-               justifyContent="space-between"
+               alignItems={{
+                   xs: "center",
+                   sm: "flex-start",
+               }}
+               justifyContent={{
+                   xs: "center",
+                   sm: "flex-start"
+               }}
         >
             {skeletons()}
         </Grid2>

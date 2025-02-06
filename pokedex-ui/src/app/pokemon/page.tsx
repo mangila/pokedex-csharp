@@ -1,12 +1,13 @@
 ﻿"use client"
 
 import FilterChipBar from "@components/FilterChipBar";
-import PokemonCard from "@components/PokemonCard";
+import PokemonCard from "@components/PokemonCard/PokemonCard";
 import {Box, Grid2} from "@mui/material";
 import {useInfiniteScroll, useScrollIntoLastVisitedFragment} from "@shared/hooks";
 import {PokemonSpecial, PokemonType} from "@shared/types";
 import React, {useState} from "react";
 import Image from "next/image";
+import PokemonCardSkeleton from "@components/PokemonCard/PokemonCardSkeleton";
 
 const specials: PokemonSpecial[] = [
     "baby", "legendary", "mythical"
@@ -18,6 +19,17 @@ const pokemonTypes: PokemonType[] = [
     "grass", "electric", "psychic", "ice", "dragon",
     "dark", "fairy"
 ];
+
+const skeletons = () => {
+    const s = []
+    for (let i = 0; i < 12; i++) {
+        s.push(<Grid2 key={i}>
+                <PokemonCardSkeleton/>
+            </Grid2>
+        )
+    }
+    return s;
+}
 
 
 export default function Page() {
@@ -95,24 +107,32 @@ export default function Page() {
         >
             {cards}
         </Grid2>
+
         <Grid2 ref={loader}
-               mt={2}
                container
-               justifyContent="center"
-               alignItems="center"
-               textAlign="center">
-            <Grid2>
-                {isLoading && 'Loading more...'}
-            </Grid2>
-            <Grid2>
-                {data?.pages[0].documents.length === 0 &&
-                    <Image src={"/missingno.png"}
-                           width={200}
-                           height={200}
-                           priority
-                           alt={"missingno"}/>
-                }
-            </Grid2>
+               direction={{
+                   xs: "column",
+                   sm: "row"
+               }}
+               spacing={1}
+               textAlign="center"
+               alignItems={{
+                   xs: "center",
+                   sm: "flex-start",
+               }}
+               justifyContent={{
+                   xs: "center",
+                   sm: "flex-start"
+               }}
+        >
+            {isLoading && skeletons()}
+            {data?.pages[0].documents.length === 0 &&
+                <Image src={"/missingno.png"}
+                       width={200}
+                       height={200}
+                       priority
+                       alt={"missingno"}/>
+            }
         </Grid2>
     </>;
 }
