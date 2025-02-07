@@ -103,8 +103,7 @@ export default function Page() {
                justifyContent={{
                    xs: "center",
                    sm: "flex-start"
-               }}
-        >
+               }}>
             {cards}
         </Grid2>
 

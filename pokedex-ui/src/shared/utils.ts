@@ -14,43 +14,35 @@ export class LocalStorageKeys {
     static FAVORITES = "favorite-pokemons";
 }
 
-export function AppendFavorites(id: number) {
-    const key = LocalStorageKeys.FAVORITES;
-    let arr = localStorage.getItem(key);
-    if (!arr) {
-        arr = JSON.stringify([id]);
-        localStorage.setItem(key, arr);
-    }
-    const favorites = JSON.parse(arr) as Array<number>;
+export function appendFavorites(id: number) {
+    const favorites = getFavorites()
     if (!favorites.includes(id)) {
         favorites.push(id);
-        localStorage.setItem(key, JSON.stringify(favorites));
+        localStorage.setItem(LocalStorageKeys.FAVORITES, JSON.stringify(favorites));
     }
 }
 
-export function HasFavorites(id: number): boolean {
-    const key = LocalStorageKeys.FAVORITES;
-    let arr = localStorage.getItem(key);
-    if (!arr) {
-        arr = JSON.stringify([id]);
-        localStorage.setItem(key, arr);
-    }
-    const favorites = JSON.parse(arr) as Array<number>;
+export function hasFavorites(id: number): boolean {
+    const favorites = getFavorites()
     return favorites.includes(id);
 }
 
-export function RemoveFavorites(id: number) {
+export function removeFavorites(id: number) {
+    const favorites = getFavorites()
+    if (favorites.includes(id)) {
+        const filteredArray = favorites.filter(item => item !== id);
+        localStorage.setItem(LocalStorageKeys.FAVORITES, JSON.stringify(filteredArray));
+    }
+}
+
+export function getFavorites(): Array<number> {
     const key = LocalStorageKeys.FAVORITES;
     let arr = localStorage.getItem(key);
     if (!arr) {
         arr = JSON.stringify([]);
         localStorage.setItem(key, arr);
     }
-    const favorites = JSON.parse(arr) as Array<number>;
-    if (favorites.includes(id)) {
-        const filteredArray = favorites.filter(item => item !== id);
-        localStorage.setItem(key, JSON.stringify(filteredArray));
-    }
+    return JSON.parse(arr) as Array<number>;
 }
 
 export class Environment {

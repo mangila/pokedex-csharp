@@ -5,8 +5,9 @@ import {CssBaseline} from "@mui/material";
 import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material';
 import {NextAppProvider} from "@toolpad/core/nextjs";
 import theme from "@shared/theme";
-import {Suspense} from "react";
+import React, {Suspense} from "react";
 import {Environment} from "@shared/utils";
+import Loading from "./loading";
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -61,7 +62,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <body className={roboto.variable}>
         <AppRouterCacheProvider>
             <CssBaseline/>
-            <Suspense fallback={<div>loading..</div>}>
+            <Suspense fallback={<Loading/>}>
                 <NextAppProvider navigation={NAVIGATION}
                                  theme={theme}>
                     {children}
