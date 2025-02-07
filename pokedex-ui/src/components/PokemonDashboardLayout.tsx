@@ -17,9 +17,6 @@ export default function PokemonDashboardLayout({children}: LayoutProps) {
                 '& .MuiIconButton-root': {
                     color: '#DCDCDC',
                 },
-                '& .MuiDrawer-paper': {
-                    backgroundColor: '#FAF3E0',
-                },
                 '& .MuiToolbar-root': {
                     backgroundColor: '#EF5350',
                 },

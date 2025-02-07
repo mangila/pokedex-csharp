@@ -1,10 +1,10 @@
 ﻿"use client"
 import Image from "next/image";
-import {capitalize, Card, CardActionArea, CardContent, Chip, Grid2, IconButton, Typography} from "@mui/material";
+import {capitalize, Card, CardActionArea, CardContent, Chip, Grid2, Typography} from "@mui/material";
 import {PokemonDto} from "@shared/types";
 import {padWithLeadingZeros, SessionStorageKeys} from "@shared/utils";
 import {useRouter} from "next/navigation";
-import {Favorite} from "@mui/icons-material";
+import FavoriteButton from "@components/FavoriteButton";
 
 interface Props {
     id: number
@@ -41,9 +41,7 @@ export default function PokemonCard(props: Props) {
             width: "280px",
         }}>
             <Grid2 container justifyContent="flex-end">
-                <IconButton>
-                    <Favorite/>
-                </IconButton>
+                <FavoriteButton id={id}/>
             </Grid2>
             <CardActionArea
                 onClick={() => {

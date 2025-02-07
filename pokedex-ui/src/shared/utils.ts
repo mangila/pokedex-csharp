@@ -11,7 +11,46 @@ export class SessionStorageKeys {
 }
 
 export class LocalStorageKeys {
-    static FAVORITES = "favorites";
+    static FAVORITES = "favorite-pokemons";
+}
+
+export function AppendFavorites(id: number) {
+    const key = LocalStorageKeys.FAVORITES;
+    let arr = localStorage.getItem(key);
+    if (!arr) {
+        arr = JSON.stringify([id]);
+        localStorage.setItem(key, arr);
+    }
+    const favorites = JSON.parse(arr);
+    if (!favorites.includes(id)) {
+        favorites.push(id);
+        localStorage.setItem(key, JSON.stringify(favorites));
+    }
+}
+
+export function HasFavorites(id: number): boolean {
+    const key = LocalStorageKeys.FAVORITES;
+    let arr = localStorage.getItem(key);
+    if (!arr) {
+        arr = JSON.stringify([id]);
+        localStorage.setItem(key, arr);
+    }
+    const favorites = JSON.parse(arr);
+    return favorites.includes(id);
+}
+
+export function RemoveFavorites(id: number) {
+    const key = LocalStorageKeys.FAVORITES;
+    let arr = localStorage.getItem(key);
+    if (!arr) {
+        arr = JSON.stringify([]);
+        localStorage.setItem(key, arr);
+    }
+    const favorites = JSON.parse(arr) as Array<number>;
+    if (favorites.includes(id)) {
+        const filteredArray = favorites.filter(item => item !== id);
+        localStorage.setItem(key, JSON.stringify(filteredArray));
+    }
 }
 
 export class Environment {
