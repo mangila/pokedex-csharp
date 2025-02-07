@@ -21,7 +21,7 @@ export function AppendFavorites(id: number) {
         arr = JSON.stringify([id]);
         localStorage.setItem(key, arr);
     }
-    const favorites = JSON.parse(arr);
+    const favorites = JSON.parse(arr) as Array<number>;
     if (!favorites.includes(id)) {
         favorites.push(id);
         localStorage.setItem(key, JSON.stringify(favorites));
@@ -35,7 +35,7 @@ export function HasFavorites(id: number): boolean {
         arr = JSON.stringify([id]);
         localStorage.setItem(key, arr);
     }
-    const favorites = JSON.parse(arr);
+    const favorites = JSON.parse(arr) as Array<number>;
     return favorites.includes(id);
 }
 
