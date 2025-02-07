@@ -168,7 +168,7 @@ public class MongoDbQueryRepository
         {
             return Filter.ElemMatch(
                 doc => doc.Varieties,
-                variety => variety.Types.Any(document => document.Type == type.Value));
+                variety => variety.Types.Any(document => document.Type == type.Value) && variety.Default);
         }).ToList();
     }
 }
