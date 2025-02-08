@@ -15,6 +15,7 @@ export default defineConfig({
         alias: {
             '@pages': '/src/pages',
             '@components': '/src/components',
+            '@layouts': '/src/layouts',
             '@shared': '/src/shared'
         }
     }

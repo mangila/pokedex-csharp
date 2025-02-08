@@ -3,7 +3,7 @@ import {Link, Outlet} from "react-router";
 import {Button, Chip, IconButton, Stack, Tooltip, Typography} from "@mui/material";
 import {CheckCircle, GitHub} from "@mui/icons-material";
 import {ENVIRONMENT_VARS} from "@shared/utils";
-import PokemonLogo from "./assets/logo-pokemon.png"
+import PokemonLogo from "../assets/logo-pokemon.png"
 
 export default function PokemonDashboardLayout() {
     return <>
