@@ -53,8 +53,7 @@ export default function Page() {
                 sm: "flex-start"
             }}>{skeletons()}</Grid2>
     }
-
-
+    
     return <>
         <Grid2
             container

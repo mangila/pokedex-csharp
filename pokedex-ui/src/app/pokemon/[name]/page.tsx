@@ -19,7 +19,7 @@ export default async function Page({params}: {
     if (!officialArtworkFrontDefault) {
         throw new Error("official-artwork-front-default.png");
     }
-
+  
     return <Box>
         {pokemon.descriptions[0].description}
         <Image src={officialArtworkFrontDefault.src}
