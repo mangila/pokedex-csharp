@@ -11,21 +11,6 @@ interface Props {
 export default function FavoriteButton({id}: Props) {
     const [favorite, setFavorite] = useState<boolean>(false);
     const queryClient = useQueryClient();
-    
-    const handleFavoriteClick = useCallback(() => {
-        mutate()
-    }, []);
-
-    useEffect(() => {
-        queryClient.fetchQuery({
-            queryKey: [FAVORITE_POKEMON_IDS],
-            queryFn: getFavorites,
-        }).then(result => {
-            const includes = result.includes(id);
-            setFavorite(includes)
-        })
-    }, [id, queryClient, handleFavoriteClick]);
-
     const {mutate} = useMutation({
         mutationFn: () => updateFavorites(id),
         mutationKey: [FAVORITE_POKEMON_IDS],
@@ -38,6 +23,20 @@ export default function FavoriteButton({id}: Props) {
             });
         }
     });
+
+    const handleFavoriteClick = useCallback(() => {
+        mutate()
+    }, [mutate]);
+
+    useEffect(() => {
+        queryClient.fetchQuery({
+            queryKey: [FAVORITE_POKEMON_IDS],
+            queryFn: getFavorites,
+        }).then(result => {
+            const includes = result.includes(id);
+            setFavorite(includes)
+        })
+    }, [id, queryClient, handleFavoriteClick]);
 
 
     return <Tooltip title={favorite ? "Unmark as Favorite" : "Mark as Favorite"}>
