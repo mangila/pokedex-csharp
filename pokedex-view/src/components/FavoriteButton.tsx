@@ -2,7 +2,7 @@
 import {Favorite, FavoriteBorder} from "@mui/icons-material";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {FAVORITE_POKEMON_IDS, FAVORITE_POKEMON_SPECIES, getFavorites, updateFavorites} from "@shared/utils";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 interface Props {
     id: number
@@ -11,9 +11,10 @@ interface Props {
 export default function FavoriteButton({id}: Props) {
     const [favorite, setFavorite] = useState<boolean>(false);
     const queryClient = useQueryClient();
-    const handleFavoriteClick = () => {
+    
+    const handleFavoriteClick = useCallback(() => {
         mutate()
-    };
+    }, []);
 
     useEffect(() => {
         queryClient.fetchQuery({
