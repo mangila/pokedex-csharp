@@ -293,9 +293,8 @@ public class PokemonMediaHandler(
         return await InsertEntriesAsync(convertedImages, cancellationToken);
     }
 
-    private static async Task<List<PokemonMediaEntry>> ConvertImagesAsync(
+    private async Task<List<PokemonMediaEntry>> ConvertImagesAsync(
         PokemonMediaEntry[] fetchedEntries,
-        List<string> supportedFormats,
         CancellationToken cancellationToken)
     {
         var l = new List<PokemonMediaEntry>();
@@ -303,7 +302,7 @@ public class PokemonMediaHandler(
         {
             if (entry != default)
             {
-                if (supportedFormats.Contains(entry.ContentType))
+                try
                 {
                     var img = await Image.LoadAsync(new MemoryStream(entry.File), cancellationToken);
                     using var webpStream = new MemoryStream();
@@ -314,8 +313,10 @@ public class PokemonMediaHandler(
                         webpStream.ToArray()
                     ));
                 }
-                else
+                catch (Exception e)
                 {
+                    logger.LogInformation("content type supported: " + entry.ContentType +
+                                          " will not convert to .webp");
                     l.Add(entry);
                 }
             }
