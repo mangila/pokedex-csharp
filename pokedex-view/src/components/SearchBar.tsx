@@ -3,10 +3,10 @@ import {useEffect, useRef, useState} from "react";
 import {PokemonSpeciesDto} from "@shared/types";
 import {padWithLeadingZeros} from "@shared/utils";
 import {searchByName} from "@shared/api";
-import {useNavigation} from "react-router";
+import {useNavigate} from "react-router";
 
 export default function SearchBar() {
-    const navigation = useNavigation();
+    const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement>(null);
     const [options, setOptions] = useState<PokemonSpeciesDto[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -51,7 +51,7 @@ export default function SearchBar() {
                             if (inputRef.current) {
                                 inputRef.current.blur()
                             }
-                            navigation.navigate(`/pokemon/${newValue.name}`)
+                            navigate(`/pokemon/${newValue.name}`)
                         }
                     }}
                     onInputChange={(_event, newInputValue) => {
