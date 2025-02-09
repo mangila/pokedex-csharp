@@ -1,13 +1,12 @@
-﻿"use client"
-import {Autocomplete, Box, capitalize, CircularProgress, Grid2, TextField, Typography} from "@mui/material";
+﻿import {Autocomplete, Box, capitalize, CircularProgress, Grid2, TextField, Typography} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
-import {useRouter} from "next/navigation";
 import {PokemonSpeciesDto} from "@shared/types";
 import {padWithLeadingZeros} from "@shared/utils";
 import {searchByName} from "@shared/api";
+import {useNavigation} from "react-router";
 
 export default function SearchBar() {
-    const router = useRouter();
+    const navigation = useNavigation();
     const inputRef = useRef<HTMLInputElement>(null);
     const [options, setOptions] = useState<PokemonSpeciesDto[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -52,7 +51,7 @@ export default function SearchBar() {
                             if (inputRef.current) {
                                 inputRef.current.blur()
                             }
-                            router.push(`/pokemon/${newValue.name}`);
+                            navigation.navigate(`/pokemon/${newValue.name}`)
                         }
                     }}
                     onInputChange={(_event, newInputValue) => {

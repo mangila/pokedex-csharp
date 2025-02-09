@@ -1,5 +1,4 @@
-﻿"use client"
-import {ButtonBase, capitalize, Chip} from '@mui/material';
+﻿import {ButtonBase, capitalize, Chip} from '@mui/material';
 import React from 'react';
 
 interface Props<T> {
