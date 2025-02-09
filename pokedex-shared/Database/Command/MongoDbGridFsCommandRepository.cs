@@ -36,9 +36,8 @@ public class MongoDbGridFsCommandRepository
         PokemonMediaEntry entry,
         CancellationToken cancellationToken = default)
     {
-        var fileName = entry.GetFileName();
         var filter = Filter
-            .Eq(gridFsFileInfo => gridFsFileInfo.Filename, fileName);
+            .Eq(gridFsFileInfo => gridFsFileInfo.Filename, entry.FileName);
         var gridFsFileInfo = await _bucket
             .Find(filter, cancellationToken: cancellationToken)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
@@ -53,19 +52,18 @@ public class MongoDbGridFsCommandRepository
             );
         }
 
-        var mediaId = await _bucket.UploadFromBytesAsync(fileName, entry.File,
+        var mediaId = await _bucket.UploadFromBytesAsync(entry.FileName, entry.File,
             new GridFSUploadOptions
             {
                 Metadata = new BsonDocument
                 {
-                    { "content_type", entry.GetContentType() },
-                    { "description", entry.Description },
+                    { "content_type", entry.ContentType },
                 }
             }, cancellationToken);
         return new PokemonMediaDocument(
             MediaId: mediaId.ToString(),
-            FileName: fileName,
-            ContentType: entry.GetContentType(),
+            FileName: entry.FileName,
+            ContentType: entry.ContentType,
             Src: GetSrc(mediaId.ToString())
         );
     }

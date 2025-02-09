@@ -3,6 +3,7 @@ const MODE = import.meta.env.MODE;
 const POKEDEX_API_URL = import.meta.env.VITE_POKEDEX_API_URL;
 export const FAVORITE_POKEMON_IDS = "favorite-pokemon-ids"
 export const FAVORITE_POKEMON_SPECIES = "favorite-pokemons-species";
+export const LAST_VISITED_FRAGMENT = "last-visited-fragment";
 export const Environment = {
     APP_TITLE,
     MODE,
