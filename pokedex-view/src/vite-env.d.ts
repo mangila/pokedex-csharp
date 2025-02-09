@@ -3,7 +3,6 @@
 interface ImportMetaEnv {
     readonly VITE_APP_TITLE: string
     readonly VITE_POKEDEX_API_URL: string
-    readonly VITE_LOKI_API_URL: string
 }
 
 interface ImportMeta {

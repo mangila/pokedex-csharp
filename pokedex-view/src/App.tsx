@@ -1,4 +1,9 @@
 import {CatchingPokemon, Dashboard, DeveloperBoard, Favorite} from '@mui/icons-material';
+import {findByGeneration} from '@shared/api';
+import {theme} from '@shared/theme';
+import {PokemonGeneration} from '@shared/types';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import {ReactRouterAppProvider} from '@toolpad/core/react-router';
 import {Outlet} from 'react-router';
 
@@ -6,7 +11,7 @@ const NAVIGATION = [
     {
         title: 'Dashboard',
         icon: <Dashboard/>,
-        segment: '',
+        segment: 'dashboard',
     },
     {
         title: 'Pokemon',
@@ -37,11 +42,32 @@ const NAVIGATION = [
     },
 ];
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 10, // 10 minutes
+            refetchOnWindowFocus: false,
+            retry: 3,
+        }
+    },
+});
+
 
 export default function App() {
+    Object.values(PokemonGeneration).forEach((generation: PokemonGeneration) => {
+        queryClient.prefetchQuery({
+            queryKey: ["generation", generation],
+            queryFn: () => findByGeneration(generation)
+        })
+    })
+
     return (
-        <ReactRouterAppProvider navigation={NAVIGATION}>
-            <Outlet/>
-        </ReactRouterAppProvider>
+        <QueryClientProvider client={queryClient}>
+            <ReactRouterAppProvider navigation={NAVIGATION}
+                                    theme={theme}>
+                <Outlet/>
+            </ReactRouterAppProvider>
+            <ReactQueryDevtools initialIsOpen={false}/>
+        </QueryClientProvider>
     );
 }

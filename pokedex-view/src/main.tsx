@@ -2,13 +2,13 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import App from './App.tsx'
 import {createBrowserRouter, Navigate, RouterProvider} from 'react-router';
+import PokemonDashboardLayout from '@layouts/PokemonDashboardLayout.tsx';
 import DashboardPage from '@pages/DashboardPage.tsx';
 import FavoritePage from '@pages/FavoritePage.tsx';
+import PokedexPage from '@pages/PokedexPage.tsx';
 import PokemonPage from '@pages/PokemonPage.tsx';
 import PokemonDetailPage from '@pages/PokemonDetailPage.tsx';
-import PokemonDashboardLayout from '@layouts/PokemonDashboardLayout.tsx';
 import NotFoundPage from '@pages/NotFoundPage.tsx';
-import GenerationPage from '@pages/GenerationPage.tsx';
 
 const router = createBrowserRouter([
     {
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'pokedex/:generation',
-                        Component: GenerationPage,
+                        Component: PokedexPage,
                     },
                     {
                         path: 'pokemon',

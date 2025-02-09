@@ -26,16 +26,16 @@
     /* Paths */
     "paths": {
       "@pages/*": [
-        "src/pages/*"
+        "./src/pages/*"
       ],
       "@components/*": [
-        "src/components/*"
+        "./src/components/*"
       ],
       "@layouts/*": [
-        "src/layouts/*"
+        "./src/layouts/*"
       ],
       "@shared/*": [
-        "src/shared/*"
+        "./src/shared/*"
       ]
     }
   },

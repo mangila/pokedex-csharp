@@ -6,9 +6,6 @@ export const theme = createTheme({
             default: '#FAF3E0',
         },
     },
-    typography: {
-        fontFamily: 'var(--font-roboto)',
-    },
     components: {
         MuiChip: {
             styleOverrides: {
@@ -146,5 +143,3 @@ export const theme = createTheme({
         },
     }
 });
-
-export default theme;
