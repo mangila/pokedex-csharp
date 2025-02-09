@@ -74,7 +74,7 @@ export default function SearchBar() {
                                        spacing={2}>
                                     <Grid2>
                                         <Typography color={"textSecondary"}>
-                                            #{padWithLeadingZeros(option.id, 4)}
+                                            #{padWithLeadingZeros(option.id)}
                                         </Typography>
                                     </Grid2>
                                     <Grid2>
