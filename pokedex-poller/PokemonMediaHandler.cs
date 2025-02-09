@@ -288,7 +288,6 @@ public class PokemonMediaHandler(
         var fetchedEntries = await Task.WhenAll(entries);
         var convertedImages = await ConvertImagesAsync(
             fetchedEntries,
-            ["image/gif", "image/png"],
             cancellationToken);
         return await InsertEntriesAsync(convertedImages, cancellationToken);
     }
