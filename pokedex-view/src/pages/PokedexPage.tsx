@@ -26,24 +26,20 @@ export default function PokedexPage() {
         }
     }, [generation, queryClient, showBoundary]);
 
-    if (!data) {
-        return null
-    }
-
     return <Grid2 container
                   mt={2}
                   spacing={1}
                   textAlign="center"
                   alignItems={{
                       xs: "center",
-                      sm: "flex-start",
+                      lg: "flex-start",
                   }}
                   justifyContent={{
                       xs: "center",
-                      sm: "flex-start"
+                      lg: "flex-start"
                   }}
     >
-        {data.map(species => <Grid2 key={species.id}>
+        {data && data.map(species => <Grid2 key={species.id}>
             <PokemonGenerationCard species={species}/>
         </Grid2>)}
     </Grid2>;

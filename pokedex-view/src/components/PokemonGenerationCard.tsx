@@ -16,14 +16,14 @@ export default function PokemonGenerationCard({species}: Props) {
     const navigate = useNavigate();
     const {showBoundary} = useErrorBoundary();
 
-    const frontDefault = species
+    const officalArtwork = species
         .varieties
         .filter(pokemon => pokemon.default)
         .flatMap(pokemon => pokemon.images)
-        .find(media => media.file_name.includes("front-default.webp"))
+        .find(media => media.file_name.includes("official-artwork-front-default.webp"))
 
-    if (!frontDefault) {
-        showBoundary(new Error("not found front-default.webp"));
+    if (!officalArtwork) {
+        showBoundary(new Error("not found official-artwork-front-default.webp"));
     }
 
     return <>
@@ -41,7 +41,7 @@ export default function PokemonGenerationCard({species}: Props) {
                 <CardMedia
                     component="img"
                     height="140"
-                    image={frontDefault!.src}
+                    image={officalArtwork!.src}
                     alt={species.name}
                 />
                 <CardContent>

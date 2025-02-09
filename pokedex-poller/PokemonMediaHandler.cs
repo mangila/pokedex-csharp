@@ -306,7 +306,7 @@ public class PokemonMediaHandler(
                 if (supportedFormats.Contains(entry.ContentType))
                 {
                     var img = await Image.LoadAsync(new MemoryStream(entry.File), cancellationToken);
-                    var webpStream = new MemoryStream();
+                    using var webpStream = new MemoryStream();
                     await img.SaveAsWebpAsync(webpStream, cancellationToken);
                     l.Add(new PokemonMediaEntry(
                         Path.ChangeExtension(entry.FileName, ".webp"),
@@ -384,7 +384,7 @@ public class PokemonMediaHandler(
             cancellationToken);
         if (cacheValue is null)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(GetJitter()), cancellationToken);
             var httpClient = httpClientFactory.CreateClient();
             using var response = await httpClient.GetAsync(mediaUri, cancellationToken);
             response.EnsureSuccessStatusCode();

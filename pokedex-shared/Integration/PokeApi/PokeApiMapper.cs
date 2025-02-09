@@ -100,10 +100,17 @@ public static partial class PokeApiMapper
             Pedigree: new PokemonPedigreeDocument(generation.Value, region),
             Evolutions: ToEvolutions(evolutionChain.Chain),
             Varieties: pokemons,
-            Legendary: species.Legendary,
-            Mythical: species.Mythical,
-            Baby: species.Baby
+            Special: ToSpecial(species.Legendary, species.Mythical, species.Baby)
         );
+    }
+
+    private static PokemonSpecialDocument ToSpecial(
+        bool legendary,
+        bool mythical,
+        bool baby)
+    {
+        var special = legendary || mythical || baby;
+        return new PokemonSpecialDocument(special, legendary, mythical, baby);
     }
 
     private static List<PokemonNameDocument> ToNames(Names[] names)

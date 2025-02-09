@@ -89,6 +89,13 @@ export interface PokemonDto {
     audios: PokemonMediaDto[];
 }
 
+export interface PokemonSpecialDto {
+    special: boolean;
+    legendary: boolean;
+    mythical: boolean;
+    baby: boolean;
+}
+
 export interface PokemonSpeciesDto {
     id: number;
     name: string;
@@ -98,9 +105,7 @@ export interface PokemonSpeciesDto {
     pedigree: PokemonPedigreeDto;
     evolutions: PokemonEvolutionDto[];
     varieties: PokemonDto[];
-    legendary: boolean;
-    mythical: boolean;
-    baby: boolean;
+    special: PokemonSpecialDto;
 }
 
 export interface PaginationResultDto {

@@ -28,9 +28,9 @@ public class MongoDbQueryRepository
             "name",
             "pedigree.generation",
             "varieties.types.type",
-            "baby",
-            "legendary",
-            "mythical"
+            "special.baby",
+            "special.legendary",
+            "special.mythical"
         ]));
     }
 
@@ -149,15 +149,15 @@ public class MongoDbQueryRepository
         {
             if (special == PokemonSpecial.Legendary)
             {
-                return Filter.Eq(p => p.Legendary, true);
+                return Filter.Eq(p => p.Special.Legendary, true);
             }
             else if (special == PokemonSpecial.Baby)
             {
-                return Filter.Eq(p => p.Baby, true);
+                return Filter.Eq(p => p.Special.Baby, true);
             }
             else
             {
-                return Filter.Eq(p => p.Mythical, true);
+                return Filter.Eq(p => p.Special.Mythical, true);
             }
         }).ToList();
     }

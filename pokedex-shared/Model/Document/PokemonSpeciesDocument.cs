@@ -30,14 +30,8 @@ public readonly record struct PokemonSpeciesDocument(
     [property: BsonElement("varieties")]
     List<PokemonDocument> Varieties,
     [Required]
-    [property: BsonElement("legendary")]
-    bool Legendary,
-    [Required]
-    [property: BsonElement("mythical")]
-    bool Mythical,
-    [Required]
-    [property: BsonElement("baby")]
-    bool Baby
+    [property: BsonElement("special")]
+    PokemonSpecialDocument Special
 );
 
 public static partial class Extensions
@@ -60,9 +54,7 @@ public static partial class Extensions
             Pedigree: document.Pedigree.ToDto(),
             Evolutions: document.Evolutions.ToDtos(),
             Varieties: document.Varieties.ToDtos(),
-            Legendary: document.Legendary,
-            Mythical: document.Mythical,
-            Baby: document.Baby
+            Special: document.Special.ToDto()
         );
     }
 }
