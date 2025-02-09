@@ -30,7 +30,6 @@ public class PokemonV1FileController(
         if (result.HasValue)
         {
             var file = result.Value;
-            Response.Headers.CacheControl = $"public, max-age=${TimeSpan.FromMinutes(10).Seconds}";
             return Results.File(
                 fileContents: file.File,
                 contentType: file.ContentType,

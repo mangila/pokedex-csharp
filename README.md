@@ -2,11 +2,11 @@
 
 A pretty Pokédex (yet another)
 
-## pokedex-ui
+## pokedex-view
 
-Next.js app that displays the Pokémon data. Using MUI components.
+Vite (React) app that displays the Pokémon data. Using MUI components.
 
-* http://localhost:4000/
+* http://localhost:5173/
 
 ## pokedex-api
 
@@ -16,11 +16,14 @@ for a cache-Aside pattern
 ## pokedex-poller
 
 C# Worker Service project that polls data from PokeApi and persists the fetched data to a MongoDB docker instance.
-Caches API request responses
+
+* Caches API request responses
+* Caches byte images
+* Converts images to .webp if possible
 
 ## pokedex-shared
 
-Shared config and services around the project
+Shared config, models and services around the project
 
 ## pokedex-unit-test
 
@@ -34,8 +37,9 @@ nUnit3 test project with Testcontainers and FluentAssertion
 
 MongoDB as database and Redis as a IDistributedCache.
 
-* Redis Insight - http://localhost:8082
+* Redis Insight - http://localhost:8001
 * Mongo Compass ConnectionString - `mongodb://admin:password@localhost:27017`
+
 ## loki
 
 * Grafana with Loki datasource - http://localhost:3000

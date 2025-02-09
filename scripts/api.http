@@ -1,5 +1,5 @@
 ﻿### Get all Pokemons
-GET {{pokemonV1}}?page=1&pageSize=10&types=flyi&special=legendary&special=legendary&special=legendary&special=legendary
+GET {{pokemonV1}}?page=1&pageSize=10&types=fire
 Content-Type: application/json
 
 ###

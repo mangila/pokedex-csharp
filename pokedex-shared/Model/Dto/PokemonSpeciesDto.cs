@@ -17,8 +17,6 @@ public readonly record struct PokemonSpeciesDto(
     ImmutableList<PokemonEvolutionDto> Evolutions,
     [property: JsonPropertyName("varieties")]
     ImmutableList<PokemonDto> Varieties,
-    [property: JsonPropertyName("legendary")]
-    bool Legendary,
-    [property: JsonPropertyName("mythical")]
-    bool Mythical,
-    [property: JsonPropertyName("baby")] bool Baby);
+    [property: JsonPropertyName("special")]
+    PokemonSpecialDto Special
+);

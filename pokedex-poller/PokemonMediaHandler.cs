@@ -6,6 +6,8 @@ using pokedex_shared.Integration.PokeApi.Response.Pokemon;
 using pokedex_shared.Model.Document.Embedded;
 using pokedex_shared.Model.Domain;
 using pokedex_shared.Service;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace pokedex_poller;
 
@@ -282,8 +284,44 @@ public class PokemonMediaHandler(
             FetchMediaAsync(name, sprites.Versions.GenerationVIII.Icons.FrontFemale!,
                 "generationviii-icons-front-female", CacheKeySpritesPrefix, cancellationToken),
         ];
+
         var fetchedEntries = await Task.WhenAll(entries);
-        return await InsertEntriesAsync(fetchedEntries, cancellationToken);
+        var convertedImages = await ConvertImagesAsync(
+            fetchedEntries,
+            ["image/gif", "image/png"],
+            cancellationToken);
+        return await InsertEntriesAsync(convertedImages, cancellationToken);
+    }
+
+    private static async Task<List<PokemonMediaEntry>> ConvertImagesAsync(
+        PokemonMediaEntry[] fetchedEntries,
+        List<string> supportedFormats,
+        CancellationToken cancellationToken)
+    {
+        var l = new List<PokemonMediaEntry>();
+        foreach (var entry in fetchedEntries)
+        {
+            if (entry != default)
+            {
+                if (supportedFormats.Contains(entry.ContentType))
+                {
+                    var img = await Image.LoadAsync(new MemoryStream(entry.File), cancellationToken);
+                    using var webpStream = new MemoryStream();
+                    await img.SaveAsWebpAsync(webpStream, cancellationToken);
+                    l.Add(new PokemonMediaEntry(
+                        Path.ChangeExtension(entry.FileName, ".webp"),
+                        "image/webp",
+                        webpStream.ToArray()
+                    ));
+                }
+                else
+                {
+                    l.Add(entry);
+                }
+            }
+        }
+
+        return l;
     }
 
 
@@ -298,11 +336,11 @@ public class PokemonMediaHandler(
             FetchMediaAsync(name, cries.Latest!, "latest", CacheKeyAudioPrefix, cancellationToken),
         ];
         var fetchedEntries = await Task.WhenAll(entries);
-        return await InsertEntriesAsync(fetchedEntries, cancellationToken);
+        return await InsertEntriesAsync(fetchedEntries.ToList(), cancellationToken);
     }
 
     private async Task<List<PokemonMediaDocument>> InsertEntriesAsync(
-        PokemonMediaEntry[] entries,
+        List<PokemonMediaEntry> entries,
         CancellationToken cancellationToken = default)
     {
         var documents = new List<PokemonMediaDocument>();
@@ -323,7 +361,7 @@ public class PokemonMediaHandler(
     private async Task<PokemonMediaEntry> FetchMediaAsync(
         PokemonName name,
         string uri,
-        string description,
+        string fileDescription,
         string cacheKeyPrefix,
         CancellationToken cancellationToken = default
     )
@@ -334,14 +372,19 @@ public class PokemonMediaHandler(
         }
 
         var mediaUri = new Uri(uri);
-        var cacheKey = string.Concat(cacheKeyPrefix, mediaUri.AbsolutePath);
+        var fileName = CreateFileName(
+            name: name,
+            fileDescription: fileDescription,
+            fileExtension: GetFileExtension(mediaUri)
+        );
+        var contentType = GetContentType(mediaUri);
+        var cacheKey = string.Concat(cacheKeyPrefix, fileName);
         var cacheValue = await redisService.GetAsync(
             cacheKey,
             cancellationToken);
-
         if (cacheValue is null)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(GetJitter()), cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(GetJitter()), cancellationToken);
             var httpClient = httpClientFactory.CreateClient();
             using var response = await httpClient.GetAsync(mediaUri, cancellationToken);
             response.EnsureSuccessStatusCode();
@@ -352,19 +395,45 @@ public class PokemonMediaHandler(
                 options: _options,
                 cancellationToken: cancellationToken);
             return new PokemonMediaEntry(
-                name,
-                mediaUri,
-                description,
+                fileName,
+                contentType,
                 file
             );
         }
 
         return new PokemonMediaEntry(
-            name,
-            new Uri(uri),
-            description,
+            fileName,
+            contentType,
             cacheValue
         );
+    }
+
+    private static string GetContentType(Uri uri)
+    {
+        var fileExtension = GetFileExtension(uri);
+        return fileExtension switch
+        {
+            "png" => "image/png",
+            "ogg" => "audio/ogg",
+            "svg" => "image/svg+xml",
+            "gif" => "image/gif",
+            _ => throw new NotSupportedException("content type not supported: " + fileExtension)
+        };
+    }
+
+    private static string GetFileExtension(Uri uri)
+    {
+        var indexOf = uri.OriginalString.LastIndexOf('.');
+        var fileExtension = uri.OriginalString[(indexOf + 1)..];
+        return fileExtension;
+    }
+
+    private static string CreateFileName(
+        PokemonName name,
+        string fileDescription,
+        string fileExtension)
+    {
+        return $"{name.Value}-{fileDescription}.{fileExtension}";
     }
 
     private int GetJitter()
