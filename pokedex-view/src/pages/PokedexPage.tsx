@@ -24,7 +24,7 @@ export default function PokedexPage() {
                 showBoundary(new Error(reason))
             });
         }
-    }, [generation]);
+    }, [generation, queryClient, showBoundary]);
 
     if (!data) {
         return null

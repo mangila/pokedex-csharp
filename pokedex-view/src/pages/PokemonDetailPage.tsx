@@ -23,7 +23,7 @@ export default function PokemonDetailPage() {
                 showBoundary(new Error(reason))
             });
         }
-    }, [name]);
+    }, [name, queryClient, showBoundary]);
 
     if (!data) {
         return null

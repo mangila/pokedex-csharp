@@ -25,7 +25,7 @@ export default function FavoritePage() {
                 showBoundary(new Error(reason));
             })
         })
-    }, [])
+    }, [queryClient, showBoundary])
 
     if (!data) {
         return null

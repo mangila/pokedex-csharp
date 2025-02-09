@@ -23,7 +23,7 @@ export default function FavoriteButton({id}: Props) {
             const includes = result.includes(id);
             setFavorite(includes)
         })
-    }, [handleFavoriteClick]);
+    }, [id, queryClient, handleFavoriteClick]);
 
     const {mutate} = useMutation({
         mutationFn: () => updateFavorites(id),
