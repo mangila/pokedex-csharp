@@ -11,10 +11,7 @@ namespace pokedex_api.Controller;
 [Route("api/v1/pokemon/file")]
 [Produces(MediaTypeNames.Application.Octet)]
 [RequestTimeout(HttpRequestConfig.Policies.ThreeMinute)]
-public class PokemonV1FileController(
-    ILogger<PokemonV1FileController> logger,
-    PokemonService pokemonService)
-    : ControllerBase
+public class PokemonV1FileController(PokemonService pokemonService) : ControllerBase
 {
     [HttpGet("{id}")]
     [ProducesResponseType<FileResult>(StatusCodes.Status200OK)]

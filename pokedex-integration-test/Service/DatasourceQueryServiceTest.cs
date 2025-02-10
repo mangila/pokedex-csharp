@@ -45,8 +45,6 @@ public class DatasourceQueryServiceTest
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             return loggerFactory.CreateLogger<DatasourceQueryService>();
         });
-
-        // Add logging
         serviceCollection.AddLogging(configure => configure.AddConsole());
         _serviceProvider = serviceCollection.BuildServiceProvider();
     }
