@@ -14,8 +14,8 @@ public record struct PokemonSpecial
     public static readonly PokemonSpecial Baby = new("baby");
     public static readonly PokemonSpecial Mythical = new("mythical");
 
-    public string Name { get; }
-    private PokemonSpecial(string name) => Name = name;
+    public string Value { get; }
+    private PokemonSpecial(string value) => Value = value;
 
     public static PokemonSpecial From(string value)
     {

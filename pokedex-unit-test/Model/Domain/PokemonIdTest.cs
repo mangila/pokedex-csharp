@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
+using pokedex_shared.Common.Attributes;
 using pokedex_shared.Model.Domain;
 
 namespace pokedex_unit_test.Model.Domain;
@@ -9,13 +10,18 @@ namespace pokedex_unit_test.Model.Domain;
 public class PokemonIdTest
 {
     [Test]
-    public void Test()
+    [SadPath]
+    public void TestBigNumber()
     {
-        // No big numbers
         Action act = () => new PokemonId(100000);
         act.Should().Throw<ValidationException>();
-        // Must be a number
-        act = () => new PokemonId("s");
+    }
+
+    [Test]
+    [SadPath]
+    public void TestInvalidNumber()
+    {
+        Action act = () => new PokemonId("s");
         act.Should().Throw<ValidationException>();
     }
 }

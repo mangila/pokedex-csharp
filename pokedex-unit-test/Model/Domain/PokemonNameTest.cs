@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
+using pokedex_shared.Common.Attributes;
 using pokedex_shared.Model.Domain;
 
 namespace pokedex_unit_test.Model.Domain;
@@ -9,6 +10,7 @@ namespace pokedex_unit_test.Model.Domain;
 public class PokemonNameTest
 {
     [Test]
+    [SadPath]
     public void TestSpecialChars()
     {
         Action act = () => new PokemonName("#");
@@ -18,6 +20,7 @@ public class PokemonNameTest
     }
 
     [Test]
+    [SadPath]
     public void TestExceptionNames()
     {
         var act = () => new PokemonName("Mr-mime");
@@ -31,6 +34,7 @@ public class PokemonNameTest
     }
 
     [Test]
+    [SadPath]
     public void TestLength()
     {
         var act = () => new PokemonName(string.Concat(Enumerable.Repeat("s", 100)));

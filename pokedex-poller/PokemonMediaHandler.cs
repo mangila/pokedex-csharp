@@ -314,8 +314,7 @@ public class PokemonMediaHandler(
                 }
                 catch (Exception)
                 {
-                    logger.LogInformation("content type supported: " + entry.ContentType +
-                                          " will not convert to .webp");
+                    logger.LogInformation("Image Conversion - not supported: {ContentType}", entry.ContentType);
                     l.Add(entry);
                 }
             }
