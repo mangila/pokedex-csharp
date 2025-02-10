@@ -16,18 +16,20 @@ namespace pokedex_integration_test.Service;
 public class DatasourceQueryServiceTest
 {
     private ServiceProvider _serviceProvider;
-    private MongoDbTestContainer _mongoDbTestContainer = new();
-    private RedisTestContainer _redisTestContainer = new();
+    private readonly MongoDbTestContainer _mongoDbTestContainer = new();
+    private readonly RedisTestContainer _redisTestContainer = new();
+    private readonly CancellationTokenSource _cts = new();
 
     [SetUp]
     public async Task Setup()
     {
+        var token = _cts.Token;
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: false)
             .AddEnvironmentVariables()
             .Build();
-        await _mongoDbTestContainer.InitializeAsync();
-        await _redisTestContainer.InitializeAsync();
+        await _mongoDbTestContainer.InitializeAsync(token);
+        await _redisTestContainer.InitializeAsync(token);
         var serviceCollection = new ServiceCollection();
 
         serviceCollection.AddStackExchangeRedisCache(options =>
@@ -52,16 +54,18 @@ public class DatasourceQueryServiceTest
     [TearDown]
     public async Task Teardown()
     {
-        await _mongoDbTestContainer.DisposeAsync();
-        await _redisTestContainer.DisposeAsync();
+        var token = _cts.Token;
+        await _mongoDbTestContainer.DisposeAsync(token);
+        await _redisTestContainer.DisposeAsync(token);
         await _serviceProvider.DisposeAsync();
     }
 
     [Test]
     public async Task Test()
     {
+        var token = _cts.Token;
         var service = _serviceProvider.GetService<DatasourceQueryService>();
-        var document = await service!.FindByNameAsync(new PokemonName("name"), CancellationToken.None);
+        var document = await service!.FindByNameAsync(new PokemonName("name"), token);
         document.Should()
             .NotBeNull()
             .And.BeEquivalentTo(default(PokemonSpeciesDocument));
@@ -70,8 +74,9 @@ public class DatasourceQueryServiceTest
     [Test]
     public async Task Test2()
     {
+        var token = _cts.Token;
         var service = _serviceProvider.GetService<DatasourceQueryService>();
-        var document = await service!.FindByNameAsync(new PokemonName("name"), CancellationToken.None);
+        var document = await service!.FindByNameAsync(new PokemonName("name"), token);
         document.Should()
             .NotBeNull()
             .And.BeEquivalentTo(default(PokemonSpeciesDocument));

@@ -6,15 +6,15 @@ public class RedisTestContainer
 {
     private RedisContainer? _container;
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         _container = new RedisBuilder().Build();
-        await _container.StartAsync();
+        await _container.StartAsync(cancellationToken);
     }
 
-    public async Task DisposeAsync()
+    public async Task DisposeAsync(CancellationToken cancellationToken = default)
     {
-        await _container!.StopAsync();
+        await _container!.StopAsync(cancellationToken);
         await _container!.DisposeAsync();
     }
 
