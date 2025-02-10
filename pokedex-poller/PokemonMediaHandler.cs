@@ -312,7 +312,7 @@ public class PokemonMediaHandler(
                         webpStream.ToArray()
                     ));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     logger.LogInformation("content type supported: " + entry.ContentType +
                                           " will not convert to .webp");
