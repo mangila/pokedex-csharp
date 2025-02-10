@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using pokedex_shared.Common;
 using pokedex_shared.Service;
 
 namespace pokedex_shared.Integration.PokeApi;
 
-public class PokeApiClient(
-    ILogger<PokeApiClient> logger,
-    HttpClient httpClient,
-    RedisService redis)
+public class PokeApiClient(HttpClient httpClient, RedisService redis)
 {
     private const string CacheKeyPrefix = "pokeapi.co:pokemon:";
 

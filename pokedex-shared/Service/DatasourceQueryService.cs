@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using pokedex_shared.Common;
 using pokedex_shared.Database.Query;
@@ -15,7 +14,6 @@ namespace pokedex_shared.Service;
 * </summary>
 */
 public class DatasourceQueryService(
-    ILogger<DatasourceQueryService> logger,
     RedisService redis,
     MongoDbQueryRepository mongoDbQueryRepository,
     MongoDbGridFsQueryRepository mongoDbGridFsQueryRepository)
@@ -93,7 +91,7 @@ public class DatasourceQueryService(
         List<PokemonSpecial> specials,
         CancellationToken cancellationToken = default)
     {
-        return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize,types,specials, cancellationToken);
+        return await mongoDbQueryRepository.FindByPaginationAsync(page, pageSize, types, specials, cancellationToken);
     }
 
     public async Task<List<PokemonSpeciesDocument>> SearchByGenerationAsync(

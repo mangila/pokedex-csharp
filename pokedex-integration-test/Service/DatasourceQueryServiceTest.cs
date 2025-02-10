@@ -40,10 +40,10 @@ public class DatasourceQueryServiceTest
         serviceCollection.AddMongoDbQueryRepository(config.GetRequiredSection(nameof(MongoDbOption)));
         serviceCollection.AddSingleton<DatasourceQueryService>();
         serviceCollection.AddSingleton<RedisService>();
-        serviceCollection.AddSingleton<ILogger<DatasourceQueryService>>(sp =>
+        serviceCollection.AddSingleton<ILogger<RedisService>>(sp =>
         {
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            return loggerFactory.CreateLogger<DatasourceQueryService>();
+            return loggerFactory.CreateLogger<RedisService>();
         });
         serviceCollection.AddLogging(configure => configure.AddConsole());
         _serviceProvider = serviceCollection.BuildServiceProvider();

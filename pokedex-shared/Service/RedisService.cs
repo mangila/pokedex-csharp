@@ -5,7 +5,7 @@ using pokedex_shared.Common;
 namespace pokedex_shared.Service;
 
 public class RedisService(
-    ILogger<DatasourceQueryService> logger,
+    ILogger<RedisService> logger,
     IDistributedCache redis)
 {
     public async Task<T> GetValueTypeAsync<T>(
