@@ -15,8 +15,8 @@ builder.Services.AddMongoDbQueryRepository(builder.Configuration.GetRequiredSect
 // Configure Redis
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
-    var connection = builder.Configuration.GetConnectionString("Redis");
-    redisOptions.Configuration = connection;
+    var connectionString = builder.Configuration.GetConnectionString("Redis");
+    redisOptions.Configuration = connectionString;
     redisOptions.InstanceName = "pokedex-api:development:";
 });
 // Configure Request timeouts

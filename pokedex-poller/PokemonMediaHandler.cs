@@ -304,7 +304,7 @@ public class PokemonMediaHandler(
                 try
                 {
                     var img = await Image.LoadAsync(new MemoryStream(entry.File), cancellationToken);
-                    using var webpStream = new MemoryStream();
+                    await using var webpStream = new MemoryStream();
                     await img.SaveAsWebpAsync(webpStream, cancellationToken);
                     l.Add(new PokemonMediaEntry(
                         Path.ChangeExtension(entry.FileName, ".webp"),

@@ -7,7 +7,7 @@ namespace pokedex_integration_test.Controller;
 public class PokemonV1ControllerTest
 {
     [Test]
-    public void METHOD()
+    public void Test()
     {
     }
 }

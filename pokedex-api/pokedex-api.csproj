@@ -20,4 +20,8 @@
       <ProjectReference Include="..\pokedex-shared\pokedex-shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="appsettings.Test.json" />
+    </ItemGroup>
+
 </Project>

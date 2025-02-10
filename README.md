@@ -33,6 +33,8 @@ nUnit3 test project for unit tests with FluentAssertion
 
 nUnit3 test project with Testcontainers and FluentAssertion
 
+* Docker is required
+
 ## datasource
 
 MongoDB as database and Redis as a IDistributedCache.
