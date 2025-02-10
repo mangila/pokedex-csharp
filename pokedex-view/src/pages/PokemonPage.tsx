@@ -17,10 +17,9 @@ export default function PokemonPage() {
         error
     } = useInfiniteScroll(["infinite-pokemons", typesFilter, specialFilter], 12, typesFilter, specialFilter);
 
-    setSpecialFilter([]);
-    setTypesFilter([]);
-
     if (error) {
+        setTypesFilter([])
+        setSpecialFilter([])
         showBoundary(error);
     }
 

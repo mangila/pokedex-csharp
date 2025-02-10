@@ -5,6 +5,7 @@ import {useNavigate} from "react-router";
 import FavoriteButton from "./FavoriteButton";
 import {useErrorBoundary} from "react-error-boundary";
 import {useScrollIntoLastVisitedFragment} from "@shared/hooks";
+import PokemonChip from "./PokemonChip";
 
 interface Props {
     species: PokemonSpeciesDto
@@ -29,9 +30,14 @@ export default function PokemonGenerationCard({species}: Props) {
     return <>
         <Card id={fragmentId}>
             <Box sx={{
+                ml: 1,
                 display: 'flex',
-                justifyContent: "flex-end",
+                justifyContent: species.special.special ? "space-between" : "flex-end",
+                alignItems: "center",
             }}>
+                {species.special.baby && <PokemonChip label={"Baby"}/>}
+                {species.special.legendary && <PokemonChip label={"Legendary"}/>}
+                {species.special.mythical && <PokemonChip label={"Mythical"}/>}
                 <FavoriteButton id={species.id}/>
             </Box>
             <CardActionArea onClick={() => {

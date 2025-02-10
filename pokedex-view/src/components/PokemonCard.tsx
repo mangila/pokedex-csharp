@@ -1,10 +1,11 @@
-﻿import {Box, capitalize, Card, CardActionArea, CardContent, CardMedia, Chip, Grid2, Typography} from "@mui/material";
+﻿import {Box, capitalize, Card, CardActionArea, CardContent, CardMedia, Grid2, Typography} from "@mui/material";
 import {useScrollIntoLastVisitedFragment} from "@shared/hooks";
-import {PokemonSpeciesDto, PokemonType} from "@shared/types";
+import {PokemonSpeciesDto} from "@shared/types";
 import {useNavigate} from "react-router";
 import {useErrorBoundary} from "react-error-boundary";
 import FavoriteButton from "./FavoriteButton";
 import {LAST_VISITED_FRAGMENT, padWithLeadingZeros} from "@shared/utils";
+import PokemonChip from "./PokemonChip";
 
 interface Props {
     species: PokemonSpeciesDto
@@ -26,20 +27,18 @@ export default function PokemonCard({species}: Props) {
         showBoundary(new Error("not found official-artwork-front-default.webp"));
     }
 
-    const isSpecial = species.special.special;
-
     const types = species
         .varieties
         .filter(pokemon => pokemon.default)
         .flatMap(defaultPokemon => defaultPokemon.types)
         .map(type => <PokemonChip label={capitalize(type.type)} variant={type.type}/>)
-    console.log(isSpecial);
+
     return <>
         <Card id={fragmentId}>
             <Box sx={{
                 ml: 1,
                 display: 'flex',
-                justifyContent: isSpecial ? "space-between" : "flex-end",
+                justifyContent: species.special.special ? "space-between" : "flex-end",
                 alignItems: "center",
             }}>
                 {species.special.baby && <PokemonChip label={"Baby"}/>}
@@ -76,13 +75,4 @@ export default function PokemonCard({species}: Props) {
             </CardActionArea>
         </Card>
     </>
-}
-
-interface PokemonChipProps {
-    label: string;
-    variant?: PokemonType
-}
-
-function PokemonChip({label, variant}: PokemonChipProps) {
-    return <Chip label={label} variant={variant ?? "outlined"}/>;
 }
