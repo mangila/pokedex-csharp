@@ -2,6 +2,12 @@
   app:
 
 services:
+  web:
+    build: ./pokedex-view
+    ports:
+      - "4020:4020"
+    networks:
+      - app
   # Redis & Redis Insight
   redis:
     image: redis/redis-stack:latest
