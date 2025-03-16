@@ -35,12 +35,21 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<PokemonService>();
 builder.Services.AddSingleton<RedisService>();
 builder.Services.AddSingleton<DatasourceQueryService>();
-
+// Configure Kestrel to listen on 0.0.0.0
+builder.WebHost.UseUrls("http://0.0.0.0:5144");
 var app = builder.Build();
-app.UseCors(policyBuilder => { policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
+app.UseCors(policyBuilder =>
+{
+    policyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseRequestTimeouts();
 app.UseRateLimiter();
 app.MapControllers();
+Console.WriteLine(app.Environment.EnvironmentName);
+Console.WriteLine("Starting web host");
 app.Run();

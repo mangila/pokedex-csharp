@@ -2,16 +2,22 @@
 
 A pretty Pokédex (yet another)
 
+## How to run
+
+run the docker-compose file and it should start everything!
+
+- `docker compose up --force-recreate -d `
+- Give the poller some time to fetch pokemon data from PokeAPI
+- goto `http://localhost:4020`
+- voila!
+
 ## pokedex-view
 
 Vite (React) app that displays the Pokémon data. Using MUI components.
 
-* http://localhost:5173/
-
 ## pokedex-api
 
-Restful API with swagger endpoint. Connected to a Redis docker instance and a MongoDB docker instance
-for a cache-Aside pattern
+- Serve the pokemon data
 
 ## pokedex-poller
 
