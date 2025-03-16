@@ -15,6 +15,8 @@ run the docker-compose file and it should start everything!
 
 Vite (React) app that displays the Pokémon data. Using MUI components.
 
+![screenshot](screenshot.png)
+
 ## pokedex-api
 
 - Serve the pokemon data
